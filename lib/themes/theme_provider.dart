@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
-import 'package:flutter_test_1/themes/dark_mode.dart';
-import 'package:flutter_test_1/themes/light_mode.dart';
+import 'package:monotone_flutter/themes/dark_mode.dart';
+import 'package:monotone_flutter/themes/light_mode.dart';
 
 class ThemeProvider extends ChangeNotifier {
   //init theme light mode
