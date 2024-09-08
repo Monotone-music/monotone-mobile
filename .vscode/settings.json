@@ -1,0 +1,4 @@
+{
+    "dart.hotReloadOnSave": "manual",
+    "files.autoSave": "onFocusChange"
+}
