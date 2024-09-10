@@ -17,7 +17,7 @@ class _MyDrawerState extends State<MyDrawer> {
           //logo
           DrawerHeader(
             decoration: BoxDecoration(
-              border: Border(
+              border: const Border(
                 bottom: BorderSide.none,
               ),
               color: Theme.of(context).colorScheme.primary,
@@ -34,7 +34,7 @@ class _MyDrawerState extends State<MyDrawer> {
           Padding(
             padding: const EdgeInsets.only(left: 25.0),
             child: ListTile(
-              title: Text('H O M E'),
+              title: const Text('H O M E'),
               leading: Icon(
                 Icons.home,
                 color: Theme.of(context).colorScheme.primary,

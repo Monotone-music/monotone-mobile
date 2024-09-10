@@ -19,7 +19,7 @@ class MyApp extends StatelessWidget {
     return MaterialApp(
       title: 'Flutter test',
       debugShowCheckedModeBanner: false,
-      home: HomePage(),
+      home: const HomeScreen(),
       theme: Provider.of<ThemeProvider>(context).themeData,
     );
   }
