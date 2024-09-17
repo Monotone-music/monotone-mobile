@@ -1,10 +1,13 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/flutter_svg.dart';
+import 'package:monotone_flutter/components/playlist_list.dart';
 import 'package:monotone_flutter/components/playlist_mini.dart';
 import 'package:monotone_flutter/themes/theme_provider.dart';
 import 'package:provider/provider.dart';
 
 class LibraryPage extends StatefulWidget {
+  const LibraryPage({super.key});
+
   @override
   _LibraryPageState createState() => _LibraryPageState();
 }
@@ -12,15 +15,29 @@ class LibraryPage extends StatefulWidget {
 class _LibraryPageState extends State<LibraryPage> {
   int _selectedIndex = 0;
 
+  static const List<Map<String, String>> playlists = [
+    {
+      'title': 'Get Lucky',
+      'artist': 'Daft Punk',
+      'imageUrl': 'assets/image/album_1.png',
+    },
+    {
+      'title': 'Daily Mix',
+      'imageUrl': 'assets/image/album_1.png',
+    },
+    {
+      'title': 'Daily Mix',
+      'imageUrl': 'assets/image/album_1.png',
+    },
+    {
+      'title': 'Daily Mix',
+      'imageUrl': 'assets/image/album_1.png',
+    },
+    // Add more playlists here
+  ];
+
   static const List<Widget> _widgetOptions = <Widget>[
-    SingleChildScrollView(
-      // scrollDirection: Axis.horizontal,
-      child: Row(
-        children: <Widget>[
-          PlaylistMini(),
-        ],
-      ),
-    ),
+    PlaylistList(playlists: playlists),
     Center(
       child: Text(
         'Podcasts',

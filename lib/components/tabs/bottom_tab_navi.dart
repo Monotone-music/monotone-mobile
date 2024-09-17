@@ -15,7 +15,7 @@ class _BottomTabNavigatorState extends State<BottomTabNavigator> {
     // Add your tab screens here
     HomeScreen(),
     DiscoverPage(),
-    LibraryPage(),
+    const LibraryPage(),
   ];
 
   @override
