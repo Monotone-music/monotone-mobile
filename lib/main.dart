@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:monotone_flutter/components/tabs/bottom_tab_navi.dart';
 import 'package:monotone_flutter/themes/theme_provider.dart';
 import 'package:provider/provider.dart';
 import 'pages/home.dart';
@@ -19,7 +20,7 @@ class MyApp extends StatelessWidget {
     return MaterialApp(
       title: 'Flutter test',
       debugShowCheckedModeBanner: false,
-      home: const HomeScreen(),
+      home: BottomTabNavigator(),
       theme: Provider.of<ThemeProvider>(context).themeData,
     );
   }

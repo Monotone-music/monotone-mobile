@@ -4,7 +4,7 @@ import 'package:monotone_flutter/themes/light_mode.dart';
 
 class ThemeProvider extends ChangeNotifier {
   //init theme light mode
-  ThemeData _themeData = lightMode;
+  ThemeData _themeData = darkMode;
 
   //get theme
   ThemeData get themeData => _themeData;
