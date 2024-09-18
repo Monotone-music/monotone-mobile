@@ -1,23 +1,67 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_svg/flutter_svg.dart';
+import 'package:monotone_flutter/components/playlist_list.dart';
 import 'package:monotone_flutter/themes/theme_provider.dart';
 import 'package:provider/provider.dart';
-import 'package:monotone_flutter/components/playlist_card.dart';
 
-class HomeScreen extends StatefulWidget {
-  const HomeScreen({super.key});
+class HomePage extends StatefulWidget {
+  const HomePage({super.key});
 
   @override
-  _HomeScreenState createState() => _HomeScreenState();
+  _HomePageState createState() => _HomePageState();
 }
 
-class _HomeScreenState extends State<HomeScreen> {
-  // final List<Item> _data = generateItems(5);
+class _HomePageState extends State<HomePage> {
+  int _selectedIndex = 0;
+
+  static const List<Map<String, String>> playlists = [
+    {
+      'title': 'Get Lucky',
+      'artist': 'Daft Punk',
+      'imageUrl': 'assets/image/album_1.png',
+    },
+    {
+      'title': 'Daily Mix',
+      'imageUrl': 'assets/image/album_1.png',
+    },
+    {
+      'title': 'Daily Mix',
+      'imageUrl': 'assets/image/album_1.png',
+    },
+    {
+      'title': 'Daily Mix',
+      'imageUrl': 'assets/image/album_1.png',
+    },
+    // Add more playlists here
+  ];
+
+  static const List<Widget> _widgetOptions = <Widget>[
+    PlaylistList(playlists: playlists),
+    Center(
+      child: Text(
+        'Podcasts',
+        style: TextStyle(fontSize: 24),
+      ),
+    ),
+    Center(
+      child: Text(
+        'Audiobooks',
+        style: TextStyle(fontSize: 24),
+      ),
+    ),
+  ];
+
+  void _onButtonPressed(int index) {
+    setState(() {
+      _selectedIndex = index;
+    });
+  }
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: const Text('Expansion Panel List'),
+        title: const Text('Library Page'),
         actions: [
           IconButton(
             icon: const Icon(Icons.brightness_6),
@@ -27,26 +71,66 @@ class _HomeScreenState extends State<HomeScreen> {
           ),
         ],
       ),
-      body: ListView(
-        padding: const EdgeInsets.all(16.0),
+      body: Column(
         children: [
-          // const Text('Hello World'),
-          // const SizedBox(height: 16),
-          _buildPanel(),
+          Row(
+            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+            children: [
+              Row(
+                mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                children: <Widget>[
+                  categoryButton("Music", 0),
+                  categoryButton("Podcasts", 1),
+                  categoryButton("Audiobooks", 2),
+                ],
+              ),
+              Container(
+                alignment: Alignment.center, // <---- The magic
+                padding: const EdgeInsets.all(12),
+                child: SvgPicture.asset(
+                  'assets/image/home_filter.svg',
+                  semanticsLabel: 'My SVG Image',
+
+                  // fit: BoxFit.scaleDown,
+                  color: const Color(0xFF898989),
+
+                  width: 50, //set your width and height
+                  height: 50,
+                ),
+              )
+            ],
+          ),
+          Expanded(
+            child: Center(
+              child: _widgetOptions.elementAt(_selectedIndex),
+            ),
+          ),
         ],
       ),
     );
   }
 
-  bool _customTileExpanded = false;
+  Widget categoryButton(String title, int index) {
+    final themeProvider = Provider.of<ThemeProvider>(context);
+    final isDarkMode = themeProvider.isDarkMode;
 
-  Widget _buildPanel() {
-    return const Column(
-      children: <Widget>[
-        PlaylistCard(),
-      ],
+    return Container(
+      padding: const EdgeInsets.only(left: 8, right: 8),
+      margin: const EdgeInsets.only(left: 8),
+      decoration: BoxDecoration(
+        color: isDarkMode ? const Color(0xFF202020) : const Color(0xFFE4E4E4),
+
+        borderRadius: BorderRadius.circular(12),
+        // border: Border.all(
+        //   color: const Color.fromARGB(255, 0, 0, 0),
+        //   width: 1,
+        // ),
+      ),
+      child: TextButton(
+        style: TextButton.styleFrom(),
+        onPressed: () => _onButtonPressed(index),
+        child: Text(title, style: const TextStyle(fontWeight: FontWeight.w400)),
+      ),
     );
   }
-
-//
 }

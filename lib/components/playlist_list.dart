@@ -13,7 +13,7 @@ class PlaylistList extends StatelessWidget {
         crossAxisCount: 2, // Number of columns
         crossAxisSpacing: 0.0, // Spacing between columns
         mainAxisSpacing: 0.0, // Spacing between rows
-        childAspectRatio: 2.0, // Aspect ratio of each item
+        childAspectRatio: 2.3, // Aspect ratio of each item
       ),
       itemCount: playlists.length,
       itemBuilder: (context, index) {
