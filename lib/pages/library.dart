@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/flutter_svg.dart';
-import 'package:monotone_flutter/components/playlist_mini.dart';
+import 'package:monotone_flutter/components/tab_components/library_list.dart';
 import 'package:monotone_flutter/themes/theme_provider.dart';
 import 'package:provider/provider.dart';
 

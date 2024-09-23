@@ -1,7 +1,8 @@
 import 'package:flutter/material.dart';
+import 'package:monotone_flutter/components/component_views/playlist_card.dart';
 import 'package:monotone_flutter/themes/theme_provider.dart';
 import 'package:provider/provider.dart';
-import 'package:monotone_flutter/components/playlist_card.dart';
+import 'package:monotone_flutter/components/tab_components/playlist_section.dart';
 
 class HomeScreen extends StatefulWidget {
   const HomeScreen({super.key});
@@ -33,8 +34,9 @@ class _HomeScreenState extends State<HomeScreen> {
           // const Text('Hello World'),
           // const SizedBox(height: 16),
           _buildPanel(),
-        ],
+          ],
       ),
+    
     );
   }
 
@@ -43,7 +45,7 @@ class _HomeScreenState extends State<HomeScreen> {
   Widget _buildPanel() {
     return const Column(
       children: <Widget>[
-        PlaylistCard(),
+        PlaylistSection(),
       ],
     );
   }
