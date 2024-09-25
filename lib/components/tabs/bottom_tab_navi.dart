@@ -16,10 +16,10 @@ class _BottomTabNavigatorState extends State<BottomTabNavigator> {
 
   final List<Widget> _tabs = [
     // Add your tab screens here
-    LibraryPage(),
+    HomePage(),
     DiscoverPage(),
     SearchPage(),
-    HomePage(),
+    LibraryPage(),
   ];
 
   @override

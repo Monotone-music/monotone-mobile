@@ -59,53 +59,58 @@ class _HomePageState extends State<HomePage> {
 
   @override
   Widget build(BuildContext context) {
+    final themeProvider = Provider.of<ThemeProvider>(context);
+    final isDarkMode = themeProvider.isDarkMode;
     return Scaffold(
-      appBar: AppBar(
-        title: const Text('Library Page'),
-        actions: [
-          IconButton(
-            icon: const Icon(Icons.brightness_6),
-            onPressed: () {
-              Provider.of<ThemeProvider>(context, listen: false).toggleTheme();
-            },
-          ),
-        ],
-      ),
-      body: Column(
-        children: [
-          Row(
-            mainAxisAlignment: MainAxisAlignment.spaceBetween,
-            children: [
-              Row(
-                mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-                children: <Widget>[
-                  categoryButton("Music", 0),
-                  categoryButton("Podcasts", 1),
-                  categoryButton("Audiobooks", 2),
-                ],
-              ),
-              Container(
-                alignment: Alignment.center, // <---- The magic
-                padding: const EdgeInsets.all(12),
-                child: SvgPicture.asset(
-                  'assets/image/home_filter.svg',
-                  semanticsLabel: 'My SVG Image',
-
-                  // fit: BoxFit.scaleDown,
-                  color: const Color(0xFF898989),
-
-                  width: 50, //set your width and height
-                  height: 50,
+      // appBar: AppBar(
+      //   title: const Text('Home Page'),
+      //   actions: [
+      //     IconButton(
+      //       icon: const Icon(Icons.brightness_6),
+      //       onPressed: () {
+      //         Provider.of<ThemeProvider>(context, listen: false).toggleTheme();
+      //       },
+      //     ),
+      //   ],
+      // ),
+      body: Container(
+        margin: const EdgeInsets.only(top: 36.0, left: 8.0, right: 8.0),
+        child: Column(
+          children: [
+            Row(
+              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+              children: [
+                Row(
+                  mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                  children: <Widget>[
+                    categoryButton("Music", 0),
+                    categoryButton("Podcasts", 1),
+                    categoryButton("Audiobooks", 2),
+                  ],
                 ),
-              )
-            ],
-          ),
-          Expanded(
-            child: Center(
-              child: _widgetOptions.elementAt(_selectedIndex),
+                Container(
+                  child: SvgPicture.asset(
+                    'assets/image/home_filter.svg',
+                    semanticsLabel: 'My SVG Image',
+
+                    // fit: BoxFit.scaleDown,
+                    color: isDarkMode
+                        ? const Color(0xFF898989)
+                        : const Color(0xFF6E6E6E),
+
+                    width: 50, //set your width and height
+                    height: 50,
+                  ),
+                )
+              ],
             ),
-          ),
-        ],
+            Expanded(
+              child: Center(
+                child: _widgetOptions.elementAt(_selectedIndex),
+              ),
+            ),
+          ],
+        ),
       ),
     );
   }
