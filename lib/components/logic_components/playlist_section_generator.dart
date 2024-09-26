@@ -1,7 +1,6 @@
 import 'package:flutter/material.dart';
 
-import 'package:monotone_flutter/components/component_views/playlist_view.dart';
-import 'package:monotone_flutter/components/component_views/playlist_card.dart'; // Import the PlaylistListView widget
+import 'package:monotone_flutter/components/component_views/playlist_card_view.dart'; // Import the PlaylistListView widget
 import 'package:monotone_flutter/components/models/playlist_items.dart'; // Import the PlaylistItem model
 
 class PlaylistSectionGenerator extends StatefulWidget {

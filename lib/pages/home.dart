@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:monotone_flutter/components/component_views/playlist_card.dart';
+import 'package:monotone_flutter/components/component_views/playlist_card_view.dart';
 import 'package:monotone_flutter/themes/theme_provider.dart';
 import 'package:provider/provider.dart';
 import 'package:monotone_flutter/components/tab_components/playlist_section.dart';
