@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
-import 'playlist_mini.dart';
+import 'package:monotone_flutter/components/tab_components/library_list.dart';
+// import 'playlist_mini.dart';
 
 class PlaylistList extends StatelessWidget {
   final List<Map<String, String>> playlists;

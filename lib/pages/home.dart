@@ -3,6 +3,10 @@ import 'package:flutter_svg/flutter_svg.dart';
 import 'package:monotone_flutter/components/playlist_list.dart';
 import 'package:monotone_flutter/themes/theme_provider.dart';
 import 'package:provider/provider.dart';
+import 'package:monotone_flutter/components/component_views/playlist_card.dart';
+import 'package:monotone_flutter/themes/theme_provider.dart';
+import 'package:provider/provider.dart';
+import 'package:monotone_flutter/components/tab_components/playlist_section.dart';
 
 class HomePage extends StatefulWidget {
   const HomePage({super.key});

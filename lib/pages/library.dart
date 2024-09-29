@@ -1,7 +1,8 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_svg/flutter_svg.dart';
+import 'package:monotone_flutter/components/tab_components/playlist_section.dart';
 import 'package:monotone_flutter/themes/theme_provider.dart';
 import 'package:provider/provider.dart';
-import 'package:monotone_flutter/components/playlist_card.dart';
 
 class LibraryPage extends StatefulWidget {
   const LibraryPage({super.key});
@@ -43,7 +44,7 @@ class _LibraryPageState extends State<LibraryPage> {
   Widget _buildPanel() {
     return const Column(
       children: <Widget>[
-        PlaylistCard(),
+        PlaylistSection(),
       ],
     );
   }
