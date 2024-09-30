@@ -1,40 +1,30 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 
+import 'package:monotone_flutter/components/models/playlist_items.dart';
+
+///Importing playlist model
 class PlaylistCard extends StatefulWidget {
-  const PlaylistCard({super.key});
+  final PlaylistItem playlistItem;
+
+  PlaylistCard({required this.playlistItem});
 
   @override
   State<PlaylistCard> createState() => _PlaylistCardState();
 }
 
-bool _customTileExpanded = false;
-
+////Styling the Playlist Card
 class _PlaylistCardState extends State<PlaylistCard> {
   @override
   Widget build(BuildContext context) {
-    return Theme(
-      data: Theme.of(context).copyWith(dividerColor: Colors.transparent),
-      child: ExpansionTile(
-        title: const Text('Playlists'),
-        trailing: Icon(
-          _customTileExpanded
-              ? Icons.keyboard_arrow_down
-              : Icons.keyboard_arrow_right,
-        ),
-        children: <Widget>[
-          SingleChildScrollView(
-            scrollDirection: Axis.horizontal,
-            child: Row(
-              children: List.generate(10, (index) {
-                return Stack(
+    return Stack(
                   children: [
                     Positioned(
                       top: 0,
                       left: 0,
                       right: 0,
                       child: Container(
-                        // width: 130,
+                        width: 130,
                         height: 230,
                         margin: const EdgeInsets.only(left: 16.0, right: 16.0),
                         decoration: BoxDecoration(
@@ -73,29 +63,16 @@ class _PlaylistCardState extends State<PlaylistCard> {
                                         0, -1), // changes position of shadow
                                   ),
                                 ],
-                                // border: Border.all(
-                                //   color: const Color.fromARGB(255, 0, 0, 0),
-                                //   width: 1,
-                                // ),
                                 color: const Color.fromARGB(255, 30, 70, 32),
                                 borderRadius: BorderRadius.circular(12.0),
                               ),
                               child: Container(
                                 alignment: Alignment.center, // <---- The magic
                                 padding: const EdgeInsets.all(12),
-                                child: SvgPicture.asset(
-                                  'assets/image/heart_icon.svg',
-                                  semanticsLabel: 'My SVG Image',
-
-                                  // fit: BoxFit.scaleDown,
-                                  color: const Color.fromARGB(255, 89, 204, 93),
-
-                                  width: 50, //set your width and height
-                                  height: 50,
-                                ),
+                                child: _buildImage(widget.playlistItem.picture)
                               )),
                           const SizedBox(height: 8.0),
-                          const Padding(
+                          Padding(
                             padding: EdgeInsets.only(left: 8.0, right: 8.0),
                             child: Column(
                               children: [
@@ -105,7 +82,7 @@ class _PlaylistCardState extends State<PlaylistCard> {
                                       MainAxisAlignment.spaceBetween,
                                   children: [
                                     Text(
-                                      'Liked songs',
+                                      widget.playlistItem.title,
                                       style: TextStyle(
                                         // fontWeight: FontWeight.bold,
                                         color: Colors.white,
@@ -113,7 +90,7 @@ class _PlaylistCardState extends State<PlaylistCard> {
                                     ),
                                     const SizedBox(width: 8.0),
                                     Text(
-                                      '10',
+                                      widget.playlistItem.amount,
                                       style: TextStyle(
                                         color: Color.fromARGB(255, 89, 204, 93),
                                       ),
@@ -121,9 +98,11 @@ class _PlaylistCardState extends State<PlaylistCard> {
                                   ],
                                 ),
                                 Text(
-                                  'Get Lucky, Instant Crush, and more',
+                                  widget.playlistItem.artist,
+                                  maxLines: 2,
                                   style: TextStyle(
                                     color: Colors.white54,
+                                    overflow: TextOverflow.ellipsis,
                                   ),
                                 ),
                               ],
@@ -153,16 +132,21 @@ class _PlaylistCardState extends State<PlaylistCard> {
                     ),
                   ],
                 );
-              }),
-            ),
-          ),
-        ],
-        onExpansionChanged: (bool expanded) {
-          setState(() {
-            _customTileExpanded = expanded;
-          });
-        },
-      ),
-    );
+}
+
+/// Build image according to .svg or .png
+Widget _buildImage(String imageUrl) {
+    if (imageUrl.endsWith('.svg')) {
+      return SvgPicture.asset(
+        imageUrl,
+        semanticsLabel: 'My SVG Image',
+      );
+    } else {
+      return Image.asset(
+        imageUrl,
+        fit: BoxFit.cover,
+      );
+    }
   }
+  
 }
