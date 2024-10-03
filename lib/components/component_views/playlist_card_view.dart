@@ -7,7 +7,7 @@ import 'package:monotone_flutter/components/models/playlist_items.dart';
 class PlaylistCard extends StatefulWidget {
   final PlaylistItem playlistItem;
 
-  PlaylistCard({required this.playlistItem});
+  const PlaylistCard({required this.playlistItem, super.key});
 
   @override
   State<PlaylistCard> createState() => _PlaylistCardState();

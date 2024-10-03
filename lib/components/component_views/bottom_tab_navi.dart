@@ -2,7 +2,6 @@ import 'package:flutter/material.dart';
 import 'package:monotone_flutter/pages/discover.dart';
 import 'package:monotone_flutter/pages/home.dart';
 import 'package:monotone_flutter/pages/library.dart';
-import 'package:monotone_flutter/components/component_views/playlist_card_view.dart';
 
 class BottomTabNavigator extends StatefulWidget {
   @override

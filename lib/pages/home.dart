@@ -1,8 +1,10 @@
 import 'package:flutter/material.dart';
-import 'package:monotone_flutter/components/component_views/playlist_card_view.dart';
-import 'package:monotone_flutter/themes/theme_provider.dart';
 import 'package:provider/provider.dart';
+
+import 'package:monotone_flutter/themes/theme_provider.dart';
 import 'package:monotone_flutter/components/tab_components/playlist_section.dart';
+import 'package:monotone_flutter/components/component_views/search_bar_view.dart';
+import 'package:monotone_flutter/components/logic_components/playlist_data_services.dart';
 
 class HomeScreen extends StatefulWidget {
   const HomeScreen({super.key});
@@ -29,24 +31,27 @@ class _HomeScreenState extends State<HomeScreen> {
         ],
       ),
       body: ListView(
-        padding: const EdgeInsets.all(16.0),
+        padding: const EdgeInsets.all(8.0),
         children: [
           // const Text('Hello World'),
           // const SizedBox(height: 16),
           _buildPanel(),
-          ],
+        ],
       ),
-    
     );
   }
 
   bool _customTileExpanded = false;
 
   Widget _buildPanel() {
-    return const Column(
+    return Column(
       children: <Widget>[
-        PlaylistSection(),
+        const SearchBarView(),
+        PlaylistSection(title: 'Playlists', fetchItems: DataService().fetchAnotherNotherPlaylistItems),
+        PlaylistSection(title: 'New Playlist', fetchItems: DataService().fetchAnotherPlaylistItems),
+        PlaylistSection(title: 'Neo Playlist', fetchItems: DataService().fetchPlaylistItems),
       ],
+      
     );
   }
 

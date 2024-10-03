@@ -4,6 +4,9 @@ import 'package:monotone_flutter/components/component_views/playlist_card_view.d
 import 'package:monotone_flutter/components/models/playlist_items.dart'; // Import the PlaylistItem model
 
 class PlaylistSectionGenerator extends StatefulWidget {
+  final Future<List<PlaylistItem>> Function() fetchItems; // Function to fetch items
+  const PlaylistSectionGenerator({required this.fetchItems, super.key}); 
+
   @override
   State<PlaylistSectionGenerator> createState() => _PlaylistSectionGeneratorState();
 }
@@ -14,7 +17,7 @@ class _PlaylistSectionGeneratorState extends State<PlaylistSectionGenerator> {
   @override
   void initState() {
     super.initState();
-    _playlistItemsFuture = fetchPlaylistItems();
+    _playlistItemsFuture = widget.fetchItems(); // Fetch items in initState
   }
 
   @override
@@ -27,45 +30,27 @@ class _PlaylistSectionGeneratorState extends State<PlaylistSectionGenerator> {
         } else if (snapshot.hasError) {
           return Center(child: Text('Error: ${snapshot.error}'));
         } else if (!snapshot.hasData || snapshot.data!.isEmpty) {
-          return const Center(child: Text('No playlists available'));
+          return Center(child: Text('No items found'));
         } else {
-          List<PlaylistItem> playlistItems = snapshot.data!;
-          List<Widget> children = List.generate(playlistItems.length, (index) {
-            PlaylistItem item = playlistItems[index];
-            return PlaylistCard(
-              playlistItem: item,
+            return SingleChildScrollView(
+              scrollDirection: Axis.horizontal,
+              child: Row(
+                children: snapshot.data!.map((item) {
+                  return Padding(
+                    padding: const EdgeInsets.symmetric(horizontal: 8.0), // Add space between items
+                    child: SizedBox(
+                  //     height: MediaQuery.of(context).size.width * 1, // Set a specific height
+                  //     child: Container(
+                  //       width: MediaQuery.of(context).size.width * 0.39,
+                        child: PlaylistCard(playlistItem: item), // Use PlaylistCard to display the item
+                      ),
+                  //   ),
+                  );
+                }).toList(),
+              ),
             );
-          }).toList();
-          return SingleChildScrollView(
-            scrollDirection: Axis.horizontal,
-            child: Row(
-              children: children,
-            ),
-          );
+          }
         }
-      },
-    );
+      );
+    }
   }
-}
-
-Future<List<PlaylistItem>> fetchPlaylistItems() async {
-  // Simulate a delay for fetching data from the database
-  await Future.delayed(Duration(seconds: 0));
-
-  // Simulated data
-  return [
-    PlaylistItem(
-      title: 'Song 1',
-      artist: 'Artist 1',
-      picture: 'assets/image/rajang.jpg',
-      amount: '12',
-    ),
-    PlaylistItem(
-      title: 'UrnaCacti',
-      artist: 'Artist 333333',
-      picture: 'assets/image/rajang.jpg',
-      amount: '15',
-    ),
-    // Add more items as needed
-  ];
-}
