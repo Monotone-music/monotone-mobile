@@ -6,7 +6,8 @@ import 'package:monotone_flutter/components/models/playlist_items.dart'; // Impo
 
 class PlaylistSectionGenerator extends StatefulWidget {
   @override
-  State<PlaylistSectionGenerator> createState() => _PlaylistSectionGeneratorState();
+  State<PlaylistSectionGenerator> createState() =>
+      _PlaylistSectionGeneratorState();
 }
 
 class _PlaylistSectionGeneratorState extends State<PlaylistSectionGenerator> {

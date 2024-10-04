@@ -37,6 +37,16 @@ class _HomePageState extends State<HomePage> {
       'imageUrl': 'assets/image/album_1.png',
     },
     // Add more playlists here
+    {
+      'title': 'Get Lucky',
+      'artist': 'Daft Punk',
+      'imageUrl': 'assets/image/album_1.png',
+    },
+    {
+      'title': 'Get Lucky',
+      'artist': 'Daft Punk',
+      'imageUrl': 'assets/image/album_1.png',
+    },
   ];
 
   static const List<Widget> _widgetOptions = <Widget>[

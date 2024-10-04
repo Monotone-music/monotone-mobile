@@ -18,7 +18,7 @@ class MyApp extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
-      title: 'Flutter test',
+      title: 'Monotone',
       debugShowCheckedModeBanner: false,
       home: BottomTabNavigator(),
       theme: Provider.of<ThemeProvider>(context).themeData,
