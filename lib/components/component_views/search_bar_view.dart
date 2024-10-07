@@ -26,9 +26,9 @@ class _SearchBarViewState extends State<SearchBarView> {
         decoration: InputDecoration(
           hintText: 'Search library',
           hintStyle: TextStyle(
-            height: MediaQuery.of(context).size.height * 0.001, // Set a dynamic height
+            height: MediaQuery.of(context).size.height * 0.0001, // Set a dynamic height
             color: Color.fromARGB(82, 255, 255, 255),
-            fontSize: MediaQuery.of(context).size.width * 0.02,
+            fontSize: MediaQuery.of(context).size.width * 0.05,
             fontWeight: FontWeight.w400,
           ),
           suffixIcon: const Icon(

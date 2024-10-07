@@ -15,6 +15,9 @@ class PlaylistSection extends StatefulWidget {
 
 class _PlaylistSectionState extends State<PlaylistSection> {
   bool _customTileExpanded = false;
+  List<PlaylistItem>? _playlistItems;
+  bool _isLoading = true;
+  String? _error;
   late Future<List<PlaylistItem>> playlistItemsFuture;
 
   @override
@@ -23,6 +26,7 @@ class _PlaylistSectionState extends State<PlaylistSection> {
     playlistItemsFuture = widget.fetchItems();
   }
 
+ 
   @override
   Widget build(BuildContext context) {
     return Theme(
@@ -38,36 +42,26 @@ class _PlaylistSectionState extends State<PlaylistSection> {
               ? Icons.keyboard_arrow_down
               : Icons.keyboard_arrow_right,
         ),
-        children: <Widget>[
-          FutureBuilder<List<PlaylistItem>>(
-            future: playlistItemsFuture,
-            builder: (context, snapshot) {
-              if (snapshot.connectionState == ConnectionState.waiting) {
-                return Center(child: CircularProgressIndicator());
-              } else if (snapshot.hasError) {
-                return Center(child: Text('Error: ${snapshot.error}'));
-              } else if (!snapshot.hasData || snapshot.data!.isEmpty) {
-                return Center(child: Text('No items found'));
-              } else {
-                return SingleChildScrollView(
-                  scrollDirection: Axis.horizontal,
-                  child: Row(
-                    children: snapshot.data!.map((item) {
-                      return Padding(
-                        padding: const EdgeInsets.symmetric(horizontal: 8.0), // Add space between items
-                        child: SizedBox(
-                            height: MediaQuery.of(context).size.height * 0.3, // Set a dynamic height
-                            width: MediaQuery.of(context).size.width,
-                            child: PlaylistSectionGenerator( fetchItems: widget.fetchItems), // Pass the item to PlaylistSectionGenerator                        ),
-                          ),
-                      );
-                    }).toList(),
-                  ),
-                );
-              }
-            },
+         children: <Widget>[
+      
+          SingleChildScrollView(
+    scrollDirection: Axis.horizontal,
+    child: Row(
+      children: [
+        Padding(
+          padding: const EdgeInsets.symmetric(horizontal: 8.0), // Add space between items
+          child: SizedBox(
+            height: MediaQuery.of(context).size.height * 0.25, // Set a specific height
+            child: Container(
+              width: MediaQuery.of(context).size.width * 1,
+              child: PlaylistSectionGenerator(fetchItems: widget.fetchItems), // Use PlaylistSectionGenerator to display the items
+            ),
           ),
-        ],
+        ),
+      ],
+    ),
+  ),
+      ],
         onExpansionChanged: (bool expanded) {
           setState(() {
             _customTileExpanded = expanded;
