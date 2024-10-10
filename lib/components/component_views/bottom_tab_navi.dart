@@ -20,6 +20,7 @@ class _BottomTabNavigatorState extends State<BottomTabNavigator> {
     DiscoverPage(),
     SearchPage(),
     LibraryPage(),
+    // ProfilePage(),
   ];
 
   @override

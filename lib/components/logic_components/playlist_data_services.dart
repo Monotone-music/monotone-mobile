@@ -16,7 +16,7 @@ class DataService {
       PlaylistItem(
         title: 'UrnaCacti',
         artist: 'Artist 333333',
-        picture: 'assets/image/rajang.jpg',
+        picture: 'https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcTy8Xkz9aPYcCsmw0fLnK96-Whkqm5Oyl2CxA&s',
         amount: '15',
       ),
       // Add more items as needed
