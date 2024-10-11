@@ -70,6 +70,12 @@ flutter:
     - assets/image/home_filter.svg
     - assets/image/group_icon.svg
     - assets/image/recent_icon.svg
+    - assets/image/me_icon.svg
+    - assets/image/discover_icon.svg
+    - assets/image/library_icon.svg
+    - assets/image/search_icon.svg
+    - assets/image/add_icon.svg
+    - assets/image/camera_icon.svg
     - assets/image/album_1.png
     - assets/image/album_3.png
     - assets/image/not_available.png

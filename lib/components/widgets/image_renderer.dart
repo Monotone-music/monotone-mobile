@@ -5,7 +5,7 @@ class ImageRenderer extends StatelessWidget {
   final String imageUrl;
   final String altImage = 'assets/image/not_available.png';
 
-  const ImageRenderer({Key? key, required this.imageUrl}) : super(key: key);
+  ImageRenderer({Key? key, required this.imageUrl}) : super(key: key);
 
   @override
   Widget build(BuildContext context) {

@@ -1,10 +1,13 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_svg/flutter_svg.dart';
+import 'package:provider/provider.dart';
+
 import 'package:monotone_flutter/pages/discover.dart';
 import 'package:monotone_flutter/pages/library.dart';
 import 'package:monotone_flutter/pages/home.dart';
 import 'package:monotone_flutter/pages/search.dart';
+import 'package:monotone_flutter/pages/profile.dart';
 import 'package:monotone_flutter/themes/theme_provider.dart';
-import 'package:provider/provider.dart';
 
 class BottomTabNavigator extends StatefulWidget {
   @override
@@ -20,7 +23,7 @@ class _BottomTabNavigatorState extends State<BottomTabNavigator> {
     DiscoverPage(),
     SearchPage(),
     LibraryPage(),
-    // ProfilePage(),
+    ProfilePage(),
   ];
 
   @override
@@ -40,13 +43,79 @@ class _BottomTabNavigatorState extends State<BottomTabNavigator> {
             _currentIndex = index;
           });
         },
-        items: const [
-          // Add your bottom navigation items here
-          BottomNavigationBarItem(icon: Icon(Icons.home), label: 'Home'),
-          BottomNavigationBarItem(icon: Icon(Icons.star), label: 'Discover'),
-          BottomNavigationBarItem(icon: Icon(Icons.search), label: 'Search'),
+        items: [
           BottomNavigationBarItem(
-              icon: Icon(Icons.library_music), label: 'Library'),
+            icon: SvgPicture.asset(
+              'image/home_icon.svg',
+              height: MediaQuery.of(context).size.height *0.05, // Adjust the height as needed
+              width: MediaQuery.of(context).size.width * 0.05, // Adjust the width as needed
+            ),
+
+            activeIcon: SvgPicture.asset(
+              'image/home_active_icon.svg',
+            ),
+
+            label: 'Home',
+          ),
+
+          BottomNavigationBarItem(
+            icon: SvgPicture.asset(
+              'image/discover_icon.svg',
+              height: MediaQuery.of(context).size.height *0.05, // Adjust the height as needed
+              width: MediaQuery.of(context).size.width * 0.05,
+            ),
+
+            activeIcon: SvgPicture.asset(
+              'image/discover_icon.svg',  ///// Discover has not received active icon yet
+              height: MediaQuery.of(context).size.height *0.05, // Adjust the height as needed
+              width: MediaQuery.of(context).size.width * 0.05, // Adjust the width as needed
+            ),
+
+            label: 'Discover',
+          ),
+
+          BottomNavigationBarItem(
+            icon: SvgPicture.asset(
+              'image/search_icon.svg',
+              height: MediaQuery.of(context).size.height *0.05, // Adjust the height as needed
+              width: MediaQuery.of(context).size.width * 0.05,
+            ),
+
+            activeIcon: SvgPicture.asset(
+              'image/search_active_icon.svg',
+            ),
+
+            label: 'Search',
+          ),
+
+          BottomNavigationBarItem(
+            icon: SvgPicture.asset(
+              'image/library_icon.svg',
+              height: MediaQuery.of(context).size.height *0.05, // Adjust the height as needed
+              width: MediaQuery.of(context).size.width * 0.05,
+            ),
+
+            activeIcon: SvgPicture.asset(
+              'image/library_active_icon.svg',
+            ),
+
+            label: 'Library',
+          ),
+
+          BottomNavigationBarItem(
+            icon: SvgPicture.asset(
+              'image/me_icon.svg',
+              height: MediaQuery.of(context).size.height *0.05, // Adjust the height as needed
+              width: MediaQuery.of(context).size.width * 0.05,
+            ),
+            
+            activeIcon: SvgPicture.asset(
+              'image/me_active_icon.svg',
+            ),
+
+            label: 'Me',
+          ),
+
         ],
       ),
     );
