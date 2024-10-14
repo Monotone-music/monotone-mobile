@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 
-import 'package:monotone_flutter/components/logic_components/playlist_section_generator.dart';
+import 'package:monotone_flutter/components/logic_components/playlist_section_loader.dart';
 import 'package:monotone_flutter/components/models/playlist_items.dart';
 
 class PlaylistSection extends StatefulWidget {

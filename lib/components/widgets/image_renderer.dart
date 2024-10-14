@@ -3,9 +3,11 @@ import 'package:flutter_svg/flutter_svg.dart';
 
 class ImageRenderer extends StatelessWidget {
   final String imageUrl;
+  final double? height;
+  final double? width;
   final String altImage = 'assets/image/not_available.png';
 
-  ImageRenderer({Key? key, required this.imageUrl}) : super(key: key);
+  ImageRenderer({Key? key, required this.imageUrl,this.height,this.width}) : super(key: key);
 
   @override
   Widget build(BuildContext context) {
@@ -18,6 +20,8 @@ class ImageRenderer extends StatelessWidget {
       if (imageUrl.endsWith('.svg')) {
         return SvgPicture.network(
           imageUrl,
+          height: height,
+          width: width,
           semanticsLabel: 'My SVG Image',
           fit: BoxFit.cover,
           placeholderBuilder: (BuildContext context) => _buildAltImage(),
@@ -25,6 +29,8 @@ class ImageRenderer extends StatelessWidget {
       } else {
         return Image.network(
           imageUrl,
+          height: height,
+          width: width,
           fit: BoxFit.cover,
           loadingBuilder: (BuildContext context, Widget child, ImageChunkEvent? loadingProgress) {
             if (loadingProgress == null) {
@@ -49,6 +55,8 @@ class ImageRenderer extends StatelessWidget {
       if (imageUrl.endsWith('.svg')) {
         return SvgPicture.asset(
           imageUrl,
+          height: height,
+          width: width,
           semanticsLabel: 'My SVG Image',
           fit: BoxFit.cover,
           placeholderBuilder: (BuildContext context) => _buildAltImage(),
@@ -56,6 +64,8 @@ class ImageRenderer extends StatelessWidget {
       } else {
         return Image.asset(
           imageUrl,
+          height: height,
+          width: width,
           fit: BoxFit.cover,
           errorBuilder: (BuildContext context, Object error, StackTrace? stackTrace) {
             print('Error loading asset image: $error');
@@ -70,6 +80,8 @@ class ImageRenderer extends StatelessWidget {
   Widget _buildAltImage() {
     return Image.asset(
       altImage,
+      height: height,
+      width: width,
       fit: BoxFit.cover,
     );
   }

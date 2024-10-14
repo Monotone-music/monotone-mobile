@@ -31,12 +31,12 @@ class _SearchPageState extends State<SearchPage> {
             margin: const EdgeInsets.only(
                 right: 16.0, top: 8.0), // Adjust the margin as needed
             child: IconButton(
-              icon: SvgPicture.asset(
-                'image/camera_icon.svg',
+              icon: ImageRenderer(
+                imageUrl: 'assets/image/camera_icon.svg',
                 height: MediaQuery.of(context).size.height *
-                    0.1, // Adjust the height as needed
+                    0.05, // Adjust the height as needed
                 width: MediaQuery.of(context).size.width *
-                    0.1, // Adjust the width as needed
+                    0.05, // Adjust the width as needed
               ),
               onPressed: () {
                 print('Search Camera button press');
