@@ -39,6 +39,9 @@ dependencies:
   just_audio: ^0.9.40
   provider: ^6.1.2
   flutter_svg: ^2.0.5
+  http: ^1.2.2
+  flutter_bloc: ^8.1.6
+  equatable: ^2.0.5
 
 dev_dependencies:
   flutter_test:

@@ -2,26 +2,28 @@ import 'package:flutter/material.dart';
 import 'package:monotone_flutter/components/component_views/bottom_tab_navi.dart';
 import 'package:monotone_flutter/themes/theme_provider.dart';
 import 'package:provider/provider.dart';
-import 'pages/library.dart';
-//
-import 'package:audio_video_progress_bar/audio_video_progress_bar.dart';
-import 'package:just_audio/just_audio.dart';
+import 'package:monotone_flutter/components/logic_components/media_player_provider.dart';
 
 void main() {
-  runApp(ChangeNotifierProvider(
-      create: (context) => ThemeProvider(), child: const MyApp()));
+  runApp(MyApp());
 }
 
 class MyApp extends StatelessWidget {
-  const MyApp({super.key});
-
   @override
   Widget build(BuildContext context) {
-    return MaterialApp(
-      title: 'Monotone',
-      debugShowCheckedModeBanner: false,
-      home: BottomTabNavigator(),
-      theme: Provider.of<ThemeProvider>(context).themeData,
+    return ChangeNotifierProvider(
+      create: (context) => MediaPlayerProvider(),
+      builder: (context, child) => ChangeNotifierProvider(
+        create: (context) => ThemeProvider(),
+        builder: (context, child) {
+          return MaterialApp(
+            title: 'Monotone',
+            home: BottomTabNavigator(),
+            debugShowCheckedModeBanner: false,
+            theme: Provider.of<ThemeProvider>(context).themeData,
+          );
+        },
+      ),
     );
   }
 }

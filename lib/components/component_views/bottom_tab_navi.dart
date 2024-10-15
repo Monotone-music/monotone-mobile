@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
+import 'package:monotone_flutter/components/component_views/media_player.dart';
 import 'package:monotone_flutter/components/component_views/media_toolbar.dart';
+import 'package:monotone_flutter/components/logic_components/media_player_provider.dart';
 import 'package:monotone_flutter/pages/discover.dart';
 import 'package:monotone_flutter/pages/library.dart';
 import 'package:monotone_flutter/pages/home.dart';
@@ -16,16 +18,33 @@ class BottomTabNavigator extends StatefulWidget {
 class _BottomTabNavigatorState extends State<BottomTabNavigator> {
   int _currentIndex = 0;
   bool _isPlaying = false;
-  bool _isDisplaying = false;
+  bool _isMediaPlayerVisible = true;
 
-  static const List<Map<String, String>> playlists = [
-    {
-      'title': 'Get Lucky',
-      'artist': 'Daft Punk',
-      'imageUrl': 'assets/image/album_1.png',
-    },
-    // Add more playlists as needed
-  ];
+  // @override
+  // void initState() {
+  //   super.initState();
+  //   Provider.of<MediaPlayerProvider>(context, listen: false).fetchMedia();
+  // }
+
+  void _toggleMediaPlayer() {
+    setState(() {
+      // _isMediaPlayerVisible = !_isMediaPlayerVisible;
+
+      // if (_isMediaPlayerVisible) {
+    });
+
+    if (_isMediaPlayerVisible) {
+      showModalBottomSheet(
+        context: context,
+        isScrollControlled: true,
+        builder: (context) => MediaPlayer(),
+      ).then((_) {
+        setState(() {
+          // _isMediaPlayerVisible = !_isMediaPlayerVisible;
+        });
+      });
+    }
+  }
 
   void _togglePlayPause() {
     setState(() {
@@ -35,7 +54,7 @@ class _BottomTabNavigatorState extends State<BottomTabNavigator> {
 
   void _toggleDisplay() {
     setState(() {
-      _isDisplaying = !_isDisplaying;
+      _isMediaPlayerVisible = !_isMediaPlayerVisible;
     });
   }
 
@@ -55,17 +74,6 @@ class _BottomTabNavigatorState extends State<BottomTabNavigator> {
       body: Column(
         children: [
           Expanded(child: _tabs[_currentIndex]),
-          if (_isDisplaying)
-            MediaToolbar(
-              title: playlists[0]['title']!, // Replace with actual song title
-              artist: playlists[0]
-                  ['artist']!, // Replace with actual artist name
-              imageUrl: playlists[0]
-                  ['imageUrl']!, // Replace with actual image path
-              isPlaying: _isPlaying,
-              onPlayPause: _togglePlayPause,
-              onClose: _toggleDisplay,
-            ),
           BottomNavigationBar(
             currentIndex: _currentIndex,
             selectedItemColor:
@@ -87,6 +95,10 @@ class _BottomTabNavigatorState extends State<BottomTabNavigator> {
                   icon: Icon(Icons.library_music), label: 'Library'),
             ],
           ),
+          if (_isMediaPlayerVisible)
+            MediaToolbar(
+              onToggleMediaPlayer: _toggleMediaPlayer,
+            ),
         ],
       ),
     );

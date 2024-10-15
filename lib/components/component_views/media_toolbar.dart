@@ -1,75 +1,70 @@
 import 'package:flutter/material.dart';
+import 'package:monotone_flutter/components/logic_components/media_player_provider.dart';
+import 'package:provider/provider.dart';
 
 class MediaToolbar extends StatelessWidget {
-  final String title;
-  final String artist;
-  final String imageUrl;
-  final bool isPlaying;
-  final VoidCallback onPlayPause;
-  final VoidCallback onClose; // Add a callback for the close button
+  final VoidCallback onToggleMediaPlayer;
 
-  const MediaToolbar({
-    Key? key,
-    required this.title,
-    required this.artist,
-    required this.imageUrl,
-    required this.isPlaying,
-    required this.onPlayPause,
-    required this.onClose, // Add the onClose parameter
-  }) : super(key: key);
+  MediaToolbar({required this.onToggleMediaPlayer});
 
   @override
   Widget build(BuildContext context) {
-    return Container(
-      color: Colors.black,
-      padding: const EdgeInsets.all(8.0),
-      child: Row(
-        children: [
-          Image.asset(
-            imageUrl,
-            width: 50,
-            height: 50,
-            fit: BoxFit.cover,
-          ),
-          const SizedBox(width: 8),
-          Expanded(
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
+    return Consumer<MediaPlayerProvider>(
+      builder: (context, mediaPlayerProvider, child) {
+        final mediaUrl = mediaPlayerProvider.currentMediaUrl;
+        return GestureDetector(
+          onTap: onToggleMediaPlayer,
+          child: Container(
+            color: Colors.grey[900],
+            padding: EdgeInsets.all(8.0),
+            child: Row(
               children: [
-                Text(
-                  title,
-                  style: const TextStyle(
-                    color: Colors.white,
-                    fontSize: 16,
-                    fontWeight: FontWeight.bold,
+                // Placeholder for media thumbnail
+                Container(
+                  width: 50,
+                  height: 50,
+                  color: Colors.grey[800],
+                  child: Icon(Icons.music_note, color: Colors.white),
+                ),
+                SizedBox(width: 8.0),
+                // Media information
+                Expanded(
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      Text(
+                        mediaUrl != null ? 'Playing' : 'No media loaded',
+                        style: TextStyle(color: Colors.white, fontSize: 16),
+                      ),
+                      Text(
+                        mediaUrl ?? '',
+                        style: TextStyle(color: Colors.white70, fontSize: 12),
+                        overflow: TextOverflow.ellipsis,
+                      ),
+                    ],
                   ),
                 ),
-                Text(
-                  artist,
-                  style: const TextStyle(
+                // Playback controls
+                IconButton(
+                  icon: Icon(
+                    mediaPlayerProvider.isPlaying
+                        ? Icons.pause
+                        : Icons.play_arrow,
                     color: Colors.white,
-                    fontSize: 14,
                   ),
+                  onPressed: () {
+                    if (mediaPlayerProvider.isPlaying) {
+                      mediaPlayerProvider.pause();
+                    } else {
+                      mediaPlayerProvider.play();
+                    }
+                  },
                 ),
               ],
             ),
           ),
-          IconButton(
-            icon: Icon(
-              isPlaying ? Icons.pause : Icons.play_arrow,
-              color: Colors.white,
-            ),
-            onPressed: onPlayPause,
-          ),
-          IconButton(
-            icon: Icon(
-              Icons.close,
-              color: Colors.white,
-            ),
-            onPressed: onClose, // Add the onClose callback
-          ),
-        ],
-      ),
+        );
+      },
     );
   }
 }
