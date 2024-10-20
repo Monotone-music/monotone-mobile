@@ -20,7 +20,7 @@ void main() {
           ChangeNotifierProvider(create: (_) => ThemeProvider()),
           // Add any other providers your app needs
         ],
-        child: const MyApp(),
+        child: MyApp(),
       ),
     );
 

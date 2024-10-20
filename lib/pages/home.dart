@@ -1,12 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/flutter_svg.dart';
-import 'package:monotone_flutter/components/playlist_list.dart';
+
+import 'package:monotone_flutter/components/tab_components/playlist_list.dart';
 import 'package:monotone_flutter/themes/theme_provider.dart';
 import 'package:provider/provider.dart';
-import 'package:monotone_flutter/components/component_views/playlist_card.dart';
-import 'package:monotone_flutter/themes/theme_provider.dart';
-import 'package:provider/provider.dart';
-import 'package:monotone_flutter/components/tab_components/playlist_section.dart';
 
 class HomePage extends StatefulWidget {
   const HomePage({super.key});
@@ -23,20 +20,39 @@ class _HomePageState extends State<HomePage> {
       'title': 'Get Lucky',
       'artist': 'Daft Punk',
       'imageUrl': 'assets/image/album_1.png',
+      'songUrl': 'https://api.ibarakoi.online/tracks/get',
     },
     {
       'title': 'Daily Mix',
       'imageUrl': 'assets/image/album_1.png',
+      'songUrl':
+          'https://www.soundhelix.com/examples/mp3/SoundHelix-Song-1.mp3',
     },
     {
       'title': 'Daily Mix',
       'imageUrl': 'assets/image/album_1.png',
+      'songUrl': 'https://api.ibarakoi.online/tracks/get',
     },
     {
       'title': 'Daily Mix',
       'imageUrl': 'assets/image/album_1.png',
+      'songUrl':
+          'https://www.soundhelix.com/examples/mp3/SoundHelix-Song-1.mp3',
     },
     // Add more playlists here
+    {
+      'title': 'Get Lucky',
+      'artist': 'Daft Punk',
+      'imageUrl': 'assets/image/album_1.png',
+      'songUrl': 'https://api.ibarakoi.online/tracks/get',
+    },
+    {
+      'title': 'Get Lucky',
+      'artist': 'Daft Punk',
+      'imageUrl': 'assets/image/album_1.png',
+      'songUrl':
+          'https://www.soundhelix.com/examples/mp3/SoundHelix-Song-1.mp3',
+    },
   ];
 
   static const List<Widget> _widgetOptions = <Widget>[
@@ -105,7 +121,7 @@ class _HomePageState extends State<HomePage> {
                     width: 50, //set your width and height
                     height: 50,
                   ),
-                )
+                ),
               ],
             ),
             Expanded(
