@@ -27,59 +27,57 @@ class _PlaylistSectionState extends State<PlaylistSection> {
 
   @override
   Widget build(BuildContext context) {
-    return Theme(
-      data: Theme.of(context).copyWith(dividerColor: Colors.transparent),
-      child: ExpansionTile(
-        title: Text(
-          widget.title,
-          style:
-              const TextStyle(fontSize: 22), // Adjust the font size as needed
-        ),
-        trailing: Icon(
-          _customTileExpanded
-              ? Icons.keyboard_arrow_down
-              : Icons.keyboard_arrow_right,
-        ),
-        children: <Widget>[
-          FutureBuilder<List<PlaylistItem>>(
-            future: playlistItemsFuture,
-            builder: (context, snapshot) {
-              if (snapshot.connectionState == ConnectionState.waiting) {
-                return Center(child: CircularProgressIndicator());
-              } else if (snapshot.hasError) {
-                return Center(child: Text('Error: ${snapshot.error}'));
-              } else if (!snapshot.hasData || snapshot.data!.isEmpty) {
-                return Center(child: Text('No items found'));
-              } else {
-                return SingleChildScrollView(
-                  scrollDirection: Axis.horizontal,
-                  child: Row(
-                    children: snapshot.data!.map((item) {
-                      return Padding(
-                        padding: const EdgeInsets.symmetric(
-                            horizontal: 8.0), // Add space between items
-                        child: SizedBox(
-                          height: MediaQuery.of(context).size.height *
-                              0.3, // Set a dynamic height
-                          width: MediaQuery.of(context).size.width,
+    return Column(
+      children: <Widget>[
+        Theme(
+          data: Theme.of(context).copyWith(dividerColor: Colors.transparent),
+          child: ExpansionTile(
+            title: Text(
+              widget.title,
+              style: const TextStyle(
+                  fontSize: 22), // Adjust the font size as needed
+            ),
+            trailing: Icon(
+              _customTileExpanded
+                  ? Icons.keyboard_arrow_down
+                  : Icons.keyboard_arrow_right,
+            ),
+            children: <Widget>[
+              SingleChildScrollView(
+                scrollDirection: Axis.horizontal,
+                child: Row(
+                  children: [
+                    Padding(
+                      padding: const EdgeInsets.symmetric(
+                          horizontal: 8.0), // Add space between items
+                      child: SizedBox(
+                        height: MediaQuery.of(context).size.height *
+                            0.35, // Set a specific height
+                        child: Container(
+                          width: MediaQuery.of(context).size.width * 1,
                           child: PlaylistSectionGenerator(
                               fetchItems: widget
-                                  .fetchItems), // Pass the item to PlaylistSectionGenerator                        ),
+                                  .fetchItems), // Use PlaylistSectionGenerator to display the items
                         ),
-                      );
-                    }).toList(),
-                  ),
-                );
-              }
+                      ),
+                    ),
+                  ],
+                ),
+              ),
+            ],
+            onExpansionChanged: (bool expanded) {
+              setState(() {
+                _customTileExpanded = expanded;
+              });
             },
           ),
-        ],
-        onExpansionChanged: (bool expanded) {
-          setState(() {
-            _customTileExpanded = expanded;
-          });
-        },
-      ),
+        ),
+        Divider(
+          color: Colors.grey.withOpacity(0.3), // Faded line color
+          thickness: 1.0, // Line thickness
+          height: 25.0, // Space around the divider
+        ),
+      ],
     );
   }
 }

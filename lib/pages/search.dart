@@ -1,6 +1,4 @@
 import 'package:flutter/material.dart';
-import 'package:flutter_svg/flutter_svg.dart';
-import 'package:monotone_flutter/components/playlist_list.dart';
 import 'package:monotone_flutter/themes/theme_provider.dart';
 import 'package:provider/provider.dart';
 
@@ -135,7 +133,8 @@ class _SearchPageState extends State<SearchPage> {
                               child: Transform.rotate(
                                 angle: 0.45,
                                 child: Image.network(
-                                  'https://s3-alpha-sig.figma.com/img/a1cb/6053/4f5505f48399778ffca8b276e8241443?Expires=1728259200&Key-Pair-Id=APKAQ4GOSFWCVNEHN3O4&Signature=RoM3xhbjENyyZNqYXtwmw2hUWcN8PW7oON9sestMZ8K6e4GxHi6nSK1U7RMm15wTkCKAQdFt2njaNgAxAflookOgY0gaBE3LGV6S5p~ONqIF8OuN4p-FAcooy9RaB7vOL-IaxH3SUSCCLHJ9tFD-GOV8MhE4SeIA6GYHFke7aJFzp3yG6BdkbeY-Ub86oYiK-Ywu5EZXqvrJfxEaz4ZvEmSeLx5jD175XiA32rddxnoPS61gqssw-VyswK2SeKkEv-HVp3bBHzNx~-sH82~hgAmwgfSRLtDTThza0xaG3k3TCrR6QPs~ffxARA4KVl1g-wdjz8KtGp8Sij-10mNRWQ__',
+                                  'https://toppng.com/uploads/preview/music-icons-musical-note-icon-11563116064s8jezbq5wm.png',
+                                  // 'https://s3-alpha-sig.figma.com/img/a1cb/6053/4f5505f48399778ffca8b276e8241443?Expires=1728259200&Key-Pair-Id=APKAQ4GOSFWCVNEHN3O4&Signature=RoM3xhbjENyyZNqYXtwmw2hUWcN8PW7oON9sestMZ8K6e4GxHi6nSK1U7RMm15wTkCKAQdFt2njaNgAxAflookOgY0gaBE3LGV6S5p~ONqIF8OuN4p-FAcooy9RaB7vOL-IaxH3SUSCCLHJ9tFD-GOV8MhE4SeIA6GYHFke7aJFzp3yG6BdkbeY-Ub86oYiK-Ywu5EZXqvrJfxEaz4ZvEmSeLx5jD175XiA32rddxnoPS61gqssw-VyswK2SeKkEv-HVp3bBHzNx~-sH82~hgAmwgfSRLtDTThza0xaG3k3TCrR6QPs~ffxARA4KVl1g-wdjz8KtGp8Sij-10mNRWQ__',
                                   // category['imagePath'], // Use this if you have image paths
                                   fit: BoxFit.contain,
                                   height: 100,

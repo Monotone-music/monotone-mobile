@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:monotone_flutter/components/logic_components/media_player_provider.dart';
+import 'package:monotone_flutter/themes/theme_provider.dart';
 import 'package:provider/provider.dart';
 
 class MediaToolbar extends StatelessWidget {
@@ -9,13 +10,17 @@ class MediaToolbar extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final themeProvider = Provider.of<ThemeProvider>(context);
+    final isDarkMode = themeProvider.isDarkMode;
+    final screenWidth = MediaQuery.of(context).size.width;
     return Consumer<MediaPlayerProvider>(
       builder: (context, mediaPlayerProvider, child) {
         final mediaUrl = mediaPlayerProvider.currentMediaUrl;
         return GestureDetector(
           onTap: onToggleMediaPlayer,
           child: Container(
-            color: Colors.grey[900],
+            color:
+                isDarkMode ? const Color(0xFF333842) : const Color(0xFFAAB3C6),
             padding: EdgeInsets.all(8.0),
             child: Row(
               children: [
@@ -33,12 +38,20 @@ class MediaToolbar extends StatelessWidget {
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
                       Text(
-                        mediaUrl != null ? 'Playing' : 'No media loaded',
-                        style: TextStyle(color: Colors.white, fontSize: 16),
+                        mediaUrl != null ? 'Now Playing' : 'No media loaded',
+                        style: TextStyle(
+                            color: isDarkMode
+                                ? const Color(0xFFDBDBDB)
+                                : const Color(0xFF1A1A1A),
+                            fontSize: 16),
                       ),
                       Text(
                         mediaUrl ?? '',
-                        style: TextStyle(color: Colors.white70, fontSize: 12),
+                        style: TextStyle(
+                            color: isDarkMode
+                                ? const Color(0xFF898989)
+                                : const Color(0xFF6E6E6E),
+                            fontSize: 12),
                         overflow: TextOverflow.ellipsis,
                       ),
                     ],
@@ -50,7 +63,9 @@ class MediaToolbar extends StatelessWidget {
                     mediaPlayerProvider.isPlaying
                         ? Icons.pause
                         : Icons.play_arrow,
-                    color: Colors.white,
+                    color: isDarkMode
+                        ? const Color(0xFFDBDBDB)
+                        : const Color(0xFF6E6E6E),
                   ),
                   onPressed: () {
                     if (mediaPlayerProvider.isPlaying) {

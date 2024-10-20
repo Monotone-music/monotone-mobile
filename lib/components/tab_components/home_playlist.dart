@@ -33,6 +33,7 @@ class _PlaylistMiniState extends State<PlaylistMini> {
               Provider.of<MediaPlayerProvider>(context, listen: false);
           mediaPlayerProvider.setMediaUrl(widget.songUrl);
           mediaPlayerProvider.initSong();
+          // mediaPlayerProvider.fetchMedia(widget.songUrl);
           mediaPlayerProvider.play(); // Autoplay the song
         },
         child: Container(

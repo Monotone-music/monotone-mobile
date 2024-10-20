@@ -53,18 +53,16 @@ class MediaPlayerProvider extends ChangeNotifier {
     notifyListeners();
   }
 
-  // Future<void> fetchMedia() async {
-  //   try {
-  //     final response =
-  //         await http.get(Uri.parse('https://api.ibarakoi.online/tracks/get'));
-  //     if (response.statusCode == 200) {
-  //       currentMediaUrl = response.request?.url.toString();
-  //       notifyListeners();
-  //     } else {
-  //       throw Exception('Failed to load media');
-  //     }
-  //   } catch (e) {
-  //     print('Error fetching media: $e');
-  //   }
-  // }
+  Future<void> fetchMedia(String url) async {
+    try {
+      final response = await http.get(Uri.parse(url));
+      if (response.statusCode == 200) {
+        await _audioPlayer.setAudioSource(AudioSource.uri(Uri.parse(url)));
+      } else {
+        throw Exception('Failed to load media');
+      }
+    } catch (e) {
+      print('Error fetching media: $e');
+    }
+  }
 }
