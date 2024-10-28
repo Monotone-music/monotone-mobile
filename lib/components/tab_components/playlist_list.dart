@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
-import 'package:monotone_flutter/components/tab_components/library_list.dart';
+import 'package:monotone_flutter/components/logic_components/media_player_provider.dart';
+import 'package:monotone_flutter/components/tab_components/home_playlist.dart';
+import 'package:provider/provider.dart';
 // import 'playlist_mini.dart';
 
 class PlaylistList extends StatelessWidget {
@@ -23,6 +25,7 @@ class PlaylistList extends StatelessWidget {
           title: playlist['title']!,
           artist: playlist['artist'],
           imageUrl: playlist['imageUrl']!,
+          songUrl: playlist['songUrl']!,
         );
       },
     );

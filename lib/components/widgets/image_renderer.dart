@@ -32,20 +32,23 @@ class ImageRenderer extends StatelessWidget {
           height: height,
           width: width,
           fit: BoxFit.cover,
-          loadingBuilder: (BuildContext context, Widget child, ImageChunkEvent? loadingProgress) {
+          loadingBuilder: (BuildContext context, Widget child,
+              ImageChunkEvent? loadingProgress) {
             if (loadingProgress == null) {
               return child;
             } else {
               return Center(
                 child: CircularProgressIndicator(
                   value: loadingProgress.expectedTotalBytes != null
-                      ? loadingProgress.cumulativeBytesLoaded / (loadingProgress.expectedTotalBytes ?? 1)
+                      ? loadingProgress.cumulativeBytesLoaded /
+                          (loadingProgress.expectedTotalBytes ?? 1)
                       : null,
                 ),
               );
             }
           },
-          errorBuilder: (BuildContext context, Object error, StackTrace? stackTrace) {
+          errorBuilder:
+              (BuildContext context, Object error, StackTrace? stackTrace) {
             print('Error loading network image: $error');
             return _buildAltImage();
           },
@@ -67,7 +70,8 @@ class ImageRenderer extends StatelessWidget {
           height: height,
           width: width,
           fit: BoxFit.cover,
-          errorBuilder: (BuildContext context, Object error, StackTrace? stackTrace) {
+          errorBuilder:
+              (BuildContext context, Object error, StackTrace? stackTrace) {
             print('Error loading asset image: $error');
             return _buildAltImage();
           },

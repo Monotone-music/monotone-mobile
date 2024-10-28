@@ -4,11 +4,13 @@ import 'package:monotone_flutter/components/component_views/playlist_card_view.d
 import 'package:monotone_flutter/components/models/playlist_items.dart'; // Import the PlaylistItem model
 
 class PlaylistSectionGenerator extends StatefulWidget {
-  final Future<List<PlaylistItem>> Function() fetchItems; // Function to fetch items
-  const PlaylistSectionGenerator({required this.fetchItems, super.key}); 
+  final Future<List<PlaylistItem>> Function()
+      fetchItems; // Function to fetch items
+  const PlaylistSectionGenerator({required this.fetchItems, super.key});
 
   @override
-  State<PlaylistSectionGenerator> createState() => _PlaylistSectionGeneratorState();
+  State<PlaylistSectionGenerator> createState() =>
+      _PlaylistSectionGeneratorState();
 }
 
 class _PlaylistSectionGeneratorState extends State<PlaylistSectionGenerator> {
@@ -23,34 +25,36 @@ class _PlaylistSectionGeneratorState extends State<PlaylistSectionGenerator> {
   @override
   Widget build(BuildContext context) {
     return FutureBuilder<List<PlaylistItem>>(
-      future: _playlistItemsFuture,
-      builder: (context, snapshot) {
-        if (snapshot.connectionState == ConnectionState.waiting) {
-          return Center(child: CircularProgressIndicator());
-        } else if (snapshot.hasError) {
-          return Center(child: Text('Error: ${snapshot.error}'));
-        } else if (!snapshot.hasData || snapshot.data!.isEmpty) {
-          return Center(child: Text('No items found'));
-        } else {
+        future: _playlistItemsFuture,
+        builder: (context, snapshot) {
+          if (snapshot.connectionState == ConnectionState.waiting) {
+            return Center(child: CircularProgressIndicator());
+          } else if (snapshot.hasError) {
+            return Center(child: Text('Error: ${snapshot.error}'));
+          } else if (!snapshot.hasData || snapshot.data!.isEmpty) {
+            return Center(child: Text('No items found'));
+          } else {
             return SingleChildScrollView(
               scrollDirection: Axis.horizontal,
               child: Row(
                 children: snapshot.data!.map((item) {
                   return Padding(
-                    padding: const EdgeInsets.symmetric(horizontal: 8.0), // Add space between items
+                    padding: const EdgeInsets.symmetric(
+                        horizontal: 8.0), // Add space between items
                     child: SizedBox(
-                  //     height: MediaQuery.of(context).size.width * 1, // Set a specific height
-                  //     child: Container(
-                  //       width: MediaQuery.of(context).size.width * 0.39,
-                        child: PlaylistCard(playlistItem: item), // Use PlaylistCard to display the item
-                      ),
-                  //   ),
+                      //     height: MediaQuery.of(context).size.width * 1, // Set a specific height
+                      //     child: Container(
+                      //       width: MediaQuery.of(context).size.width * 0.39,
+                      child: PlaylistCard(
+                          playlistItem:
+                              item), // Use PlaylistCard to display the item
+                    ),
+                    //   ),
                   );
                 }).toList(),
               ),
             );
           }
-        }
-      );
-    }
+        });
   }
+}
