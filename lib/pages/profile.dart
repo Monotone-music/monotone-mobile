@@ -20,7 +20,7 @@ class ProfileAppBar extends StatelessWidget implements PreferredSizeWidget {
   @override
   Widget build(BuildContext context) {
     return AppBar(
-      title: const Text('DMC5'),
+      // title: const Text('DMC5'),
       actions: [
         IconButton(
           icon: const Icon(Icons.brightness_6),
@@ -45,7 +45,7 @@ class ProfileBody extends StatelessWidget {
       await Future.delayed(Duration(seconds: 1));
       return ProfileDataService().getProfileData();
     }
-
+    
     return ProfileLoader(fetchProfileData: fetchProfile);
   }
 }

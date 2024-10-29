@@ -5,7 +5,6 @@ class ProfileItems {
   final int follower;
   final int following;
   final bool member;
-  final List<String> fren;
 
   ProfileItems({
     required this.name,
@@ -14,6 +13,5 @@ class ProfileItems {
     required this.follower,
     required this.following,
     required this.member,
-    required this.fren,
   });
 }

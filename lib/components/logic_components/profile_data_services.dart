@@ -7,7 +7,6 @@ class ProfileDataService {
   int? follower;
   int? following;
   bool? member;
-  List<String>? fren;
 
   ProfileDataService({
     this.name,
@@ -16,18 +15,16 @@ class ProfileDataService {
     this.follower,
     this.following,
     this.member,
-    this.fren,
   });
 
   ProfileItems getProfileData() {
     return ProfileItems(
-      name: 'Siuuu',
+      name: '123as1d54sdlkfopdfpodopf',
       identifier: '10298302803802',
-      avatar: 'assets/image/rajang.jpg', // Replace with your image asset
+      avatar: 'https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcSbfe6jVBKeEynH9EtUr5gnN927eTZUJiuV8Q&s',
       follower: 3,
       following: 5,
       member: false,
-      fren: ['asidnosdns', 'osdhosjdpsjpdosjpds'],
     );
   }
 }

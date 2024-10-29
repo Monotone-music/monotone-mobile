@@ -39,7 +39,7 @@ class MediaPlayer extends StatelessWidget {
                 ),
               ),
               title: Padding(
-                padding: const EdgeInsets.only(
+                padding: EdgeInsets.only(
                     top: 20.0), // Add padding above the text
                 child: Text(
                   'Now Playing',
@@ -217,7 +217,7 @@ class MediaPlayer extends StatelessWidget {
         mainAxisAlignment: MainAxisAlignment.center,
         children: [
           // Album Cover
-          Container(
+          SizedBox(
               width: 350,
               // height: 350,
               child: ImageRenderer(
