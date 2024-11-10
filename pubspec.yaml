@@ -91,6 +91,10 @@ flutter:
     - assets/image/rajang.jpg
     - assets/image/profile_adjust_icon.svg
     - assets/image/profile_avatar_upload_icon.svg
+    - assets/image/term_and_service_icon.svg
+    - assets/image/setting_icon.svg
+    - assets/image/expand_arrow_icon.svg
+    - assets/image/history_icon.svg
 
   # An image asset can refer to one or more resolution-specific "variants", see
   # https://flutter.dev/to/resolution-aware-images
