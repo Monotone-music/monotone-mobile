@@ -1,6 +1,6 @@
 import 'package:audio_service/audio_service.dart';
 import 'package:flutter/material.dart';
-import 'package:monotone_flutter/components/logic_components/media_player_provider.dart';
+// import 'package:monotone_flutter/components/logic_components/media_player_provider.dart';
 import 'package:monotone_flutter/components/widgets/image_renderer.dart';
 import 'package:monotone_flutter/page_manager.dart';
 import 'package:monotone_flutter/services/audio_handler.dart';
@@ -10,11 +10,27 @@ import 'package:monotone_flutter/themes/theme_provider.dart';
 import 'package:provider/provider.dart';
 import 'package:rxdart/rxdart.dart';
 
+// late AudioPlayerHandler _audioHandler;
+
 class MediaPlayer extends StatelessWidget {
+  // final MyAudioHandler _audioHandler;
   const MediaPlayer({
     super.key,
+    // required MyAudioHandler audioPlayerHandler
   });
 
+  // Stream<Duration> get _bufferedPositionStream => _audioHandler.playbackState
+  //     .map((state) => state.bufferedPosition)
+  //     .distinct();
+  // Stream<Duration?> get _durationStream =>
+  //     _audioHandler.mediaItem.map((item) => item?.duration).distinct();
+  // Stream<PositionData> get _positionDataStream =>
+  //     Rx.combineLatest3<Duration, Duration, Duration?, PositionData>(
+  //         AudioService.position,
+  //         _bufferedPositionStream,
+  //         _durationStream,
+  //         (position, bufferedPosition, duration) => PositionData(
+  //             position, bufferedPosition, duration ?? Duration.zero));
   @override
   Widget build(BuildContext context) {
     final themeProvider = Provider.of<ThemeProvider>(context);
@@ -65,7 +81,14 @@ class MediaPlayer extends StatelessWidget {
               child: Column(
                 children: [
                   Expanded(
-                      child: PageView.builder(
+                      child:
+                          // StreamBuilder<MediaItem?>(
+                          //     stream: _audioHandler.mediaItem,
+                          //     builder: (context, snapshot) {
+                          //       final mediaItem = snapshot.data;
+                          //       if (mediaItem == null) return const SizedBox();
+                          //       return
+                          PageView.builder(
                     controller: PageController(initialPage: 1),
                     itemCount: 3,
                     itemBuilder: (context, index) {
@@ -79,13 +102,140 @@ class MediaPlayer extends StatelessWidget {
                         default:
                           return const SizedBox();
                       }
+                      // if (index == 0) {
+                      //   return _buildPlaylist(context);
+                      // } else if (index == 1) {
+                      //   return _buildMainPlayer(
+                      //       context, mediaPlayerProvider);
+                      // } else {
+                      //   return _buildLyrics(context);
+                      // }
                     },
                   )
                       // ;}),
                       ),
                   const SizedBox(height: 20),
+                  // Progress Bar
+                  // Padding(
+                  //   padding: const EdgeInsets.symmetric(horizontal: 15.0),
+                  //   child: SliderTheme(
+                  //     data: SliderTheme.of(context).copyWith(
+                  //       trackHeight:
+                  //           1.0, // Set the track height to make the slider thinner
+                  //       thumbShape: const RoundSliderThumbShape(
+                  //           enabledThumbRadius:
+                  //               5.0), // Customize the thumb size
+                  //       overlayShape: const RoundSliderOverlayShape(
+                  //           overlayRadius: 5.0), // Customize the overlay size
+                  //     ),
+                  //     child: Slider(
+                  //       value:
+                  //           mediaPlayerProvider.position.inSeconds.toDouble(),
+                  //       max: mediaPlayerProvider.duration.inSeconds.toDouble(),
+                  //       onChanged: (value) {
+                  //         mediaPlayerProvider
+                  //             .seek(Duration(seconds: value.toInt()));
+                  //       },
+                  //       activeColor: Colors.white,
+                  //       inactiveColor: Colors.white24,
+                  //     ),
+                  //   ),
+                  // ),
+
+                  // Padding(
+                  //   padding: const EdgeInsets.symmetric(
+                  //       horizontal: 20.0, vertical: 5.0),
+                  //   child: Row(
+                  //     mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                  //     children: [
+                  //       Text(
+                  //         _formatDuration(mediaPlayerProvider.position),
+                  //         style: const TextStyle(color: Color(0xFF898989)),
+                  //       ),
+                  //       Text(
+                  //         _formatDuration(mediaPlayerProvider.duration),
+                  //         style: const TextStyle(color: Color(0xFF898989)),
+                  //       ),
+                  //     ],
+                  //   ),
+                  // ),
+
+                  // ================================================================
+
+                  // SizedBox(height: 5),
+                  // Playback Controls before
+                  // Row(
+                  //   mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                  //   children: [
+                  //     IconButton(
+                  //       icon:
+                  //           const Icon(Icons.shuffle, color: Color(0xFF898989)),
+                  //       onPressed: () {
+                  //         // Implement shuffle functionality
+                  //       },
+                  //     ),
+                  //     IconButton(
+                  //       icon: const Icon(Icons.skip_previous,
+                  //           color: Color(0xFF898989), size: 36),
+                  //       onPressed: () {
+                  //         // Implement skip previous functionality
+                  //       },
+                  //     ),
+                  //     IconButton(
+                  //       icon: Icon(
+                  //         mediaPlayerProvider.isPlaying
+                  //             ? Icons.pause_circle_filled
+                  //             : Icons.play_circle_filled,
+                  //         color: const Color(0xFFE0E0E0),
+                  //         size: 64,
+                  //       ),
+                  //       onPressed: () {
+                  //         if (mediaPlayerProvider.isPlaying) {
+                  //           mediaPlayerProvider.pause();
+                  //         } else {
+                  //           mediaPlayerProvider.play();
+                  //         }
+                  //       },
+                  //     ),
+                  //     IconButton(
+                  //       icon: const Icon(Icons.skip_next,
+                  //           color: Color(0xFF898989), size: 36),
+                  //       onPressed: () {
+                  //         // Implement skip next functionality
+                  //       },
+                  //     ),
+                  //     IconButton(
+                  //       icon:
+                  //           const Icon(Icons.repeat, color: Color(0xFF898989)),
+                  //       onPressed: () {
+                  //         // Implement repeat functionality
+                  //       },
+                  //     ),
+                  //   ],
+                  // ),
+                  // SizedBox(height: 10),
+                  // Playback Controls after
+                  // StreamBuilder<PositionData>(
+                  //   stream: _positionDataStream,
+                  //   builder: (context, snapshot) {
+                  //     final positionData = snapshot.data ??
+                  //         PositionData(
+                  //             Duration.zero, Duration.zero, Duration.zero);
+                  //     return SeekBar(
+                  //       duration: positionData.duration,
+                  //       position: positionData.position,
+                  //       onChangeEnd: (newPosition) {
+                  //         _audioHandler.seek(newPosition);
+                  //       },
+                  //     );
+                  //   },
+                  // ),
+                  //Divider
+                  // ControlButtons(_audioHandler),
+
                   const AudioProgressBar(),
                   const AudioControlButtons(),
+
                   Row(
                     mainAxisAlignment: MainAxisAlignment.spaceEvenly,
                     children: [
@@ -126,6 +276,15 @@ class MediaPlayer extends StatelessWidget {
                       ),
                     ],
                   ),
+                  // Spacer(),
+                  // Close Button
+                  // TextButton(
+                  //   onPressed: () {
+                  //     Navigator.of(context).pop();
+                  //   },
+                  //   child: Text('Close',
+                  //       style: TextStyle(fontSize: 18, color: Colors.white)),
+                  // ),
                 ],
               ),
             ));
@@ -142,7 +301,7 @@ class MediaPlayer extends StatelessWidget {
         mainAxisAlignment: MainAxisAlignment.center,
         children: [
           // Album Cover
-          const SizedBox(
+          SizedBox(
               width: 350,
               // height: 350,
               child: ImageRenderer(
@@ -231,48 +390,48 @@ class MediaPlayer extends StatelessWidget {
         //     );
         //   },
         // ),
-        // SizedBox(
-        //   height: 240.0,
-        // child: StreamBuilder<QueueState>(
-        //   stream: _audioHandler.queueState,
-        //   builder: (context, snapshot) {
-        //     final queueState = snapshot.data ?? QueueState.empty;
-        //     final queue = queueState.queue;
-        //     return ReorderableListView(
-        //       onReorder: (int oldIndex, int newIndex) {
-        //         if (oldIndex < newIndex) newIndex--;
-        //         _audioHandler.moveQueueItem(oldIndex, newIndex);
-        //       },
-        //       children: [
-        //         for (var i = 0; i < queue.length; i++)
-        //           Dismissible(
-        //             key: ValueKey(queue[i].id),
-        //             background: Container(
-        //               color: Colors.redAccent,
-        //               alignment: Alignment.centerRight,
-        //               child: const Padding(
-        //                 padding: EdgeInsets.only(right: 8.0),
-        //                 child: Icon(Icons.delete, color: Colors.white),
-        //               ),
-        //             ),
-        //             onDismissed: (dismissDirection) {
-        //               _audioHandler.removeQueueItemAt(i);
-        //             },
-        //             child: Material(
-        //               color: i == queueState.queueIndex
-        //                   ? Colors.grey.shade300
-        //                   : null,
-        //               child: ListTile(
-        //                 title: Text(queue[i].title),
-        //                 onTap: () => _audioHandler.skipToQueueItem(i),
-        //               ),
-        //             ),
-        //           ),
-        //       ],
-        //     );
-        //   },
-        // ),
-        // ),
+        SizedBox(
+          height: 240.0,
+          // child: StreamBuilder<QueueState>(
+          //   stream: _audioHandler.queueState,
+          //   builder: (context, snapshot) {
+          //     final queueState = snapshot.data ?? QueueState.empty;
+          //     final queue = queueState.queue;
+          //     return ReorderableListView(
+          //       onReorder: (int oldIndex, int newIndex) {
+          //         if (oldIndex < newIndex) newIndex--;
+          //         _audioHandler.moveQueueItem(oldIndex, newIndex);
+          //       },
+          //       children: [
+          //         for (var i = 0; i < queue.length; i++)
+          //           Dismissible(
+          //             key: ValueKey(queue[i].id),
+          //             background: Container(
+          //               color: Colors.redAccent,
+          //               alignment: Alignment.centerRight,
+          //               child: const Padding(
+          //                 padding: EdgeInsets.only(right: 8.0),
+          //                 child: Icon(Icons.delete, color: Colors.white),
+          //               ),
+          //             ),
+          //             onDismissed: (dismissDirection) {
+          //               _audioHandler.removeQueueItemAt(i);
+          //             },
+          //             child: Material(
+          //               color: i == queueState.queueIndex
+          //                   ? Colors.grey.shade300
+          //                   : null,
+          //               child: ListTile(
+          //                 title: Text(queue[i].title),
+          //                 onTap: () => _audioHandler.skipToQueueItem(i),
+          //               ),
+          //             ),
+          //           ),
+          //       ],
+          //     );
+          //   },
+          // ),
+        ),
       ],
     );
   }

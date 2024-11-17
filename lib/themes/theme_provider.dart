@@ -27,4 +27,12 @@ class ThemeProvider extends ChangeNotifier {
     //update UI
     notifyListeners();
   }
+
+  //get theme color
+  Color getThemeColorPrimary(){
+    _themeData == darkMode? darkMode.colorScheme.primary : lightMode.colorScheme.primary;
+    print('Theme Data: $_themeData');
+    return _themeData == darkMode? darkMode.colorScheme.primary : lightMode.colorScheme.primary;
+  }
 }
+  
