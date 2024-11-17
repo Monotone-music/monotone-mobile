@@ -1,37 +1,37 @@
+import 'package:audio_service/audio_service.dart';
 import 'package:flutter/material.dart';
+import 'package:monotone_flutter/components/widgets/image_renderer.dart';
+import 'package:provider/provider.dart';
+import 'package:just_audio/just_audio.dart';
 import 'package:monotone_flutter/components/component_views/media_player.dart';
 import 'package:monotone_flutter/components/component_views/media_toolbar.dart';
-import 'package:monotone_flutter/components/logic_components/media_player_provider.dart';
 import 'package:monotone_flutter/pages/discover.dart';
 import 'package:monotone_flutter/pages/library.dart';
 import 'package:monotone_flutter/pages/home.dart';
 import 'package:monotone_flutter/pages/search.dart';
+import 'package:monotone_flutter/pages/profile.dart';
 import 'package:monotone_flutter/themes/theme_provider.dart';
-import 'package:provider/provider.dart';
 // import 'package:monotone_flutter/components/component_views/playlist_card.dart';
 
 class BottomTabNavigator extends StatefulWidget {
+  // final audioPlayerHandler;
+
+  const BottomTabNavigator({
+    super.key,
+    // required this.audioPlayerHandler
+  });
+
   @override
   _BottomTabNavigatorState createState() => _BottomTabNavigatorState();
 }
 
 class _BottomTabNavigatorState extends State<BottomTabNavigator> {
   int _currentIndex = 0;
-  bool _isPlaying = false;
+  // bool _isPlaying = false;
   bool _isMediaPlayerVisible = true;
 
-  // @override
-  // void initState() {
-  //   super.initState();
-  //   Provider.of<MediaPlayerProvider>(context, listen: false).fetchMedia();
-  // }
-
   void _toggleMediaPlayer() {
-    setState(() {
-      // _isMediaPlayerVisible = !_isMediaPlayerVisible;
-
-      // if (_isMediaPlayerVisible) {
-    });
+    setState(() {});
 
     if (_isMediaPlayerVisible) {
       showModalBottomSheet(
@@ -46,17 +46,17 @@ class _BottomTabNavigatorState extends State<BottomTabNavigator> {
     }
   }
 
-  void _togglePlayPause() {
-    setState(() {
-      _isPlaying = !_isPlaying;
-    });
-  }
+  // void _togglePlayPause() {
+  //   setState(() {
+  //     _isPlaying = !_isPlaying;
+  //   });
+  // }
 
-  void _toggleDisplay() {
-    setState(() {
-      _isMediaPlayerVisible = !_isMediaPlayerVisible;
-    });
-  }
+  // void _toggleDisplay() {
+  //   setState(() {
+  //     _isMediaPlayerVisible = !_isMediaPlayerVisible;
+  //   });
+  // }
 
   final List<Widget> _tabs = [
     // Add your tab screens here
@@ -64,7 +64,7 @@ class _BottomTabNavigatorState extends State<BottomTabNavigator> {
     DiscoverPage(),
     SearchPage(),
     LibraryPage(),
-    // ProfilePage(),
+    ProfilePage(),
   ];
 
   @override
@@ -86,14 +86,73 @@ class _BottomTabNavigatorState extends State<BottomTabNavigator> {
                 _currentIndex = index;
               });
             },
-            items: const [
-              BottomNavigationBarItem(icon: Icon(Icons.home), label: 'Home'),
+            items: [
               BottomNavigationBarItem(
-                  icon: Icon(Icons.star), label: 'Discover'),
+                icon: ImageRenderer(
+                  imageUrl: 'assets/image/home_icon.svg',
+                  height: MediaQuery.of(context).size.height *
+                      0.05, // Adjust the height as needed
+                  width: MediaQuery.of(context).size.width *
+                      0.05, // Adjust the width as needed
+                ),
+                activeIcon: ImageRenderer(
+                  imageUrl: 'assets/image/home_active_icon.svg',
+                ),
+                label: 'Home',
+              ),
               BottomNavigationBarItem(
-                  icon: Icon(Icons.search), label: 'Search'),
+                icon: ImageRenderer(
+                  imageUrl: 'assets/image/discover_icon.svg',
+                  height: MediaQuery.of(context).size.height *
+                      0.05, // Adjust the height as needed
+                  width: MediaQuery.of(context).size.width * 0.05,
+                ),
+                activeIcon: ImageRenderer(
+                  imageUrl:
+                      'assets/image/discover_active_icon.svg', ///// Discover has not received active icon yet
+                  height: MediaQuery.of(context).size.height *
+                      0.05, // Adjust the height as needed
+                  width: MediaQuery.of(context).size.width *
+                      0.05, // Adjust the width as needed
+                ),
+                label: 'Discover',
+              ),
               BottomNavigationBarItem(
-                  icon: Icon(Icons.library_music), label: 'Library'),
+                icon: ImageRenderer(
+                  imageUrl: 'assets/image/search_icon.svg',
+                  height: MediaQuery.of(context).size.height *
+                      0.05, // Adjust the height as needed
+                  width: MediaQuery.of(context).size.width * 0.05,
+                ),
+                activeIcon: ImageRenderer(
+                  imageUrl: 'assets/image/search_active_icon.svg',
+                ),
+                label: 'Search',
+              ),
+              BottomNavigationBarItem(
+                icon: ImageRenderer(
+                  imageUrl: 'assets/image/library_icon.svg',
+                  height: MediaQuery.of(context).size.height *
+                      0.05, // Adjust the height as needed
+                  width: MediaQuery.of(context).size.width * 0.05,
+                ),
+                activeIcon: ImageRenderer(
+                  imageUrl: 'assets/image/library_active_icon.svg',
+                ),
+                label: 'Library',
+              ),
+              BottomNavigationBarItem(
+                icon: ImageRenderer(
+                  imageUrl: 'assets/image/me_icon.svg',
+                  height: MediaQuery.of(context).size.height *
+                      0.05, // Adjust the height as needed
+                  width: MediaQuery.of(context).size.width * 0.05,
+                ),
+                activeIcon: ImageRenderer(
+                  imageUrl: 'assets/image/me_active_icon.svg',
+                ),
+                label: 'Me',
+              ),
             ],
           ),
           if (_isMediaPlayerVisible)
@@ -102,6 +161,7 @@ class _BottomTabNavigatorState extends State<BottomTabNavigator> {
             ),
         ],
       ),
+      // bottomNavigationBar:
     );
   }
 }

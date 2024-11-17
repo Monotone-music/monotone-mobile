@@ -1,6 +1,10 @@
 import 'package:flutter/material.dart';
-import 'package:monotone_flutter/themes/theme_provider.dart';
 import 'package:provider/provider.dart';
+import 'package:flutter_svg/flutter_svg.dart';
+
+import 'package:monotone_flutter/themes/theme_provider.dart';
+import 'package:monotone_flutter/components/component_views/search_bar_view.dart';
+import 'package:monotone_flutter/components/widgets/image_renderer.dart';
 
 class SearchPage extends StatefulWidget {
   const SearchPage({super.key});
@@ -19,68 +23,27 @@ class _SearchPageState extends State<SearchPage> {
     return Scaffold(
       appBar: AppBar(
         // backgroundColor: Colors.black,
-        title: Row(
-          mainAxisAlignment: MainAxisAlignment.spaceBetween,
-          children: [
-            Expanded(
-              child: Container(
-                margin: const EdgeInsets.only(top: 10),
-                height: 40,
-                decoration: BoxDecoration(
-                  color: isDarkMode
-                      ? const Color(0xFF202020)
-                      : const Color(0xFFE4E4E4),
-                  borderRadius: BorderRadius.circular(10),
-                ),
-                child: Center(
-                  child: TextField(
-                    controller: _searchController,
-                    decoration: InputDecoration(
-                      hintText: 'What do you want to play?',
-                      // border: OutlineInputBorder(),
-                      hintStyle: TextStyle(
-                          color: isDarkMode
-                              ? const Color(0xFF898989)
-                              : const Color(0xFF6E6E6E),
-                          fontWeight: FontWeight.w400),
-
-                      suffixIcon: _searchController.text.isEmpty
-                          ? const Icon(Icons.search, color: Colors.grey)
-                          : IconButton(
-                              icon: const Icon(Icons.clear, color: Colors.grey),
-                              onPressed: () {
-                                _searchController.clear();
-                                setState(() {});
-                              },
-                            ),
-                      border: InputBorder.none,
-                      contentPadding: const EdgeInsets.all(10),
-                    ),
-                    style: const TextStyle(color: Colors.black, fontSize: 18),
-                    onChanged: (text) {
-                      setState(() {});
-                    },
-                  ),
-                ),
+        title: const SearchBarView(
+            placeholderText:
+                'What do you want to play?'), // Replacing with SearchBarView widget
+        actions: [
+          Container(
+            margin: const EdgeInsets.only(
+                right: 16.0, top: 8.0), // Adjust the margin as needed
+            child: IconButton(
+              icon: ImageRenderer(
+                imageUrl: 'assets/image/camera_icon.svg',
+                height: MediaQuery.of(context).size.height *
+                    0.05, // Adjust the height as needed
+                width: MediaQuery.of(context).size.width *
+                    0.05, // Adjust the width as needed
               ),
+              onPressed: () {
+                print('Search Camera button press');
+              },
             ),
-            Container(
-              margin: const EdgeInsets.only(top: 10),
-              child: IconButton(
-                icon: Icon(
-                  Icons.camera_alt_outlined,
-                  size: 30,
-                  color: isDarkMode
-                      ? const Color(0xFF898989)
-                      : const Color(0xFF6E6E6E),
-                ),
-                onPressed: () {
-                  // Handle icon button press
-                },
-              ),
-            )
-          ],
-        ),
+          ),
+        ],
       ),
       body: Padding(
         padding: const EdgeInsets.all(16.0),
@@ -128,19 +91,24 @@ class _SearchPageState extends State<SearchPage> {
                         child: Stack(
                           children: [
                             Positioned(
-                              bottom: -40,
-                              right: -10,
-                              child: Transform.rotate(
-                                angle: 0.45,
-                                child: Image.network(
-                                  'https://toppng.com/uploads/preview/music-icons-musical-note-icon-11563116064s8jezbq5wm.png',
-                                  // 'https://s3-alpha-sig.figma.com/img/a1cb/6053/4f5505f48399778ffca8b276e8241443?Expires=1728259200&Key-Pair-Id=APKAQ4GOSFWCVNEHN3O4&Signature=RoM3xhbjENyyZNqYXtwmw2hUWcN8PW7oON9sestMZ8K6e4GxHi6nSK1U7RMm15wTkCKAQdFt2njaNgAxAflookOgY0gaBE3LGV6S5p~ONqIF8OuN4p-FAcooy9RaB7vOL-IaxH3SUSCCLHJ9tFD-GOV8MhE4SeIA6GYHFke7aJFzp3yG6BdkbeY-Ub86oYiK-Ywu5EZXqvrJfxEaz4ZvEmSeLx5jD175XiA32rddxnoPS61gqssw-VyswK2SeKkEv-HVp3bBHzNx~-sH82~hgAmwgfSRLtDTThza0xaG3k3TCrR6QPs~ffxARA4KVl1g-wdjz8KtGp8Sij-10mNRWQ__',
-                                  // category['imagePath'], // Use this if you have image paths
-                                  fit: BoxFit.contain,
-                                  height: 100,
+                                bottom: -40,
+                                right: -10,
+                                child: Transform.rotate(
+                                  angle: 0.45,
+                                  child: SizedBox(
+                                  width:  MediaQuery.of(context).size.width * 0.27,
+                                  height: MediaQuery.of(context).size.height * 0.27,
+                                  child: FittedBox(
+                                    fit: BoxFit.contain,
+                                    child: ImageRenderer(
+                                      imageUrl:
+                                          'https://toppng.com/uploads/preview/music-icons-musical-note-icon-11563116064s8jezbq5wm.png',
+                                      // category['imagePath'], // Use this if you have image paths
+                                    ),
+                                  ),
+                                )
+                                  )
                                 ),
-                              ),
-                            ),
                             Center(
                               child: Padding(
                                 padding: const EdgeInsets.all(8.0),
