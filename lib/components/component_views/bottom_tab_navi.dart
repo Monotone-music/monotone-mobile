@@ -1,7 +1,10 @@
+import 'package:audio_service/audio_service.dart';
 import 'package:flutter/material.dart';
+import 'package:just_audio/just_audio.dart';
 import 'package:monotone_flutter/components/component_views/media_player.dart';
 import 'package:monotone_flutter/components/component_views/media_toolbar.dart';
 import 'package:monotone_flutter/components/logic_components/media_player_provider.dart';
+import 'package:monotone_flutter/main.dart';
 import 'package:monotone_flutter/pages/discover.dart';
 import 'package:monotone_flutter/pages/library.dart';
 import 'package:monotone_flutter/pages/home.dart';
@@ -11,6 +14,13 @@ import 'package:provider/provider.dart';
 // import 'package:monotone_flutter/components/component_views/playlist_card.dart';
 
 class BottomTabNavigator extends StatefulWidget {
+  // final audioPlayerHandler;
+
+  const BottomTabNavigator({
+    super.key,
+    // required this.audioPlayerHandler
+  });
+
   @override
   _BottomTabNavigatorState createState() => _BottomTabNavigatorState();
 }
@@ -20,18 +30,8 @@ class _BottomTabNavigatorState extends State<BottomTabNavigator> {
   bool _isPlaying = false;
   bool _isMediaPlayerVisible = true;
 
-  // @override
-  // void initState() {
-  //   super.initState();
-  //   Provider.of<MediaPlayerProvider>(context, listen: false).fetchMedia();
-  // }
-
   void _toggleMediaPlayer() {
-    setState(() {
-      // _isMediaPlayerVisible = !_isMediaPlayerVisible;
-
-      // if (_isMediaPlayerVisible) {
-    });
+    setState(() {});
 
     if (_isMediaPlayerVisible) {
       showModalBottomSheet(
@@ -99,6 +99,7 @@ class _BottomTabNavigatorState extends State<BottomTabNavigator> {
           if (_isMediaPlayerVisible)
             MediaToolbar(
               onToggleMediaPlayer: _toggleMediaPlayer,
+              // audioPlayerHandler: widget.audioPlayerHandler,
             ),
         ],
       ),
