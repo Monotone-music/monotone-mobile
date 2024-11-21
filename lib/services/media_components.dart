@@ -1,3 +1,4 @@
+import 'package:audio_service/audio_service.dart';
 import 'package:flutter/material.dart';
 import 'package:monotone_flutter/notifiers/play_button_notifier.dart';
 import 'package:monotone_flutter/notifiers/progress_notifier.dart';
@@ -37,6 +38,9 @@ class Playlist extends StatelessWidget {
             itemBuilder: (context, index) {
               return ListTile(
                 title: Text(playlistTitles[index]),
+                onTap: () {
+                  getIt<AudioHandler>().skipToQueueItem(index);
+                },
               );
             },
           );

@@ -1,6 +1,7 @@
 import 'package:audio_service/audio_service.dart';
 import 'package:flutter/material.dart';
 import 'package:just_audio/just_audio.dart';
+import 'package:get_it/get_it.dart';
 
 Future<AudioHandler> initAudioService() async {
   return await AudioService.init(
@@ -142,13 +143,32 @@ class MyAudioHandler extends BaseAudioHandler with ChangeNotifier {
     );
   }
 
+  Future<void> clearQueue() async {
+    try {
+      // Clear the playlist
+      await _playlist.clear();
+
+      // Notify system
+      final newQueue = queue.value..clear();
+      queue.add(newQueue);
+
+      print('Queue cleared' + queue.value.toList().toString());
+      // print('Queue cleared' + _playlist.children.toString());
+    } catch (e) {
+      print('Error clearing queue: $e');
+    }
+  }
+
   @override
   Future<void> removeQueueItemAt(int index) async {
     // manage Just Audio
+    // return if index is out of bounds
+    if (index < 0 || index >= queue.value.length) return;
+
     _playlist.removeAt(index);
 
     // notify system
-    final newQueue = queue.value..removeAt(index);
+    final newQueue = List<MediaItem>.from(queue.value)..removeAt(index);
     queue.add(newQueue);
   }
 

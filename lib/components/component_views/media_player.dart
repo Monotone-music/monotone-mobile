@@ -390,48 +390,48 @@ class MediaPlayer extends StatelessWidget {
         //     );
         //   },
         // ),
-        SizedBox(
-          height: 240.0,
-          // child: StreamBuilder<QueueState>(
-          //   stream: _audioHandler.queueState,
-          //   builder: (context, snapshot) {
-          //     final queueState = snapshot.data ?? QueueState.empty;
-          //     final queue = queueState.queue;
-          //     return ReorderableListView(
-          //       onReorder: (int oldIndex, int newIndex) {
-          //         if (oldIndex < newIndex) newIndex--;
-          //         _audioHandler.moveQueueItem(oldIndex, newIndex);
-          //       },
-          //       children: [
-          //         for (var i = 0; i < queue.length; i++)
-          //           Dismissible(
-          //             key: ValueKey(queue[i].id),
-          //             background: Container(
-          //               color: Colors.redAccent,
-          //               alignment: Alignment.centerRight,
-          //               child: const Padding(
-          //                 padding: EdgeInsets.only(right: 8.0),
-          //                 child: Icon(Icons.delete, color: Colors.white),
-          //               ),
-          //             ),
-          //             onDismissed: (dismissDirection) {
-          //               _audioHandler.removeQueueItemAt(i);
-          //             },
-          //             child: Material(
-          //               color: i == queueState.queueIndex
-          //                   ? Colors.grey.shade300
-          //                   : null,
-          //               child: ListTile(
-          //                 title: Text(queue[i].title),
-          //                 onTap: () => _audioHandler.skipToQueueItem(i),
-          //               ),
-          //             ),
-          //           ),
-          //       ],
-          //     );
-          //   },
-          // ),
-        ),
+        // SizedBox(
+        //   height: 240.0,
+        // child: StreamBuilder<QueueState>(
+        //   stream: _audioHandler.queueState,
+        //   builder: (context, snapshot) {
+        //     final queueState = snapshot.data ?? QueueState.empty;
+        //     final queue = queueState.queue;
+        //     return ReorderableListView(
+        //       onReorder: (int oldIndex, int newIndex) {
+        //         if (oldIndex < newIndex) newIndex--;
+        //         _audioHandler.moveQueueItem(oldIndex, newIndex);
+        //       },
+        //       children: [
+        //         for (var i = 0; i < queue.length; i++)
+        //           Dismissible(
+        //             key: ValueKey(queue[i].id),
+        //             background: Container(
+        //               color: Colors.redAccent,
+        //               alignment: Alignment.centerRight,
+        //               child: const Padding(
+        //                 padding: EdgeInsets.only(right: 8.0),
+        //                 child: Icon(Icons.delete, color: Colors.white),
+        //               ),
+        //             ),
+        //             onDismissed: (dismissDirection) {
+        //               _audioHandler.removeQueueItemAt(i);
+        //             },
+        //             child: Material(
+        //               color: i == queueState.queueIndex
+        //                   ? Colors.grey.shade300
+        //                   : null,
+        //               child: ListTile(
+        //                 title: Text(queue[i].title),
+        //                 onTap: () => _audioHandler.skipToQueueItem(i),
+        //               ),
+        //             ),
+        //           ),
+        //       ],
+        //     );
+        //   },
+        // ),
+        // ),
       ],
     );
   }

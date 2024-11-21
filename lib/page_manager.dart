@@ -82,7 +82,9 @@ class PageManager {
     //     ))
     // .toList();
     _audioHandler.addQueueItem(mediaItem);
-    print(mediaItem);
+    // print(mediaItem);
+    print("Load track: Current queue value" +
+        _audioHandler.queue.value.toString());
     print('track loaded');
   }
 
@@ -219,6 +221,16 @@ class PageManager {
     final lastIndex = _audioHandler.queue.value.length - 1;
     if (lastIndex < 0) return;
     _audioHandler.removeQueueItemAt(lastIndex);
+  }
+
+  void removeAll() {
+    while (_audioHandler.queue.value.isNotEmpty) {
+      // remove();
+      print('current queue length ' +
+          _audioHandler.queue.value.length.toString());
+      _audioHandler.removeQueueItemAt(0);
+      print('removing index');
+    }
   }
 
   void dispose() {

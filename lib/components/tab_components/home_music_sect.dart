@@ -1,7 +1,10 @@
+import 'package:audio_service/audio_service.dart';
 import 'package:flutter/material.dart';
 import 'package:monotone_flutter/components/logic_components/media_player_provider.dart';
 import 'package:monotone_flutter/components/models/track_item.dart';
 import 'package:monotone_flutter/components/tab_components/home_playlist.dart';
+import 'package:monotone_flutter/page_manager.dart';
+import 'package:monotone_flutter/services/service_locator.dart';
 import 'package:provider/provider.dart';
 // import 'playlist_mini.dart';
 
@@ -36,8 +39,18 @@ class PlaylistList extends StatelessWidget {
       itemCount: trackItems.length,
       itemBuilder: (context, index) {
         final trackItem = trackItems[index];
-        return PlaylistMini(
-            trackItem: trackItem); // Use PlaylistMini to display the items
+        return
+            // GestureDetector(
+            //   child:
+            PlaylistMini(
+                // Use PlaylistMini to display the items,
+                trackItem: trackItem);
+        // onTap: () {
+        // print('womp womp');
+        // getIt<PageManager>().loadTrack(trackItem);
+        // getIt<AudioHandler>().skipToQueueItem(index);
+        // },
+        // );
       },
     );
   }
