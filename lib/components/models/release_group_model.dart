@@ -26,11 +26,15 @@ class Track {
 
 class ReleaseGroup {
   final String name;
+  final String artistName;
+  final String releaseYear;
   final String imageUrl;
   final List<Track> tracks;
 
   ReleaseGroup({
     required this.name,
+    required this.artistName,
+    required this.releaseYear,
     required this.imageUrl,
     required this.tracks,
   });
@@ -57,6 +61,10 @@ class ReleaseGroup {
 
     return ReleaseGroup(
       name: json['data']['releaseGroups'][0]['title'],
+      artistName: json['data']['releaseGroups'][0]['release'][0]['recording'][0]
+          ['artist'][0]['name'],
+      releaseYear: json['data']['releaseGroups'][0]['releaseEvent']['date']
+          .substring(0, 4),
       imageUrl: json['data']['releaseGroups'][0]['release'][0]['recording'][0]
           ['image']['filename'],
       tracks: tracks,
