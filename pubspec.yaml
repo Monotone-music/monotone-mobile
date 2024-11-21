@@ -47,6 +47,8 @@ dependencies:
   rxdart: ^0.28.0
   on_audio_query: ^2.9.0
   get_it: ^7.2.0
+  skeletonizer: ^1.4.2
+  shimmer: ^3.0.0
 
 dev_dependencies:
   flutter_test:
