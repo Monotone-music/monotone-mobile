@@ -20,7 +20,7 @@ class _LibraryPageState extends State<LibraryPage> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: const SearchBarView(placeholderText: 'Search Library'),
+        // title: const SearchBarView(placeholderText: 'Search Library'),
         // actions: [
         //   IconButton(
         //     icon: const Icon(Icons.brightness_6),
@@ -31,12 +31,15 @@ class _LibraryPageState extends State<LibraryPage> {
         // ],
         actions: [
           Container(
-            margin: const EdgeInsets.only(right: 16.0, top: 8.0), // Adjust the margin as needed
+            margin: const EdgeInsets.only(
+                right: 16.0, top: 8.0), // Adjust the margin as needed
             child: IconButton(
-              icon:  ImageRenderer(
-              imageUrl: 'assets/image/add_icon.svg',
-                height: MediaQuery.of(context).size.height * 0.05, // Adjust the height as needed
-                width: MediaQuery.of(context).size.width * 0.05, // Adjust the width as needed
+              icon: ImageRenderer(
+                imageUrl: 'assets/image/add_icon.svg',
+                height: MediaQuery.of(context).size.height *
+                    0.05, // Adjust the height as needed
+                width: MediaQuery.of(context).size.width *
+                    0.05, // Adjust the width as needed
               ),
               onPressed: () {
                 print('Library button press');
@@ -67,23 +70,53 @@ class _LibraryPageState extends State<LibraryPage> {
           SizedBox(
               height: MediaQuery.of(context).size.height *
                   0.1), // Add vertical space
-           ImageRenderer(
-              imageUrl: 'assets/image/group_icon.svg', // Replace with your SVG asset path
-            height: MediaQuery.of(context).size.height *
-                0.05, // Adjust the height as needed
-            width: MediaQuery.of(context).size.height *
-                0.05, // Adjust the width as needed
+          IconButton(
+            onPressed: () {
+              print('group icon pressed');
+            },
+            icon: ImageRenderer(
+              imageUrl:
+                  'assets/image/group_icon.svg', // Replace with your SVG asset path
+              height: MediaQuery.of(context).size.height *
+                  0.05, // Adjust the height as needed
+              width: MediaQuery.of(context).size.height *
+                  0.05, // Adjust the width as needed
+            ),
           ),
-          const Text("Group"),
+
+          ///
+          const Text(
+            "Group",
+            style: TextStyle(
+              fontSize: 25,
+            ),
+          ),
+
+          ///
           SizedBox(width: MediaQuery.of(context).size.width * 0.025),
-           ImageRenderer(
-              imageUrl: 'assets/image/recent_icon.svg', // Replace with your SVG asset path
-            height: MediaQuery.of(context).size.height *
-                0.07, // Adjust the height as needed
-            width: MediaQuery.of(context).size.height *
-                0.07, // Adjust the width as needed
+          IconButton(
+            onPressed: () {
+              print('group icon pressed');
+            },
+            icon: ImageRenderer(
+              imageUrl:
+                  'assets/image/recent_icon.svg', // Replace with your SVG asset path
+              height: MediaQuery.of(context).size.height *
+                  0.07, // Adjust the height as needed
+              width: MediaQuery.of(context).size.height *
+                  0.07, // Adjust the width as needed
+            ),
           ),
-          const Text("Recent")
+
+          ///
+          const Text(
+            "Recent",
+            style: TextStyle(
+              fontSize: 25,
+            ),
+          )
+
+          ///
         ],
       )
     ]);
@@ -97,8 +130,12 @@ class _LibraryPageState extends State<LibraryPage> {
                 0.025), // Add vertical space
         PlaylistSection(
             title: 'Playlists', fetchItems: DataService().fetchPlaylistItems),
-        // PlaylistSection(title: 'New Playlist', fetchItems: DataService().fetchAnotherPlaylistItems),
-        // PlaylistSection(title: 'Neo Playlist', fetchItems: DataService().fetchPlaylistItems),
+        PlaylistSection(
+            title: 'New Playlist',
+            fetchItems: DataService().fetchAnotherPlaylistItems),
+        PlaylistSection(
+            title: 'Neo Playlist',
+            fetchItems: DataService().fetchPlaylistItems),
       ],
     );
   }

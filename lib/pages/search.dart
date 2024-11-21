@@ -1,6 +1,5 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
-import 'package:flutter_svg/flutter_svg.dart';
 
 import 'package:monotone_flutter/themes/theme_provider.dart';
 import 'package:monotone_flutter/components/component_views/search_bar_view.dart';
@@ -21,29 +20,45 @@ class _SearchPageState extends State<SearchPage> {
     final themeProvider = Provider.of<ThemeProvider>(context);
     final isDarkMode = themeProvider.isDarkMode;
     return Scaffold(
-      appBar: AppBar(
-        // backgroundColor: Colors.black,
-        title: const SearchBarView(
-            placeholderText:
-                'What do you want to play?'), // Replacing with SearchBarView widget
-        actions: [
-          Container(
-            margin: const EdgeInsets.only(
-                right: 16.0, top: 8.0), // Adjust the margin as needed
-            child: IconButton(
-              icon: ImageRenderer(
-                imageUrl: 'assets/image/camera_icon.svg',
-                height: MediaQuery.of(context).size.height *
-                    0.05, // Adjust the height as needed
-                width: MediaQuery.of(context).size.width *
-                    0.05, // Adjust the width as needed
-              ),
-              onPressed: () {
-                print('Search Camera button press');
-              },
-            ),
-          ),
-        ],
+      appBar: PreferredSize(
+        preferredSize: Size.fromHeight(100),
+        child: AppBar(
+          // backgroundColor: Colors.black,
+          // title: Container(
+          //   width: MediaQuery.of(context).size.width * 0.8,
+          //   height: MediaQuery.of(context).size.height *0.15,
+          //   child: 
+          //   SearchBarView(
+          //       placeholderText: 'What do you want to play?'),
+          // ),
+
+          // Replacing with SearchBarView widget
+          actions: [
+            Container(
+                margin: const EdgeInsets.only(
+                    right: 16.0, top: 10.0), // Adjust the margin as needed
+                child: Row(
+                  mainAxisAlignment: MainAxisAlignment.start,
+                  children: [
+                    // const SearchBarView(
+                    //   placeholderText: 'What do you want to play?',
+                    // ),
+                    IconButton(
+                      icon: ImageRenderer(
+                        imageUrl: 'assets/image/camera_icon.svg',
+                        height: MediaQuery.of(context).size.height *
+                            0.05, // Adjust the height as needed
+                        width: MediaQuery.of(context).size.width *
+                            0.05, // Adjust the width as needed
+                      ),
+                      onPressed: () {
+                        print('Search Camera button press');
+                      },
+                    ),
+                  ],
+                )),
+          ],
+        ),
       ),
       body: Padding(
         padding: const EdgeInsets.all(16.0),
@@ -94,21 +109,22 @@ class _SearchPageState extends State<SearchPage> {
                                 bottom: -40,
                                 right: -10,
                                 child: Transform.rotate(
-                                  angle: 0.45,
-                                  child: SizedBox(
-                                  width:  MediaQuery.of(context).size.width * 0.27,
-                                  height: MediaQuery.of(context).size.height * 0.27,
-                                  child: FittedBox(
-                                    fit: BoxFit.contain,
-                                    child: ImageRenderer(
-                                      imageUrl:
-                                          'https://toppng.com/uploads/preview/music-icons-musical-note-icon-11563116064s8jezbq5wm.png',
-                                      // category['imagePath'], // Use this if you have image paths
-                                    ),
-                                  ),
-                                )
-                                  )
-                                ),
+                                    angle: 0.45,
+                                    child: SizedBox(
+                                      width: MediaQuery.of(context).size.width *
+                                          0.27,
+                                      height:
+                                          MediaQuery.of(context).size.height *
+                                              0.27,
+                                      child: FittedBox(
+                                        fit: BoxFit.contain,
+                                        child: ImageRenderer(
+                                          imageUrl:
+                                              'https://toppng.com/uploads/preview/music-icons-musical-note-icon-11563116064s8jezbq5wm.png',
+                                          // category['imagePath'], // Use this if you have image paths
+                                        ),
+                                      ),
+                                    ))),
                             Center(
                               child: Padding(
                                 padding: const EdgeInsets.all(8.0),

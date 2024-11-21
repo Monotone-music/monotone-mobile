@@ -16,7 +16,7 @@ class ProfileView extends StatelessWidget {
     final themeProvider = Provider.of<ThemeProvider>(context);
     final changePrimary = themeProvider.getThemeColorPrimary();
 
-    return Container(
+    return SingleChildScrollView(
       padding: const EdgeInsets.all(0),
       child: Column(
         // crossAxisAlignment: CrossAxisAlignment.start,
