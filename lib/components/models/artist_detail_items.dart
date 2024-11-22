@@ -20,10 +20,14 @@ class Artist {
     var featuredInList = json['featuredIn'] as List? ?? [];
     var releaseGroupList = json['releaseGroup'] as List? ?? [];
 
-    List<FeaturedRelease> featuredIn =
-        featuredInList.where((i) => i != null).map((i) => FeaturedRelease.fromJson(i)).toList();
-    List<ReleaseGroup> releaseGroup =
-        releaseGroupList.where((i) => i != null).map((i) => ReleaseGroup.fromJson(i)).toList();
+    List<FeaturedRelease> featuredIn = featuredInList
+        .where((i) => i != null)
+        .map((i) => FeaturedRelease.fromJson(i))
+        .toList();
+    List<ReleaseGroup> releaseGroup = releaseGroupList
+        .where((i) => i != null)
+        .map((i) => ReleaseGroup.fromJson(i))
+        .toList();
 
     return Artist(
       id: json['_id'],
@@ -32,15 +36,13 @@ class Artist {
       releaseGroup: releaseGroup,
     );
   }
-   // Method to create an Artist instance from a JSON string
+
+  // Method to create an Artist instance from a JSON string
   factory Artist.fromJsonString(String jsonString) {
     final Map<String, dynamic> json = jsonDecode(jsonString);
     return Artist.fromJson(json);
   }
 }
-
-
-
 
 // Model class for FeaturedRelease
 class FeaturedRelease {
@@ -50,6 +52,7 @@ class FeaturedRelease {
   final List<String> release;
   final String releaseType;
   final String title;
+  final String image;
 
   // Constructor for FeaturedRelease
   FeaturedRelease({
@@ -59,13 +62,15 @@ class FeaturedRelease {
     required this.release,
     required this.releaseType,
     required this.title,
+    required this.image,
   });
 
   // Factory constructor to create a FeaturedRelease instance from JSON
   factory FeaturedRelease.fromJson(Map<String, dynamic> json) {
     var releaseEventJson = json['releaseEvent'] as Map<String, dynamic>? ?? {};
     var releaseList = json['release'] as List? ?? [];
-    List<String> release = releaseList.where((i) => i != null).map((i) => i.toString()).toList();
+    List<String> release =
+        releaseList.where((i) => i != null).map((i) => i.toString()).toList();
 
     return FeaturedRelease(
       releaseEvent: ReleaseEvent.fromJson(releaseEventJson),
@@ -74,6 +79,7 @@ class FeaturedRelease {
       release: release,
       releaseType: json['releaseType'],
       title: json['title'],
+      image: json['image']['filename'], 
     );
   }
 }
@@ -86,6 +92,7 @@ class ReleaseGroup {
   final List<String> release;
   final String releaseType;
   final String title;
+  final String image;
 
   // Constructor for ReleaseGroup
   ReleaseGroup({
@@ -95,13 +102,15 @@ class ReleaseGroup {
     required this.release,
     required this.releaseType,
     required this.title,
+    required this.image,
   });
 
   // Factory constructor to create a ReleaseGroup instance from JSON
   factory ReleaseGroup.fromJson(Map<String, dynamic> json) {
     var releaseEventJson = json['releaseEvent'] as Map<String, dynamic>? ?? {};
     var releaseList = json['release'] as List? ?? [];
-    List<String> release = releaseList.where((i) => i != null).map((i) => i.toString()).toList();
+    List<String> release =
+        releaseList.where((i) => i != null).map((i) => i.toString()).toList();
 
     return ReleaseGroup(
       releaseEvent: ReleaseEvent.fromJson(releaseEventJson),
@@ -110,6 +119,7 @@ class ReleaseGroup {
       release: release,
       releaseType: json['releaseType'],
       title: json['title'],
+      image: json['image'], // Added imageId
     );
   }
 }

@@ -9,8 +9,9 @@ import 'package:monotone_flutter/themes/theme_provider.dart';
 // Define the ArtistDetailView widget
 class ArtistDetailView extends StatelessWidget {
   final Artist artist;
+  final Map<String, String> albumImageUrls;
 
-  ArtistDetailView({required this.artist});
+  ArtistDetailView({required this.artist, required this.albumImageUrls});
 
   @override
   Widget build(BuildContext context) {
@@ -325,17 +326,21 @@ class ArtistDetailView extends StatelessWidget {
 
             /// List of Albums
             Container(
-              height: height * 0.4, // Increase the height to provide more space
+              height:
+                  height * 0.26, // Increase the height to provide more space
               child: ListView.builder(
                 scrollDirection: Axis.horizontal,
                 itemCount: albums.length,
                 itemBuilder: (context, index) {
+                  // print(albums[index].image);
                   final album = albums[index];
                   final year =
                       DateTime.parse(album.releaseEvent.date).year.toString();
                   final releaseType = album.releaseType[0].toUpperCase() +
                       album.releaseType.substring(1);
-
+                  final imageUrl = albumImageUrls[album.id] ??
+                      ''; // Get the correct image URL for the album
+                  // print(imageUrl);
                   return Padding(
                     padding: const EdgeInsets.only(right: 16.0),
                     child: InkWell(
@@ -348,17 +353,13 @@ class ArtistDetailView extends StatelessWidget {
                         children: [
                           /// Square Image
                           Container(
-                            width: width * 0.4,
-                            height: width * 0.4,
-                            decoration: BoxDecoration(
-                              color: changePrimary.withOpacity(0.6),
-                              borderRadius: BorderRadius.circular(8.0),
-                            ),
-                            child: ImageRenderer(
-                              imageUrl:
-                                  'assets/image/rajang.jpg', // Replace with your image path
-                            ),
-                          ),
+                              width: width * 0.4,
+                              height: width * 0.4,
+                              decoration: BoxDecoration(
+                                color: changePrimary.withOpacity(0.6),
+                                borderRadius: BorderRadius.circular(8.0),
+                              ),
+                              child: ImageRenderer(imageUrl: imageUrl)),
                           SizedBox(height: 8),
 
                           /// Album Title
@@ -442,7 +443,8 @@ class ArtistDetailView extends StatelessWidget {
 
             /// List of Singles and Compilations
             Container(
-              height: height * 0.4, // Increase the height to provide more space
+              height:
+                  height * 0.26, // Increase the height to provide more space
               child: ListView.builder(
                 scrollDirection: Axis.horizontal,
                 itemCount: singlesAndCompilations.length,
@@ -546,7 +548,7 @@ class ArtistDetailView extends StatelessWidget {
 
           /// List of Artists
           Container(
-            height: height * 0.2, // Set a fixed height for the list
+            height: height * 0.26, // Set a fixed height for the list
             child: ListView.builder(
               scrollDirection: Axis.horizontal,
               itemCount: artistNames.length,

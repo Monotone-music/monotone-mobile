@@ -19,8 +19,6 @@ class _ArtistDetailPageState extends State<ArtistDetailPage> {
       body: ListView(
         padding: const EdgeInsets.all(0),
         children: [
-          // const Text('Hello World'),
-          // const SizedBox(height: 16),
           _buildPanel(),
         ],
       ),
@@ -36,7 +34,7 @@ class _ArtistDetailPageState extends State<ArtistDetailPage> {
             SizedBox(
               width: MediaQuery.of(context).size.width *1,
               height: MediaQuery.of(context).size.height * 1 ,
-              child: ArtistDetailLoader(artistId: '674002946357c3ed99dede7d'),
+              child: ArtistDetailLoader(artistId: '674002d16357c3ed99dede8a'),
             ),
             ///
           ],

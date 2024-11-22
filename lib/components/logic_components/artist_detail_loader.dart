@@ -1,11 +1,10 @@
+import 'dart:convert';
 import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
-import 'dart:convert';
 
+import 'package:monotone_flutter/components/models/artist_detail_items.dart';
 import 'package:monotone_flutter/components/component_views/artist_detail_view.dart';
-import 'package:monotone_flutter/components/models/artist_detail_items.dart'; // Import the Artist model
 
-// Define the ArtistDetailLoader widget
 class ArtistDetailLoader extends StatefulWidget {
   final String artistId;
 
@@ -24,48 +23,53 @@ class _ArtistDetailLoaderState extends State<ArtistDetailLoader> {
     artistFuture = fetchArtistData(widget.artistId);
   }
 
-    Future<Artist> fetchArtistData(String artistId) async {
-    final response = await http.get(Uri.parse('https://api2.ibarakoi.online/artist/id/$artistId'));
-    // print(response.body);
+  Future<Artist> fetchArtistData(String artistId) async {
+    final response = await http
+        .get(Uri.parse('https://api2.ibarakoi.online/artist/id/$artistId'));
     if (response.statusCode != 200) {
       throw Exception('Failed to load artist data');
     }
 
     final Map<String, dynamic> jsonResponse = json.decode(response.body);
-    if (!jsonResponse.containsKey('data') || !jsonResponse['data'].containsKey('artist')) {
+    if (!jsonResponse.containsKey('data') ||
+        !jsonResponse['data'].containsKey('artist')) {
       throw Exception('Artist data not found');
     }
 
     final artist = Artist.fromJson(jsonResponse['data']['artist']);
-    ///Use to fetch Image
-    // final Map<String, String> imageCache = {};
-
-    // // Assuming you want to cache images for featured releases and release groups
-    // for (var release in artist.featuredIn) {
-    //   if (!imageCache.containsKey(release.mbid)) {
-    //     final imageResponse = await fetchImage(release.mbid);
-    //     imageCache[release.mbid] = imageResponse;
-    //   }
-    // }
-
-    // for (var release in artist.releaseGroup) {
-    //   if (!imageCache.containsKey(release.mbid)) {
-    //     final imageResponse = await fetchImage(release.mbid);
-    //     imageCache[release.mbid] = imageResponse;
-    //   }
-    // }
-
     return artist;
   }
 
-  Future<String> fetchImage(String imageUrl) async {
-    final response = await http.get(Uri.parse(imageUrl));
-
+  Future<Map<String, String>> fetchAlbumImageFilenames(
+      List<String> albumIds) async {
+    final response =
+        await http.get(Uri.parse('https://api2.ibarakoi.online/album'));
     if (response.statusCode != 200) {
-      throw Exception('Failed to load image');
+      throw Exception('Failed to load album data');
     }
 
-    return response.body;
+    final Map<String, dynamic> jsonResponse = json.decode(response.body);
+    if (!jsonResponse.containsKey('data') ||
+        !jsonResponse['data'].containsKey('releaseGroup')) {
+      throw Exception('Album data not found');
+    }
+
+    final List<dynamic> releaseGroupsJson =
+        jsonResponse['data']['releaseGroup'];
+    Map<String, String> imageFilenames = {};
+
+    for (final albumId in albumIds) {
+      for (final releaseGroupJson in releaseGroupsJson) {
+        if (releaseGroupJson['_id'] == albumId) {
+          imageFilenames[albumId] =
+              'https://api2.ibarakoi.online/image/${releaseGroupJson['image']['filename']}';
+          // print(imageFilenames[albumId]);
+
+          break;
+        }
+      }
+    }
+    return imageFilenames;
   }
 
   @override
@@ -78,7 +82,26 @@ class _ArtistDetailLoaderState extends State<ArtistDetailLoader> {
         } else if (snapshot.hasError) {
           return Center(child: Text('Error: ${snapshot.error}'));
         } else if (snapshot.hasData) {
-          return ArtistDetailView(artist: snapshot.data!);
+          final artist = snapshot.data!;
+          final albumIds = artist.releaseGroup
+              .map((releaseGroup) => releaseGroup.id)
+              .toList();
+          return FutureBuilder<Map<String, String>>(
+            future: fetchAlbumImageFilenames(albumIds),
+            builder: (context, imageSnapshot) {
+              if (imageSnapshot.connectionState == ConnectionState.waiting) {
+                return Center(child: CircularProgressIndicator());
+              } else if (imageSnapshot.hasError) {
+                return Center(child: Text('Error: ${imageSnapshot.error}'));
+              } else if (imageSnapshot.hasData) {
+                final imageFilenames = imageSnapshot.data!;
+                return ArtistDetailView(
+                    artist: artist, albumImageUrls: imageFilenames);
+              } else {
+                return Center(child: Text('No artist images available'));
+              }
+            },
+          );
         } else {
           return Center(child: Text('No artist data available'));
         }
