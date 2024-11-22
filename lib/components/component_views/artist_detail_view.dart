@@ -55,8 +55,16 @@ class ArtistDetailView extends StatelessWidget {
             width: double.infinity,
             height: height * 0.4,
             decoration: BoxDecoration(
-                shape: BoxShape.rectangle,
-                border: Border.all(color: Colors.blue, width: 2)),
+              image: DecorationImage(
+                image: const AssetImage(
+                    'assets/image/rajang.jpg'), // Replace with your image path
+                fit: BoxFit.cover,
+                colorFilter: ColorFilter.mode(
+                  changePrimary.withOpacity(0.8),
+                  BlendMode.dstOut,
+                ),
+              ),
+            ),
 
             ///
             child: Column(
