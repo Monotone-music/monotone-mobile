@@ -25,7 +25,7 @@ class _ArtistDetailLoaderState extends State<ArtistDetailLoader> {
   }
 
     Future<Artist> fetchArtistData(String artistId) async {
-    final response = await http.get(Uri.parse('https://api2.ibarakoi.online/artist/$artistId'));
+    final response = await http.get(Uri.parse('https://api2.ibarakoi.online/artist/id/$artistId'));
     // print(response.body);
     if (response.statusCode != 200) {
       throw Exception('Failed to load artist data');
