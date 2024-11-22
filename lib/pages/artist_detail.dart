@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
 
+import 'package:monotone_flutter/components/logic_components/artist_detail_loader.dart';
+
 
 class ArtistDetailPage extends StatefulWidget {
   ArtistDetailPage({Key? key, this.focusOnTextField}) : super(key: key);
@@ -15,7 +17,7 @@ class _ArtistDetailPageState extends State<ArtistDetailPage> {
     return Scaffold(
       appBar: AppBar(title: Text("Artist Detail Page")),
       body: ListView(
-        padding: const EdgeInsets.all(16.0),
+        padding: const EdgeInsets.all(0),
         children: [
           // const Text('Hello World'),
           // const SizedBox(height: 16),
@@ -25,20 +27,24 @@ class _ArtistDetailPageState extends State<ArtistDetailPage> {
     );
   }
 ///
-  Widget _buildPanel(){
+   ///
+  Widget _buildPanel() {
     return Column(
       children: [
         Row(
           children: [
             SizedBox(
-              
-            )
+              width: MediaQuery.of(context).size.width *1,
+              height: MediaQuery.of(context).size.height * 1 ,
+              child: ArtistDetailLoader(artistId: '674002906357c3ed99dede79'),
+            ),
             ///
           ],
-        )
+        ),
         ///
       ],
     );
     ///
   }
+  ///
 }

@@ -103,6 +103,7 @@ flutter:
     - assets/image/setting_icon.svg
     - assets/image/expand_arrow_icon.svg
     - assets/image/history_icon.svg
+    - assets/image/play_button_icon.svg
 
   # An image asset can refer to one or more resolution-specific "variants", see
   # https://flutter.dev/to/resolution-aware-images
