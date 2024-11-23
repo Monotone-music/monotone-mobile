@@ -1,16 +1,8 @@
-import 'package:audio_service/audio_service.dart';
+import 'package:auto_scroll_text/auto_scroll_text.dart';
 import 'package:flutter/material.dart';
-import 'package:monotone_flutter/components/logic_components/media_player_provider.dart';
-import 'package:monotone_flutter/components/models/track_item.dart';
 import 'package:monotone_flutter/components/tab_components/home_playlist.dart';
-import 'package:monotone_flutter/page_manager.dart';
-import 'package:monotone_flutter/services/service_locator.dart';
-import 'package:provider/provider.dart';
-// import 'playlist_mini.dart';
 
 class PlaylistList extends StatelessWidget {
-  // final List<Map<String, String>> playlists;
-
   final List<Map<String, String>> trackItems;
 
   const PlaylistList({super.key, required this.trackItems});
@@ -19,6 +11,7 @@ class PlaylistList extends StatelessWidget {
   Widget build(BuildContext context) {
     return Column(
       children: [
+        SizedBox(height: 10),
         gridPlaylistMini(),
         SizedBox(height: 10), // Add some spacing between the widgets
         M4UPlaylist(),
@@ -30,27 +23,15 @@ class PlaylistList extends StatelessWidget {
     return GridView.builder(
       shrinkWrap: true,
       physics: const NeverScrollableScrollPhysics(),
+      itemCount: trackItems.length,
       gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
         crossAxisCount: 2, // Number of columns
         crossAxisSpacing: 0.0, // Spacing between columns
         mainAxisSpacing: 0.0, // Spacing between rows
         childAspectRatio: 2.3, // Aspect ratio of each item
       ),
-      itemCount: trackItems.length,
       itemBuilder: (context, index) {
-        final trackItem = trackItems[index];
-        return
-            // GestureDetector(
-            //   child:
-            PlaylistMini(
-                // Use PlaylistMini to display the items,
-                trackItem: trackItem);
-        // onTap: () {
-        // print('womp womp');
-        // getIt<PageManager>().loadTrack(trackItem);
-        // getIt<AudioHandler>().skipToQueueItem(index);
-        // },
-        // );
+        return PlaylistMini(trackItem: trackItems[index]);
       },
     );
   }
@@ -58,14 +39,35 @@ class PlaylistList extends StatelessWidget {
   Widget M4UPlaylist() {
     return ListTile(
       leading: const Icon(Icons.music_note),
-      title: const Text(
-        'Made For You',
-        style: TextStyle(fontSize: 24.0),
+      title: Container(
+        constraints: const BoxConstraints(
+            maxWidth: 200), // Define a fixed width for the Container
+        child: const Row(
+          mainAxisAlignment: MainAxisAlignment.center,
+          crossAxisAlignment: CrossAxisAlignment.center,
+          children: <Widget>[
+            SizedBox(
+              width: 300, // Define a fixed width for the AutoScrollText
+              height: 24, // Define a fixed height for the AutoScrollText
+              child: AutoScrollText(
+                "Lorem Ipsum is simply dummy text of the printing and typesetting industry.",
+                style: TextStyle(fontSize: 16), // Adjust font size as needed
+                scrollDirection:
+                    Axis.horizontal, // Change to horizontal scrolling
+                mode: AutoScrollTextMode.bouncing,
+                // delayBefore: Duration(milliseconds: 3000),
+                velocity: Velocity(
+                    pixelsPerSecond:
+                        Offset(20, 0)), // Adjust the scrolling speed
+                delayBefore: Duration(seconds: 1),
+                pauseBetween: Duration(seconds: 1),
+              ),
+            ),
+          ],
+        ),
       ),
-      // subtitle: const Text('M4U'),
-      trailing: const Icon(Icons.more_horiz_outlined),
       onTap: () {
-        print('M4U Playlist');
+        // Handle tap
       },
     );
   }

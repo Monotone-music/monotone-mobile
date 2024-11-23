@@ -1,6 +1,4 @@
-import 'package:audio_service/audio_service.dart';
 import 'package:flutter/material.dart';
-import 'package:monotone_flutter/components/logic_components/media_player_provider.dart';
 import 'package:monotone_flutter/page_manager.dart';
 import 'package:monotone_flutter/services/audio_handler.dart';
 import 'package:monotone_flutter/services/media_components.dart';
@@ -69,56 +67,8 @@ class MediaToolbar extends StatelessWidget {
                     ],
                   ),
                 ),
-                // Playback controls
-                // StreamBuilder<PlaybackState>(
-                //   stream: audioPlayerHandler.playbackState,
-                //   builder: (context, snapshot) {
-                //     final playbackState = snapshot.data;
-                //     final processingState = playbackState?.processingState;
-                //     final playing = playbackState?.playing;
-                //     if (processingState == AudioProcessingState.loading ||
-                //         processingState == AudioProcessingState.buffering) {
-                //       return Container(
-                //         margin: const EdgeInsets.all(8.0),
-                //         width: 24.0,
-                //         height: 24.0,
-                //         child: const CircularProgressIndicator(),
-                //       );
-                //     } else if (playing != true) {
-                //       return IconButton(
-                //         icon: const Icon(Icons.play_arrow),
-                //         iconSize: 24.0,
-                //         onPressed: audioPlayerHandler.play,
-                //       );
-                //     } else {
-                //       return IconButton(
-                //         icon: const Icon(Icons.pause),
-                //         iconSize: 24.0,
-                //         onPressed: audioPlayerHandler.pause,
-                //       );
-                //     }
-                //   },
-                // ),
 
                 const PlayButton(),
-
-                // IconButton(
-                //   icon: Icon(
-                //     mediaPlayerProvider.isPlaying
-                //         ? Icons.pause
-                //         : Icons.play_arrow,
-                //     color: isDarkMode
-                //         ? const Color(0xFFDBDBDB)
-                //         : const Color(0xFF6E6E6E),
-                //   ),
-                //   onPressed: () {
-                //     if (mediaPlayerProvider.isPlaying) {
-                //       mediaPlayerProvider.pause();
-                //     } else {
-                //       mediaPlayerProvider.play();
-                //     }
-                //   },
-                // ),
               ],
             ),
           ),

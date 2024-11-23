@@ -129,7 +129,7 @@ class MyAudioHandler extends BaseAudioHandler with ChangeNotifier {
 
       // notify system
       final newQueue = List<MediaItem>.from(queue.value)..add(mediaItem);
-      queue.add(newQueue);
+      // queue.add(newQueue);
       print('Added: ${mediaItem.title}');
     } catch (e) {
       print('Error adding item to queue: $e');
@@ -166,10 +166,12 @@ class MyAudioHandler extends BaseAudioHandler with ChangeNotifier {
     if (index < 0 || index >= queue.value.length) return;
 
     _playlist.removeAt(index);
+    print('xue hue');
 
     // notify system
     final newQueue = List<MediaItem>.from(queue.value)..removeAt(index);
     queue.add(newQueue);
+    // print('Removed: ${queue.value[index].title}');
   }
 
   @override

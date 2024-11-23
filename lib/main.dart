@@ -9,7 +9,6 @@ import 'package:monotone_flutter/services/audio_handler.dart';
 import 'package:monotone_flutter/services/service_locator.dart';
 import 'package:monotone_flutter/themes/theme_provider.dart';
 import 'package:provider/provider.dart';
-import 'package:monotone_flutter/components/logic_components/media_player_provider.dart';
 import 'package:permission_handler/permission_handler.dart';
 
 // Create a singleton instance of TrackHandler

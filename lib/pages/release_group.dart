@@ -1,15 +1,16 @@
 import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
 import 'package:monotone_flutter/components/models/release_group_model.dart';
+import 'package:monotone_flutter/components/widgets/image_renderer.dart';
 import 'package:monotone_flutter/themes/theme_provider.dart';
 import 'package:provider/provider.dart';
 import 'package:shimmer/shimmer.dart';
 import 'dart:convert';
 
 class ReleaseGroupPage extends StatefulWidget {
-  final String artistName;
+  final String id;
 
-  ReleaseGroupPage({required this.artistName});
+  ReleaseGroupPage({required this.id});
 
   @override
   _ReleaseGroupPageState createState() => _ReleaseGroupPageState();
@@ -21,24 +22,24 @@ class _ReleaseGroupPageState extends State<ReleaseGroupPage> {
   @override
   void initState() {
     super.initState();
-    releaseGroupData = fetchReleaseGroupData(widget.artistName);
+    releaseGroupData = fetchReleaseGroupData(widget.id);
   }
 
-  Future<Map<String, dynamic>> fetchReleaseGroupData(String artistName) async {
+  Future<Map<String, dynamic>> fetchReleaseGroupData(String id) async {
     final releaseGroupResponse =
-        await http.get(Uri.parse('https://api2.ibarakoi.online/album/all'));
-
+        await http.get(Uri.parse('https://api2.ibarakoi.online/album/id/$id'));
+    print('release url: ' + 'https://api2.ibarakoi.online/album/id/$id');
     if (releaseGroupResponse.statusCode != 200) {
       throw Exception('Failed to load release group');
     }
 
     final releaseGroup =
-        ReleaseGroup.fromJson(json.decode(releaseGroupResponse.body));
+        ReleaseGroup.fromJson(json.decode(releaseGroupResponse.body)['data']);
     final Map<String, String> imageCache = {};
 
     for (var track in releaseGroup.tracks) {
       if (!imageCache.containsKey(track.imageUrl)) {
-        final imageResponse = await fetchImage(track.imageUrl);
+        final imageResponse = track.imageUrl;
         imageCache[track.imageUrl] = imageResponse;
       }
     }
@@ -49,18 +50,18 @@ class _ReleaseGroupPageState extends State<ReleaseGroupPage> {
     };
   }
 
-  Future<String> fetchImage(String imageUrl) async {
-    final response = await http
-        .get(Uri.parse('https://api2.ibarakoi.online/image/$imageUrl'));
+  // Future<String> fetchImage(String imageUrl) async {
+  //   final response = await http
+  //       .get(Uri.parse('https://api2.ibarakoi.online/image/$imageUrl'));
 
-    if (response.statusCode == 200) {
-      final buffer = json.decode(response.body)['data']['buffer']['data'];
-      print('Womp womp');
-      return base64Encode(List<int>.from(buffer));
-    } else {
-      throw Exception('Failed to load image');
-    }
-  }
+  //   if (response.statusCode == 200) {
+  //     final buffer = json.decode(response.body)['data']['buffer']['data'];
+  //     print('womp womp');
+  //     return base64Encode(List<int>.from(buffer));
+  //   } else {
+  //     throw Exception('Failed to load image');
+  //   }
+  // }
 
   String formatDuration(double duration) {
     final minutes = duration ~/ 60;
@@ -74,7 +75,8 @@ class _ReleaseGroupPageState extends State<ReleaseGroupPage> {
     final isDarkMode = themeProvider.isDarkMode;
     final screenWidth = MediaQuery.of(context).size.width;
     return Scaffold(
-      body: FutureBuilder<Map<String, dynamic>>(
+        body: SafeArea(
+      child: FutureBuilder<Map<String, dynamic>>(
         future: releaseGroupData,
         builder: (context, snapshot) {
           if (snapshot.connectionState == ConnectionState.waiting) {
@@ -194,40 +196,37 @@ class _ReleaseGroupPageState extends State<ReleaseGroupPage> {
                       Container(
                         height: 400,
                         width: double.infinity,
-                        decoration: BoxDecoration(
-                          image: DecorationImage(
-                            image: MemoryImage(base64Decode(
-                                imageCache[releaseGroup.imageUrl])),
-                            fit: BoxFit.cover,
-                          ),
-                        ),
-                        //add the gradient effect here
-                        child: Container(
-                          decoration: BoxDecoration(
-                            gradient: LinearGradient(
-                              begin: Alignment.topCenter,
-                              end: Alignment.bottomCenter,
-                              colors: [
-                                //use the app theme color here
-                                // themeProvider.getThemeColorPrimary(),
-                                Colors.transparent,
-                                // themeProvider.getThemeColorPrimary(),
-                                themeProvider
-                                    .getThemeColorSurface()
-                                    .withOpacity(0.3),
-                                themeProvider
-                                    .getThemeColorSurface()
-                                    .withOpacity(0.5),
-                                themeProvider
-                                    .getThemeColorSurface()
-                                    .withOpacity(0.7),
-                                themeProvider
-                                    .getThemeColorSurface()
-                                    .withOpacity(0.9),
-                                themeProvider.getThemeColorSurface(),
-                              ],
+                        child: Stack(
+                          children: [
+                            ImageRenderer(
+                              imageUrl:
+                                  'https://api2.ibarakoi.online/image/${imageCache[releaseGroup.imageUrl]}',
+                              width: double.infinity,
+                              height: 400,
+                              // fit: BoxFit.cover,
                             ),
-                          ),
+                            Container(
+                              decoration: BoxDecoration(
+                                gradient: LinearGradient(
+                                  begin: Alignment.topCenter,
+                                  end: Alignment.bottomCenter,
+                                  colors: [
+                                    Colors.transparent,
+                                    themeProvider
+                                        .getThemeColorSurface()
+                                        .withOpacity(0.1),
+                                    themeProvider
+                                        .getThemeColorSurface()
+                                        .withOpacity(0.3),
+                                    themeProvider
+                                        .getThemeColorSurface()
+                                        .withOpacity(0.5),
+                                    themeProvider.getThemeColorSurface(),
+                                  ],
+                                ),
+                              ),
+                            ),
+                          ],
                         ),
                       ),
                       Positioned(
@@ -280,7 +279,7 @@ class _ReleaseGroupPageState extends State<ReleaseGroupPage> {
                             shape: BoxShape.circle,
                           ),
                           child: IconButton(
-                            icon: Icon(Icons.shuffle,
+                            icon: const Icon(Icons.shuffle,
                                 color: Colors.white, size: 30),
                             onPressed: () {
                               // Play the album
@@ -332,7 +331,7 @@ class _ReleaseGroupPageState extends State<ReleaseGroupPage> {
                         const SizedBox(height: 8),
                         ListView.builder(
                           shrinkWrap: true,
-                          physics: NeverScrollableScrollPhysics(),
+                          physics: const NeverScrollableScrollPhysics(),
                           itemCount: releaseGroup.tracks.length,
                           itemBuilder: (context, index) {
                             final track = releaseGroup.tracks[index];
@@ -352,11 +351,22 @@ class _ReleaseGroupPageState extends State<ReleaseGroupPage> {
                                   //   textAlign: TextAlign.end,
                                   // ),
                                   const SizedBox(width: 15),
-                                  Image.memory(
-                                    base64Decode(imageCache[track.imageUrl]),
-                                    width: 50,
-                                    height: 50,
-                                    fit: BoxFit.cover,
+
+                                  ClipRRect(
+                                    borderRadius: BorderRadius.circular(8.0),
+                                    child: ImageRenderer(
+                                      imageUrl:
+                                          'https://api2.ibarakoi.online/image/${imageCache[track.imageUrl]}',
+                                      width: 60,
+                                      height: 60,
+                                    ),
+                                    // Image(
+                                    //   image: NetworkImage(
+                                    //       'https://api2.ibarakoi.online/image/${imageCache[track.imageUrl]}'),
+                                    //   height: 60,
+                                    //   width: 60,
+                                    //   fit: BoxFit.cover,
+                                    // ),
                                   ),
                                 ],
                               ),
@@ -365,7 +375,7 @@ class _ReleaseGroupPageState extends State<ReleaseGroupPage> {
                                 style: Theme.of(context).textTheme.bodyLarge,
                               ),
                               subtitle: Text(
-                                '${formatDuration(track.duration)} • ${track.artistName}',
+                                '${formatDuration(track.duration)} •   ${track.artistNames.join(', ')}',
                                 style: Theme.of(context)
                                     .textTheme
                                     .bodyMedium
@@ -399,6 +409,6 @@ class _ReleaseGroupPageState extends State<ReleaseGroupPage> {
           }
         },
       ),
-    );
+    ));
   }
 }

@@ -81,11 +81,13 @@ class PageManager {
     //       extras: {'url': song['url']},
     //     ))
     // .toList();
-    _audioHandler.addQueueItem(mediaItem);
+    await _audioHandler.addQueueItem(mediaItem);
     // print(mediaItem);
     print("Load track: Current queue value" +
         _audioHandler.queue.value.toString());
     print('track loaded');
+    // auto play the track after finish loading
+    play();
   }
 
   void _listenToChangesInPlaylist() {
