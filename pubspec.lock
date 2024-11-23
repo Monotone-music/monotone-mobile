@@ -57,6 +57,14 @@ packages:
       url: "https://pub.dev"
     source: hosted
     version: "2.0.3"
+  auto_scroll_text:
+    dependency: "direct main"
+    description:
+      name: auto_scroll_text
+      sha256: "8de28056f844f24f13771606417ffa109397f75a66440fe60ec2d38c133e16dc"
+      url: "https://pub.dev"
+    source: hosted
+    version: "0.0.7"
   bloc:
     dependency: transitive
     description:

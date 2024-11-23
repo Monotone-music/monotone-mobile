@@ -1,10 +1,11 @@
 import 'package:flutter/material.dart';
-import 'package:flutter_svg/flutter_svg.dart';
-import 'package:monotone_flutter/components/models/track_item.dart';
-
 import 'package:monotone_flutter/components/tab_components/home_music_sect.dart';
+import 'package:monotone_flutter/components/widgets/skeletons/skeleton_home.dart';
 import 'package:monotone_flutter/themes/theme_provider.dart';
 import 'package:provider/provider.dart';
+import 'package:http/http.dart' as http;
+import 'dart:convert';
+import 'package:skeletonizer/skeletonizer.dart';
 
 class HomePage extends StatefulWidget {
   const HomePage({super.key});
@@ -15,45 +16,45 @@ class HomePage extends StatefulWidget {
 
 class _HomePageState extends State<HomePage> {
   int _selectedIndex = 0;
+  late Future<List<Map<String, String>>> releaseGroups;
 
-  static List<Map<String, String>> trackItems = [
-    {
-      'id': '001',
-      'album': 'Ibarakoi Mix',
-      'title': 'Unga',
-      'artist': 'Ibarakoi',
-      // 'duration': '300000', // Duration in milliseconds as a string
-      'url': 'https://api.ibarakoi.online/tracks/get',
-      'artUri':
-          'https://img.freepik.com/premium-photo/macro-shot-captures-monke-ai-generated_954305-73.jpg'
-    },
-    {
-      'id': '002',
-      'album': 'Album 2',
-      'title': 'Title 2',
-      'artist': 'Artist 2',
-      // 'duration': '240000', // Duration in milliseconds as a string
-      'url': 'https://www.soundhelix.com/examples/mp3/SoundHelix-Song-1.mp3',
-      'artUri':
-          'https://img.freepik.com/premium-photo/macro-shot-captures-monke-ai-generated_954305-73.jpg',
-    },
-  ];
+  @override
+  void initState() {
+    super.initState();
+    releaseGroups = fetchReleaseGroups();
+    //print release groups first image
 
-  static final List<Widget> _widgetOptions = <Widget>[
-    PlaylistList(trackItems: trackItems),
-    Center(
-      child: Text(
-        'Podcasts',
-        style: TextStyle(fontSize: 24),
-      ),
-    ),
-    Center(
-      child: Text(
-        'Audiobooks',
-        style: TextStyle(fontSize: 24),
-      ),
-    ),
-  ];
+    // releaseGroups.then((groups) {
+    //   if (groups.isNotEmpty) {
+    //     print('First release group image URL: ${groups[0]['imageUrl']}');
+    //   } else {
+    //     print('No release groups available');
+    //   }
+    // });
+  }
+
+  Future<List<Map<String, String>>> fetchReleaseGroups() async {
+    final response =
+        await http.get(Uri.parse('https://api2.ibarakoi.online/album/'));
+
+    if (response.statusCode != 200) {
+      throw Exception('Failed to load release groups');
+    }
+
+    final data = json.decode(response.body)['data']['releaseGroup'];
+    return List<Map<String, String>>.from(data.map((item) => {
+          'id': item['_id'].toString(),
+          'title': item['title'].toString(),
+          'releaseType': item['releaseType'].toString(),
+          'releaseYear':
+              item['releaseEvent']['date'].substring(0, 4).toString(),
+          'artistName': item['releaseType'] == 'compilation'
+              ? 'Various Artists'
+              : item['albumArtist'].toString(),
+          'imageUrl':
+              item['image'] != null ? item['image']['filename'].toString() : '',
+        }));
+  }
 
   void _onButtonPressed(int index) {
     setState(() {
@@ -65,72 +66,46 @@ class _HomePageState extends State<HomePage> {
   Widget build(BuildContext context) {
     final themeProvider = Provider.of<ThemeProvider>(context);
     final isDarkMode = themeProvider.isDarkMode;
-    return Scaffold(
-      // appBar: AppBar(
-      //   title: const Text('Home Page'),
-      // ),
-      body: Container(
-        margin: const EdgeInsets.only(top: 36.0, left: 8.0, right: 8.0),
-        child: Column(
-          children: [
-            Row(
-              mainAxisAlignment: MainAxisAlignment.spaceBetween,
-              children: [
-                Row(
-                  mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-                  children: <Widget>[
-                    categoryButton("Music", 0),
-                    categoryButton("Podcasts", 1),
-                    categoryButton("Audiobooks", 2),
-                  ],
-                ),
-                Container(
-                  child: SvgPicture.asset(
-                    'assets/image/home_filter.svg',
-                    semanticsLabel: 'My SVG Image',
+    final screenWidth = MediaQuery.of(context).size.width;
 
-                    // fit: BoxFit.scaleDown,
-                    color: isDarkMode
-                        ? const Color(0xFF898989)
-                        : const Color(0xFF6E6E6E),
-
-                    width: 50, //set your width and height
-                    height: 50,
+    return DefaultTabController(
+      length: 3,
+      child: Scaffold(
+        appBar: AppBar(
+          title: TabBar(
+            onTap: _onButtonPressed,
+            tabs: const [
+              Tab(text: 'Music'),
+              Tab(text: 'Podcasts'),
+              Tab(text: 'Audiobooks'),
+            ],
+          ),
+        ),
+        body: Container(
+          child: _selectedIndex == 0
+              ? FutureBuilder<List<Map<String, String>>>(
+                  future: releaseGroups,
+                  builder: (context, snapshot) {
+                    if (snapshot.connectionState == ConnectionState.waiting) {
+                      // if (true) {
+                      return SkeletonHome(
+                          screenWidth: screenWidth, isDarkMode: isDarkMode);
+                    } else if (snapshot.hasError) {
+                      return Center(child: Text('Error: ${snapshot.error}'));
+                    } else if (!snapshot.hasData || snapshot.data!.isEmpty) {
+                      return Center(child: Text('No data available'));
+                    } else {
+                      return PlaylistList(trackItems: snapshot.data!);
+                    }
+                  },
+                )
+              : Center(
+                  child: Text(
+                    _selectedIndex == 1 ? 'Podcasts' : 'Audiobooks',
+                    style: TextStyle(fontSize: 24),
                   ),
                 ),
-              ],
-            ),
-            Expanded(
-              child: Center(
-                child: _widgetOptions.elementAt(_selectedIndex),
-              ),
-            ),
-          ],
         ),
-      ),
-    );
-  }
-
-  Widget categoryButton(String title, int index) {
-    final themeProvider = Provider.of<ThemeProvider>(context);
-    final isDarkMode = themeProvider.isDarkMode;
-
-    return Container(
-      padding: const EdgeInsets.only(left: 8, right: 8),
-      margin: const EdgeInsets.only(left: 8),
-      decoration: BoxDecoration(
-        color: isDarkMode ? const Color(0xFF202020) : const Color(0xFFE4E4E4),
-
-        borderRadius: BorderRadius.circular(12),
-        // border: Border.all(
-        //   color: const Color.fromARGB(255, 0, 0, 0),
-        //   width: 1,
-        // ),
-      ),
-      child: TextButton(
-        style: TextButton.styleFrom(),
-        onPressed: () => _onButtonPressed(index),
-        child: Text(title, style: const TextStyle(fontWeight: FontWeight.w400)),
       ),
     );
   }
