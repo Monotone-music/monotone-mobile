@@ -91,6 +91,7 @@ class _ArtistDetailLoaderState extends State<ArtistDetailLoader> {
           final featuredIds = artist.featuredIn
               .map((featuredRelease) => featuredRelease.id)
               .toList();
+              print(artist.featuredIn);
           return FutureBuilder<Map<String, String>>(
             future: fetchAlbumAndFeaturedImages(albumIds, featuredIds),
             builder: (context, imageSnapshot) {

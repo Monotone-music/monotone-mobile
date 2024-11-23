@@ -49,7 +49,6 @@ class FeaturedRelease {
   final ReleaseEvent releaseEvent;
   final String id;
   final String mbid;
-  final List<String> release;
   final String releaseType;
   final String title;
   final String image;
@@ -59,7 +58,6 @@ class FeaturedRelease {
     required this.releaseEvent,
     required this.id,
     required this.mbid,
-    required this.release,
     required this.releaseType,
     required this.title,
     required this.image,
@@ -68,18 +66,14 @@ class FeaturedRelease {
   // Factory constructor to create a FeaturedRelease instance from JSON
   factory FeaturedRelease.fromJson(Map<String, dynamic> json) {
     var releaseEventJson = json['releaseEvent'] as Map<String, dynamic>? ?? {};
-    var releaseList = json['release'] as List? ?? [];
-    List<String> release =
-        releaseList.where((i) => i != null).map((i) => i.toString()).toList();
 
     return FeaturedRelease(
       releaseEvent: ReleaseEvent.fromJson(releaseEventJson),
       id: json['_id'],
       mbid: json['mbid'],
-      release: release,
-      releaseType: json['releaseType'],
-      title: json['title'],
-      image: json['image'], 
+      releaseType: json['releaseType'] ?? '',
+      title: json['title'] ?? '',
+      image: json['image'] ?? '', // Handle null image field
     );
   }
 }
@@ -89,7 +83,6 @@ class ReleaseGroup {
   final ReleaseEvent releaseEvent;
   final String id;
   final String mbid;
-  final List<String> release;
   final String releaseType;
   final String title;
   final String image;
@@ -99,7 +92,6 @@ class ReleaseGroup {
     required this.releaseEvent,
     required this.id,
     required this.mbid,
-    required this.release,
     required this.releaseType,
     required this.title,
     required this.image,
@@ -108,18 +100,14 @@ class ReleaseGroup {
   // Factory constructor to create a ReleaseGroup instance from JSON
   factory ReleaseGroup.fromJson(Map<String, dynamic> json) {
     var releaseEventJson = json['releaseEvent'] as Map<String, dynamic>? ?? {};
-    var releaseList = json['release'] as List? ?? [];
-    List<String> release =
-        releaseList.where((i) => i != null).map((i) => i.toString()).toList();
 
     return ReleaseGroup(
       releaseEvent: ReleaseEvent.fromJson(releaseEventJson),
       id: json['_id'],
       mbid: json['mbid'],
-      release: release,
-      releaseType: json['releaseType'],
-      title: json['title'],
-      image: json['image'], // Added imageId
+      releaseType: json['releaseType'] ?? '',
+      title: json['title'] ?? '',
+      image: json['image']?? '', // Handle null image field
     );
   }
 }

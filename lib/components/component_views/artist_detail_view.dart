@@ -311,6 +311,7 @@ class ArtistDetailView extends StatelessWidget {
           if (albums.isEmpty)
             Container(
               padding: EdgeInsets.all(16.0),
+              height: height *0.22,
               child: Center(
                 child: Text(
                   'This artist has not released any albums yet!',
@@ -615,8 +616,7 @@ class ArtistDetailView extends StatelessWidget {
     final changePrimary = themeProvider.getThemeColorPrimary();
 
     List<FeaturedRelease> appearsIn = artist.featuredIn;
-
-    return Container(
+    return Container( 
       padding: EdgeInsets.all(16.0),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
@@ -635,9 +635,10 @@ class ArtistDetailView extends StatelessWidget {
           if (appearsIn.isEmpty)
             Container(
               padding: EdgeInsets.all(16.0),
+              height: height *0.28,
               child: Center(
                 child: Text(
-                  'This artist does not appear in any releases yet!',
+                  'This artist has not participated in any product yet!',
                   textAlign: TextAlign.center,
                   style: TextStyle(
                     fontSize: 18,
