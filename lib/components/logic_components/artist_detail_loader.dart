@@ -40,31 +40,24 @@ class _ArtistDetailLoaderState extends State<ArtistDetailLoader> {
     return artist;
   }
 
-  Future<Map<String, String>> fetchAlbumImageFilenames(
-      List<String> albumIds) async {
-    final response =
-        await http.get(Uri.parse('https://api2.ibarakoi.online/album'));
+  Future<Map<String, String>> fetchImageFilenames(List<String> ids) async {
+    final response = await http.get(Uri.parse('https://api2.ibarakoi.online/album'));
     if (response.statusCode != 200) {
       throw Exception('Failed to load album data');
     }
 
     final Map<String, dynamic> jsonResponse = json.decode(response.body);
-    if (!jsonResponse.containsKey('data') ||
-        !jsonResponse['data'].containsKey('releaseGroup')) {
+    if (!jsonResponse.containsKey('data') || !jsonResponse['data'].containsKey('releaseGroup')) {
       throw Exception('Album data not found');
     }
 
-    final List<dynamic> releaseGroupsJson =
-        jsonResponse['data']['releaseGroup'];
+    final List<dynamic> releaseGroupsJson = jsonResponse['data']['releaseGroup'];
     Map<String, String> imageFilenames = {};
 
-    for (final albumId in albumIds) {
+    for (final id in ids) {
       for (final releaseGroupJson in releaseGroupsJson) {
-        if (releaseGroupJson['_id'] == albumId) {
-          imageFilenames[albumId] =
-              'https://api2.ibarakoi.online/image/${releaseGroupJson['image']['filename']}';
-          // print(imageFilenames[albumId]);
-
+        if (releaseGroupJson['_id'] == id) {
+          imageFilenames[id] = 'https://api2.ibarakoi.online/image/${releaseGroupJson['image']['filename']}';
           break;
         }
       }
@@ -72,6 +65,15 @@ class _ArtistDetailLoaderState extends State<ArtistDetailLoader> {
     return imageFilenames;
   }
 
+  ///
+   Future<Map<String, String>> fetchAlbumAndFeaturedImages(List<String> albumIds, List<String> featuredIds) async {
+    final albumImages = await fetchImageFilenames(albumIds);
+    final featuredImages = await fetchImageFilenames(featuredIds);
+
+    return {...albumImages, ...featuredImages};
+  }
+
+  ///
   @override
   Widget build(BuildContext context) {
     return FutureBuilder<Artist>(
@@ -86,8 +88,11 @@ class _ArtistDetailLoaderState extends State<ArtistDetailLoader> {
           final albumIds = artist.releaseGroup
               .map((releaseGroup) => releaseGroup.id)
               .toList();
+          final featuredIds = artist.featuredIn
+              .map((featuredRelease) => featuredRelease.id)
+              .toList();
           return FutureBuilder<Map<String, String>>(
-            future: fetchAlbumImageFilenames(albumIds),
+            future: fetchAlbumAndFeaturedImages(albumIds, featuredIds),
             builder: (context, imageSnapshot) {
               if (imageSnapshot.connectionState == ConnectionState.waiting) {
                 return Center(child: CircularProgressIndicator());

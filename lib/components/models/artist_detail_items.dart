@@ -79,7 +79,7 @@ class FeaturedRelease {
       release: release,
       releaseType: json['releaseType'],
       title: json['title'],
-      image: json['image']['filename'], 
+      image: json['image'], 
     );
   }
 }

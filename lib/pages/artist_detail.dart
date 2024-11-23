@@ -34,7 +34,7 @@ class _ArtistDetailPageState extends State<ArtistDetailPage> {
             SizedBox(
               width: MediaQuery.of(context).size.width *1,
               height: MediaQuery.of(context).size.height * 1 ,
-              child: ArtistDetailLoader(artistId: '674002d16357c3ed99dede8a'),
+              child: ArtistDetailLoader(artistId: '6740a0976357c3ed99dedf8e'),
             ),
             ///
           ],
