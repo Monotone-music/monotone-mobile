@@ -1,21 +1,26 @@
 import 'package:flutter/foundation.dart';
+import 'package:monotone_flutter/components/models/release_group_model.dart';
 import 'notifiers/play_button_notifier.dart';
 import 'notifiers/progress_notifier.dart';
 import 'notifiers/repeat_button_notifier.dart';
 import 'package:audio_service/audio_service.dart';
 import 'services/playlist_repository.dart';
 import 'services/service_locator.dart';
+import 'package:http/http.dart' as http;
 
 class PageManager {
   // Listeners: Updates going to the UI
   final currentSongTitleNotifier = ValueNotifier<String>('');
-  final playlistNotifier = ValueNotifier<List<String>>([]);
+  final playlistNotifier = ValueNotifier<List<MediaItem>>([]);
   final progressNotifier = ProgressNotifier();
   final repeatButtonNotifier = RepeatButtonNotifier();
   final isFirstSongNotifier = ValueNotifier<bool>(true);
   final playButtonNotifier = PlayButtonNotifier();
   final isLastSongNotifier = ValueNotifier<bool>(true);
   final isShuffleModeEnabledNotifier = ValueNotifier<bool>(false);
+
+  // Extra
+  MediaItem? get currentMediaItem => _audioHandler.mediaItem.value;
 
   final _audioHandler = getIt<AudioHandler>();
 
@@ -31,63 +36,135 @@ class PageManager {
     _listenToChangesInSong();
   }
 
-  Future<void> _initLoadPlaylist() async {
-    final songRepository = getIt<PlaylistRepository>();
-    final playlist = await songRepository.fetchInitialPlaylist();
-    final mediaItems = playlist
-        .map((song) => MediaItem(
-              id: song['id'] ?? '',
-              album: song['album'] ?? '',
-              title: song['title'] ?? '',
-              extras: {'url': song['url']},
-            ))
-        .toList();
-    _audioHandler.addQueueItems(mediaItems);
-    print(playlist);
+  Future<void> fetchAndPrintApiResponse(String url) async {
+    try {
+      final response = await http.get(Uri.parse(url));
+      if (response.statusCode == 206) {
+        print('API Response: ${response.headers}');
+      } else {
+        print(
+            'Failed to load data from API. Status code: ${response.statusCode}');
+      }
+    } catch (e) {
+      print('Error fetching data from API: $e');
+    }
   }
 
-  void FakeLoadPlaylist() async {
-    final songRepository = getIt<PlaylistRepository>();
-    final playlist = await songRepository.fetchInitialPlaylist();
-    final mediaItems = playlist
-        .map((song) => MediaItem(
-              id: song['id'] ?? '',
-              album: song['album'] ?? '',
-              title: song['title'] ?? '',
-              extras: {'url': song['url']},
-            ))
-        .toList();
-    _audioHandler.addQueueItems(mediaItems);
-    print(playlist);
+  Future<void> addQueueItemIfNotExists(MediaItem mediaItem) async {
+    if (!_isDuplicate(mediaItem)) {
+      await _audioHandler.addQueueItem(mediaItem);
+    } else {
+      print('Item already exists in the queue: ${mediaItem.title}');
+    }
+  }
+
+  bool _isDuplicate(MediaItem mediaItem) {
+    return _audioHandler.queue.value.any((item) => item.id == mediaItem.id);
+  }
+
+  void clearAndLoadPlaylistAndPlay(
+      List<Track> playlist, String albumName) async {
+    await _audioHandler.stop();
+    await _audioHandler.seek(Duration.zero);
+    await _audioHandler.skipToQueueItem(0);
+    removeAll();
+    loadPlaylist(playlist, albumName);
+    play();
+  }
+
+  void clearLoadPlaylistAndSkipToIndex(
+      List<Track> playlist, String albumName, int index) async {
+    await _audioHandler.stop();
+    await _audioHandler.seek(Duration.zero);
+    removeAll();
+    // loadPlaylist(playlist, albumName);
+    // stop();
+
+    // Add the selected track first
+    final selectedTrack = playlist[index];
+    final selectedMediaItem = MediaItem(
+      id: selectedTrack.id,
+      album: albumName,
+      title: selectedTrack.title,
+      artist: selectedTrack.artistNames.join(', '),
+      artUri: Uri.parse(
+          'https://api2.ibarakoi.online/image/${selectedTrack.imageUrl}'),
+      extras: {
+        'url': 'https://api2.ibarakoi.online/tracks/stream/${selectedTrack.id}'
+      },
+    );
+    await _audioHandler.addQueueItem(selectedMediaItem);
+
+    // Add the rest of the playlist
+    final remainingTracks =
+        playlist.where((track) => track.id != selectedTrack.id).toList();
+    loadPlaylist(remainingTracks, albumName);
+
+    await _audioHandler.skipToQueueItem(0);
+    print('Skipped to index: $index');
+    play();
+  }
+
+  void loadPlaylist(List<Track> playlist, String albumName) async {
+    print('playlist loading');
+    // final songRepository = getIt<PlaylistRepository>();
+    final mediaItems = playlist.map((track) {
+      return MediaItem(
+        id: track.id,
+        album: albumName,
+        title: track.title,
+        artist: track.artistNames.join(', '),
+        artUri:
+            Uri.parse('https://api2.ibarakoi.online/image/${track.imageUrl}'),
+        extras: {
+          'url': 'https://api2.ibarakoi.online/tracks/mobile/stream/${track.id}'
+        },
+      );
+    }).toList();
+    await _audioHandler.addQueueItems(mediaItems);
+    print('playlist loaded: ${mediaItems}');
+    // auto play the track after finish loading
+  }
+
+  void sequentialLoadTracks(List<Track> tracks, String albumName) async {
+    for (var track in tracks) {
+      loadTrack(track, albumName);
+    }
+  }
+
+  void clearAndLoadTrack(Track track, String albumName) async {
+    removeAll();
+    loadTrack(track, albumName);
+    play();
   }
 
   void loadTrack(
       //add Map<String, String> input argument
-      Map<String, String> track) async {
-    final songRepository = getIt<PlaylistRepository>();
-    print('track loading');
-    final fetchedPlaylist = await songRepository.fetchClickPlaylist(track);
-    final mediaItem = MediaItem(
-      id: fetchedPlaylist['id'] ?? '',
-      album: fetchedPlaylist['album'] ?? '',
-      title: fetchedPlaylist['title'] ?? '',
-      extras: {'url': fetchedPlaylist['url']},
-    );
+      Track track,
+      String albumName) async {
+    // final songRepository = getIt<PlaylistRepository>();
 
-    // ((song) => MediaItem(
-    //       id: song['id'] ?? '',
-    //       album: song['album'] ?? '',
-    //       title: song['title'] ?? '',
-    //       extras: {'url': song['url']},
-    //     ))
-    // .toList();
+    print('track loading');
+
+    final fetchedTrack = track;
+    final mediaItem = MediaItem(
+      id: fetchedTrack.id,
+      album: albumName,
+      title: fetchedTrack.title,
+      artist: fetchedTrack.artistNames.join(', '),
+      artUri: Uri.parse(
+          'https://api2.ibarakoi.online/image/${fetchedTrack.imageUrl}'),
+      extras: {
+        'url':
+            'https://api2.ibarakoi.online/tracks/mobile/stream/${fetchedTrack.id}'
+      },
+    );
+    // fetchAndPrintApiResponse(mediaItem.extras!['url'] as String);
+
     await _audioHandler.addQueueItem(mediaItem);
     // print(mediaItem);
-    print("Load track: Current queue value" +
-        _audioHandler.queue.value.toString());
-    print('track loaded');
+    print('track loaded: ${mediaItem}');
     // auto play the track after finish loading
-    play();
   }
 
   void _listenToChangesInPlaylist() {
@@ -96,8 +173,7 @@ class PageManager {
         playlistNotifier.value = [];
         currentSongTitleNotifier.value = '';
       } else {
-        final newList = playlist.map((item) => item.title).toList();
-        playlistNotifier.value = newList;
+        playlistNotifier.value = playlist;
       }
       _updateSkipButtons();
     });
@@ -226,13 +302,11 @@ class PageManager {
   }
 
   void removeAll() {
-    while (_audioHandler.queue.value.isNotEmpty) {
-      // remove();
-      print('current queue length ' +
-          _audioHandler.queue.value.length.toString());
-      _audioHandler.removeQueueItemAt(0);
-      print('removing index');
+    final queueLength = _audioHandler.queue.value.length;
+    for (int i = queueLength - 1; i >= 0; i--) {
+      _audioHandler.removeQueueItemAt(i);
     }
+    print('All items removed from the queue');
   }
 
   void dispose() {
