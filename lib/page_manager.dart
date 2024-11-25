@@ -117,7 +117,7 @@ class PageManager {
         artUri:
             Uri.parse('https://api2.ibarakoi.online/image/${track.imageUrl}'),
         extras: {
-          'url': 'https://api2.ibarakoi.online/tracks/mobile/stream/${track.id}'
+          'url': 'https://api2.ibarakoi.online/tracks/stream/${track.id}'
         },
       );
     }).toList();
@@ -155,8 +155,7 @@ class PageManager {
       artUri: Uri.parse(
           'https://api2.ibarakoi.online/image/${fetchedTrack.imageUrl}'),
       extras: {
-        'url':
-            'https://api2.ibarakoi.online/tracks/mobile/stream/${fetchedTrack.id}'
+        'url': 'https://api2.ibarakoi.online/tracks/stream/${fetchedTrack.id}'
       },
     );
     // fetchAndPrintApiResponse(mediaItem.extras!['url'] as String);

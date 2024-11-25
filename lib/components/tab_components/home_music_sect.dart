@@ -1,6 +1,7 @@
 import 'package:auto_scroll_text/auto_scroll_text.dart';
 import 'package:flutter/material.dart';
 import 'package:monotone_flutter/components/tab_components/home_playlist.dart';
+import 'package:monotone_flutter/pages/login.dart';
 import 'package:monotone_flutter/services/audio_handler.dart';
 import 'package:monotone_flutter/services/media_components.dart';
 import 'package:monotone_flutter/services/service_locator.dart';
@@ -18,7 +19,7 @@ class PlaylistList extends StatelessWidget {
         gridPlaylistMini(),
         SizedBox(height: 10), // Add some spacing between the widgets
         M4UPlaylist(),
-        // ChunkAudioControl(),
+        LoginNavigator(),
       ],
     );
   }

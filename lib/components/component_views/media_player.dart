@@ -99,7 +99,7 @@ class MediaPlayer extends StatelessWidget {
                   ),
                   body: SafeArea(
                     child: Column(
-                      crossAxisAlignment: CrossAxisAlignment.stretch,
+                      crossAxisAlignment: CrossAxisAlignment.center,
                       children: [
                         Expanded(
                             child: PageView.builder(
@@ -190,7 +190,7 @@ class MediaPlayer extends StatelessWidget {
       padding: const EdgeInsets.all(1.0),
       child: Column(
         mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-        crossAxisAlignment: CrossAxisAlignment.stretch,
+        crossAxisAlignment: CrossAxisAlignment.center,
         children: [
           // Album Cover
           SizedBox(
