@@ -1,12 +1,14 @@
 import 'package:flutter/material.dart';
-
 import 'package:monotone_flutter/components/logic_components/artist_detail_loader.dart';
-
+import 'package:monotone_flutter/components/component_views/search_bar_view.dart';
 
 class ArtistDetailPage extends StatefulWidget {
-  ArtistDetailPage({Key? key, this.focusOnTextField}) : super(key: key);
+  final String artistId;
+  final bool? focusOnTextField;
 
-  bool? focusOnTextField;
+  ArtistDetailPage({Key? key, required this.artistId, this.focusOnTextField})
+      : super(key: key);
+
   @override
   State<ArtistDetailPage> createState() => _ArtistDetailPageState();
 }
@@ -15,7 +17,7 @@ class _ArtistDetailPageState extends State<ArtistDetailPage> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(title: Text("Artist Detail Page")),
+      appBar: AppBar(toolbarHeight: 40,),
       body: ListView(
         padding: const EdgeInsets.all(0),
         children: [
@@ -24,25 +26,20 @@ class _ArtistDetailPageState extends State<ArtistDetailPage> {
       ),
     );
   }
-///
-   ///
+
   Widget _buildPanel() {
     return Column(
       children: [
         Row(
           children: [
             SizedBox(
-              width: MediaQuery.of(context).size.width *1,
-              height: MediaQuery.of(context).size.height * 1 ,
-              child: ArtistDetailLoader(artistId: '6740a1246357c3ed99dedfac'),
+              width: MediaQuery.of(context).size.width,
+              height: MediaQuery.of(context).size.height,
+              child: ArtistDetailLoader(artistId: widget.artistId),
             ),
-            ///
           ],
         ),
-        ///
       ],
     );
-    ///
   }
-  ///
 }

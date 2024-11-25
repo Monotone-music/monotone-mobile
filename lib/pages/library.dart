@@ -20,7 +20,7 @@ class _LibraryPageState extends State<LibraryPage> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        // title: const SearchBarView(placeholderText: 'Search Library'),
+        // title:  SearchBarView(hintText: 'Search Library'),
         // actions: [
         //   IconButton(
         //     icon: const Icon(Icons.brightness_6),
@@ -30,6 +30,10 @@ class _LibraryPageState extends State<LibraryPage> {
         //   ),
         // ],
         actions: [
+          Container(
+            width: MediaQuery.of(context).size.width *0.8,
+            child: SearchBarView(hintText: 'Search Library'),
+          ),
           Container(
             margin: const EdgeInsets.only(
                 right: 16.0, top: 8.0), // Adjust the margin as needed

@@ -20,14 +20,12 @@ class _SearchPageState extends State<SearchPage> {
     final themeProvider = Provider.of<ThemeProvider>(context);
     final isDarkMode = themeProvider.isDarkMode;
     return Scaffold(
-      appBar: PreferredSize(
-        preferredSize: Size.fromHeight(100),
-        child: AppBar(
+      appBar:  AppBar(
           // backgroundColor: Colors.black,
           // title: Container(
           //   width: MediaQuery.of(context).size.width * 0.8,
           //   height: MediaQuery.of(context).size.height *0.15,
-          //   child: 
+          //   child:
           //   SearchBarView(
           //       placeholderText: 'What do you want to play?'),
           // ),
@@ -35,31 +33,14 @@ class _SearchPageState extends State<SearchPage> {
           // Replacing with SearchBarView widget
           actions: [
             Container(
-                margin: const EdgeInsets.only(
-                    right: 16.0, top: 10.0), // Adjust the margin as needed
-                child: Row(
-                  mainAxisAlignment: MainAxisAlignment.start,
-                  children: [
-                    // const SearchBarView(
-                    //   placeholderText: 'What do you want to play?',
-                    // ),
-                    IconButton(
-                      icon: ImageRenderer(
-                        imageUrl: 'assets/image/camera_icon.svg',
-                        height: MediaQuery.of(context).size.height *
-                            0.05, // Adjust the height as needed
-                        width: MediaQuery.of(context).size.width *
-                            0.05, // Adjust the width as needed
-                      ),
-                      onPressed: () {
-                        print('Search Camera button press');
-                      },
-                    ),
-                  ],
+                padding: EdgeInsets.only(right: 16),
+                width: MediaQuery.of(context).size.width * 0.9,
+                height: MediaQuery.of(context).size.height * 0.2,
+                child: SearchBarView(
+                  hintText: 'What do you want to play?',
                 )),
           ],
         ),
-      ),
       body: Padding(
         padding: const EdgeInsets.all(16.0),
         child: Column(

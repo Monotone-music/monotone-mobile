@@ -13,25 +13,52 @@ class _DiscoverPageState extends State<DiscoverPage> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(
-        title: Text('Discover Page'),
-      ),
-      body: ListView(
-        padding: const EdgeInsets.all(16.0),
-        children: [
-          // const Text('Hello World'),
-          // const SizedBox(height: 16),
-          _searchPanel(),
-          _buildPanel(),
-        ],
-      ),
-    );
+        appBar: AppBar(
+          toolbarHeight: 20,
+        ),
+        body: Padding(
+          padding: EdgeInsets.only(right: 16, left: 16, bottom: 30),
+          child: Stack(
+            children: [
+              Column(
+                children: [
+                  Container(
+                    height: MediaQuery.of(context).size.height *
+                        0.43, // Set a fixed height for the stack
+                    child: Stack(
+                      children: [
+                        Positioned(
+                          top: 100,
+                          left: 0,
+                          right: 0,
+                          child: _buildPanel(),
+                        ),
+                        Positioned(
+                          top: 0,
+                          left: 0,
+                          right: 0,
+                          child: _searchPanel(),
+                        ),
+                      ],
+                    ),
+                  ),
+
+                  ///
+                ],
+              ),
+
+              ///
+            ],
+          ),
+        ));
+
+    ///
   }
 
   Widget _searchPanel() {
-    return const SizedBox(
-      child: const SearchBarView(placeholderText: 'Discover'),
-      height: 200,
+    return Container(
+      child: SearchBarView(hintText: 'Discover'),
+      height: MediaQuery.of(context).size.height * 0.5,
     );
   }
 
@@ -45,6 +72,7 @@ class _DiscoverPageState extends State<DiscoverPage> {
                 context,
                 MaterialPageRoute(
                   builder: (context) => ArtistDetailPage(
+                    artistId: '',
                     focusOnTextField: false,
                   ),
                 ),
