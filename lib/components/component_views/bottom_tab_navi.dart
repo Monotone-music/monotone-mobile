@@ -14,11 +14,8 @@ import 'package:monotone_flutter/themes/theme_provider.dart';
 // import 'package:monotone_flutter/components/component_views/playlist_card.dart';
 
 class BottomTabNavigator extends StatefulWidget {
-  // final audioPlayerHandler;
-
   const BottomTabNavigator({
     super.key,
-    // required this.audioPlayerHandler
   });
 
   @override
@@ -157,8 +154,8 @@ class _BottomTabNavigatorState extends State<BottomTabNavigator> {
           ),
           if (_isMediaPlayerVisible)
             MediaToolbar(
-              onToggleMediaPlayer: _toggleMediaPlayer,
-            ),
+                // onToggleMediaPlayer: _toggleMediaPlayer,
+                ),
         ],
       ),
       // bottomNavigationBar:

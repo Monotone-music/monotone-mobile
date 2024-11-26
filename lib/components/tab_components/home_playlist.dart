@@ -23,7 +23,7 @@ class _PlaylistMiniState extends State<PlaylistMini> {
   void initState() {
     super.initState();
     _id = widget.trackItem['id'] ?? '';
-    imageUrl = widget.trackItem['imageUrl'] ?? '';
+    imageUrl = widget.trackItem['imageUrl'] ?? 'assets/image/not_available.png';
   }
 
   @override

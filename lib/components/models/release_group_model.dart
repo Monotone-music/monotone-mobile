@@ -1,4 +1,5 @@
 class Track {
+  final String id;
   final int position;
   final String title;
   final double duration;
@@ -6,6 +7,7 @@ class Track {
   final String imageUrl;
 
   Track({
+    required this.id,
     required this.position,
     required this.title,
     required this.duration,
@@ -22,11 +24,12 @@ class Track {
     }
 
     return Track(
-      position: json['position']['no'],
-      title: json['title'],
-      duration: (json['duration'] as num).toDouble(),
+      id: json['_id'] ?? 'unknown', // Ensure the id is correctly parsed
+      position: json['position']['no'] ?? 0,
+      title: json['title'] ?? 'unknown',
+      duration: (json['duration'] as num?)?.toDouble() ?? 0.0,
       artistNames: artistNames,
-      imageUrl: json['image']['filename'],
+      imageUrl: json['image']['filename'] ?? '',
     );
   }
 }

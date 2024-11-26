@@ -2,6 +2,7 @@ import 'package:audio_service/audio_service.dart';
 import 'package:flutter/material.dart';
 import 'package:just_audio/just_audio.dart';
 import 'package:get_it/get_it.dart';
+import 'package:http/http.dart' as http;
 
 Future<AudioHandler> initAudioService() async {
   return await AudioService.init(
@@ -15,9 +16,11 @@ Future<AudioHandler> initAudioService() async {
   );
 }
 
-class MyAudioHandler extends BaseAudioHandler with ChangeNotifier {
+class MyAudioHandler extends BaseAudioHandler
+    with ChangeNotifier, QueueHandler, SeekHandler {
   final _player = AudioPlayer();
   final _playlist = ConcatenatingAudioSource(children: []);
+  // MyCustomSource? customSource;
 
   MyAudioHandler() {
     _loadEmptyPlaylist();
@@ -38,17 +41,20 @@ class MyAudioHandler extends BaseAudioHandler with ChangeNotifier {
   void _notifyAudioHandlerAboutPlaybackEvents() {
     _player.playbackEventStream.listen((PlaybackEvent event) {
       final playing = _player.playing;
+      // print('player progress: $event');
       playbackState.add(playbackState.value.copyWith(
         controls: [
           MediaControl.skipToPrevious,
           if (playing) MediaControl.pause else MediaControl.play,
-          MediaControl.stop,
           MediaControl.skipToNext,
+          MediaControl.stop,
         ],
         systemActions: const {
           MediaAction.seek,
+          // MediaAction.seekForward,
+          // MediaAction.seekBackward,
         },
-        androidCompactActionIndices: const [0, 1, 3],
+        androidCompactActionIndices: const [0, 1, 2],
         processingState: const {
           ProcessingState.idle: AudioProcessingState.idle,
           ProcessingState.loading: AudioProcessingState.loading,
@@ -111,26 +117,25 @@ class MyAudioHandler extends BaseAudioHandler with ChangeNotifier {
 
   @override
   Future<void> addQueueItems(List<MediaItem> mediaItems) async {
-    // manage Just Audio
     final audioSource = mediaItems.map(_createAudioSource);
-    _playlist.addAll(audioSource.toList());
+    await _playlist.addAll(audioSource.toList());
 
     // notify system
-    final newQueue = queue.value..addAll(mediaItems);
-    queue.add(newQueue);
+    // final newQueue = queue.value..addAll(mediaItems);
+    // queue.add(newQueue);
   }
 
   @override
   Future<void> addQueueItem(MediaItem mediaItem) async {
     try {
-      // manage Just Audio
       final audioSource = _createAudioSource(mediaItem);
       await _playlist.add(audioSource);
+      print('item added: ${audioSource.tag}');
 
       // notify system
       final newQueue = List<MediaItem>.from(queue.value)..add(mediaItem);
       // queue.add(newQueue);
-      print('Added: ${mediaItem.title}');
+      print('Added: ${_playlist.children.iterator}');
     } catch (e) {
       print('Error adding item to queue: $e');
     }
@@ -139,6 +144,7 @@ class MyAudioHandler extends BaseAudioHandler with ChangeNotifier {
   UriAudioSource _createAudioSource(MediaItem mediaItem) {
     return AudioSource.uri(
       Uri.parse(mediaItem.extras!['url'] as String),
+      // headers: {'Range': 'bytes=0-'},
       tag: mediaItem,
     );
   }
@@ -146,14 +152,16 @@ class MyAudioHandler extends BaseAudioHandler with ChangeNotifier {
   Future<void> clearQueue() async {
     try {
       // Clear the playlist
+      print('playlist cleared: ${_playlist.children.isEmpty}');
+      print('Queue cleared: ${queue.value.isEmpty}');
       await _playlist.clear();
 
       // Notify system
       final newQueue = queue.value..clear();
-      queue.add(newQueue);
+      // queue.add(newQueue);
 
-      print('Queue cleared' + queue.value.toList().toString());
-      // print('Queue cleared' + _playlist.children.toString());
+      print('Queue cleared: ${queue.value.isEmpty}');
+      print('Playlist cleared: ${_playlist.children.isEmpty}');
     } catch (e) {
       print('Error clearing queue: $e');
     }
@@ -163,15 +171,12 @@ class MyAudioHandler extends BaseAudioHandler with ChangeNotifier {
   Future<void> removeQueueItemAt(int index) async {
     // manage Just Audio
     // return if index is out of bounds
-    if (index < 0 || index >= queue.value.length) return;
+    //print all the items in the queue
+    print('Queue items: ${_playlist.children.toString()}');
+    if (index < 0 || index >= queue.value.length || queue.value.isEmpty) return;
 
-    _playlist.removeAt(index);
-    print('xue hue');
-
-    // notify system
-    final newQueue = List<MediaItem>.from(queue.value)..removeAt(index);
-    queue.add(newQueue);
-    // print('Removed: ${queue.value[index].title}');
+    await _playlist.removeAt(index);
+    print('Removed item at index: $index');
   }
 
   @override
@@ -181,7 +186,10 @@ class MyAudioHandler extends BaseAudioHandler with ChangeNotifier {
   Future<void> pause() => _player.pause();
 
   @override
-  Future<void> seek(Duration position) => _player.seek(position);
+  Future<void> seek(Duration position) {
+    print('Seeking to: $position');
+    return _player.seek(position);
+  }
 
   @override
   Future<void> skipToQueueItem(int index) async {
