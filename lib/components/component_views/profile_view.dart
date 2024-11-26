@@ -16,7 +16,7 @@ class ProfileView extends StatelessWidget {
     final themeProvider = Provider.of<ThemeProvider>(context);
     final changePrimary = themeProvider.getThemeColorPrimary();
 
-    return Container(
+    return SingleChildScrollView(
       padding: const EdgeInsets.all(0),
       child: Column(
         // crossAxisAlignment: CrossAxisAlignment.start,
@@ -25,15 +25,14 @@ class ProfileView extends StatelessWidget {
             padding:
                 const EdgeInsets.only(top: 25, bottom: 25, left: 10, right: 10),
             decoration: BoxDecoration(
-              gradient: LinearGradient(
-                begin: Alignment.bottomCenter,
-                end: Alignment.topCenter,
-                colors: [
-                  const Color.fromARGB(255, 101, 98, 98)
-                      .withOpacity(0.3), // Faded color at the top
-                  const Color.fromARGB(255, 101, 98, 98)
-                      .withOpacity(0.0), // Fully transparent at the bottom
-                ],
+              image: DecorationImage(
+                image: NetworkImage(
+                    profile.avatar), // Replace with your image path
+                fit: BoxFit.cover,
+                colorFilter: ColorFilter.mode(
+                  changePrimary.withOpacity(0.8),
+                  BlendMode.dstOut,
+                ),
               ),
               border: Border.all(
                 color: const Color.fromARGB(255, 70, 69, 69),
@@ -112,7 +111,7 @@ class ProfileView extends StatelessWidget {
                                       MediaQuery.sizeOf(context).height * 0.035,
                                       35),
                                 ),
-                                color: changePrimary.withOpacity(0.6),
+                                color: changePrimary.withOpacity(1),
                                 onPressed: () {
                                   // Handle edit action
                                   print('Edit button pressed');
@@ -129,7 +128,7 @@ class ProfileView extends StatelessWidget {
                                       MediaQuery.sizeOf(context).height * 0.03,
                                       35),
                                 ),
-                                color: changePrimary.withOpacity(0.6),
+                                color: changePrimary.withOpacity(1),
                                 onPressed: () {
                                   // Handle edit action
                                   print('Edit button pressed');
