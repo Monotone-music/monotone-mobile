@@ -200,8 +200,9 @@ class ArtistDetailView extends StatelessWidget {
                       Navigator.push(
                         context,
                         MaterialPageRoute(
-                            builder: (context) =>
-                                ReleaseGroupPage(id: release.id,)), // Replace with your navigation target
+                            builder: (context) => ReleaseGroupPage(
+                                  id: release.id,
+                                )), // Replace with your navigation target
                       );
                     },
                     child: Row(
@@ -322,6 +323,7 @@ class ArtistDetailView extends StatelessWidget {
           SizedBox(height: 16),
           if (albums.isEmpty)
             Container(
+              height: height * 0.25,
               padding: EdgeInsets.all(16.0),
               child: Center(
                 child: Text(
@@ -338,7 +340,8 @@ class ArtistDetailView extends StatelessWidget {
 
             /// List of Singles and Compilations
             Container(
-              height: height * 0.26, // Increase the height to provide more space
+              height:
+                  height * 0.30, // Increase the height to provide more space
               child: ListView.builder(
                 scrollDirection: Axis.horizontal,
                 itemCount: albums.length,
@@ -360,7 +363,8 @@ class ArtistDetailView extends StatelessWidget {
                           context,
                           MaterialPageRoute(
                               builder: (context) => ReleaseGroupPage(
-                                  id: album.id)), // Replace with your navigation target
+                                  id: album
+                                      .id)), // Replace with your navigation target
                         );
                       },
                       child: Column(
@@ -563,7 +567,7 @@ class ArtistDetailView extends StatelessWidget {
 
           /// List of Artists
           Container(
-            height: height * 0.2, // Set a fixed height for the list
+            height: height * 0.24, // Set a fixed height for the list
             child: ListView.builder(
               scrollDirection: Axis.horizontal,
               itemCount: artistNames.length,
@@ -577,37 +581,37 @@ class ArtistDetailView extends StatelessWidget {
                   //     // Handle tap event
                   //     print('Artist $index pressed');
                   //   },
-                    child: Column(
-                      crossAxisAlignment: CrossAxisAlignment.center,
-                      children: [
-                        /// Circular Avatar
-                        Container(
-                          width: width * 0.35,
-                          height: width * 0.35,
-                          decoration: BoxDecoration(
-                            shape: BoxShape.circle,
-                            color: changePrimary.withOpacity(0.6),
-                          ),
-                          child: ClipOval(
-                            child: ImageRenderer(
-                              imageUrl: 'assets/image/rajang.jpg',
-                            ),
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.center,
+                    children: [
+                      /// Circular Avatar
+                      Container(
+                        width: width * 0.35,
+                        height: width * 0.35,
+                        decoration: BoxDecoration(
+                          shape: BoxShape.circle,
+                          color: changePrimary.withOpacity(0.6),
+                        ),
+                        child: ClipOval(
+                          child: ImageRenderer(
+                            imageUrl: 'assets/image/rajang.jpg',
                           ),
                         ),
-                        SizedBox(height: 8),
+                      ),
+                      SizedBox(height: 8),
 
-                        /// Artist Name
-                        Text(
-                          artistName,
-                          style: TextStyle(
-                            fontSize: 16,
-                            fontWeight: FontWeight.bold,
-                          ),
+                      /// Artist Name
+                      Text(
+                        artistName,
+                        style: TextStyle(
+                          fontSize: 16,
+                          fontWeight: FontWeight.bold,
                         ),
+                      ),
 
-                        ///
-                      ],
-                    ),
+                      ///
+                    ],
+                  ),
                   // ),
                 );
 
@@ -649,7 +653,7 @@ class ArtistDetailView extends StatelessWidget {
           /// Conditional Check
           if (appearsIn.isEmpty)
             Container(
-              height:height*0.2,
+              height: height * 0.2,
               padding: EdgeInsets.all(16.0),
               child: Center(
                 child: Text(
@@ -663,80 +667,83 @@ class ArtistDetailView extends StatelessWidget {
               ),
             )
           else
+
             /// List of Appears In
             Container(
-            height: height * 0.33, // Increase the height to provide more space
-            child: ListView.builder(
-              scrollDirection: Axis.horizontal,
-              itemCount: appearsIn.length,
-              itemBuilder: (context, index) {
-                final release = appearsIn[index];
-                final year =
-                    DateTime.parse(release.releaseEvent.date).year.toString();
-                final releaseType = release.releaseType[0].toUpperCase() +
-                    release.releaseType.substring(1);
-                final imageUrl = albumImageUrls[release.id] ??
-                    ''; // Get the correct image URL for the release
+              height:
+                  height * 0.33, // Increase the height to provide more space
+              child: ListView.builder(
+                scrollDirection: Axis.horizontal,
+                itemCount: appearsIn.length,
+                itemBuilder: (context, index) {
+                  final release = appearsIn[index];
+                  final year =
+                      DateTime.parse(release.releaseEvent.date).year.toString();
+                  final releaseType = release.releaseType[0].toUpperCase() +
+                      release.releaseType.substring(1);
+                  final imageUrl = albumImageUrls[release.id] ??
+                      ''; // Get the correct image URL for the release
 
-                return Padding(
-                  padding: const EdgeInsets.only(right: 16.0),
-                  child: InkWell(
-                    onTap: () {
-                      // Handle tap event
-                      Navigator.push(
-                        context,
-                        MaterialPageRoute(
-                            builder: (context) =>
-                                ReleaseGroupPage(id: release.id,)), // Replace with your navigation target
-                      );
-                    },
-                    child: Column(
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: [
-                        /// Square Image
-                        Container(
-                            width: width * 0.4,
-                            height: width * 0.4,
-                            decoration: BoxDecoration(
-                              color: changePrimary.withOpacity(0.6),
-                              borderRadius: BorderRadius.circular(8.0),
+                  return Padding(
+                    padding: const EdgeInsets.only(right: 16.0),
+                    child: InkWell(
+                      onTap: () {
+                        // Handle tap event
+                        Navigator.push(
+                          context,
+                          MaterialPageRoute(
+                              builder: (context) => ReleaseGroupPage(
+                                    id: release.id,
+                                  )), // Replace with your navigation target
+                        );
+                      },
+                      child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          /// Square Image
+                          Container(
+                              width: width * 0.4,
+                              height: width * 0.4,
+                              decoration: BoxDecoration(
+                                color: changePrimary.withOpacity(0.6),
+                                borderRadius: BorderRadius.circular(8.0),
+                              ),
+
+                              ///
+                              child: ImageRenderer(
+                                imageUrl:
+                                    imageUrl, // Use the correct image URL for the release
+                              )
+
+                              ///
+                              ),
+                          SizedBox(height: 8),
+
+                          /// Release Title
+                          Text(
+                            release.title,
+                            style: TextStyle(
+                              fontSize: 18,
+                              fontWeight: FontWeight.bold,
                             ),
+                          ),
+                          SizedBox(height: 4),
 
-                            ///
-                            child: ImageRenderer(
-                              imageUrl:
-                                  imageUrl, // Use the correct image URL for the release
-                            )
-
-                            ///
+                          /// Release Type and Year
+                          Text(
+                            '$releaseType • $year',
+                            style: TextStyle(
+                              fontSize: 16,
+                              color: changePrimary.withOpacity(0.5),
                             ),
-                        SizedBox(height: 8),
-
-                        /// Release Title
-                        Text(
-                          release.title,
-                          style: TextStyle(
-                            fontSize: 18,
-                            fontWeight: FontWeight.bold,
                           ),
-                        ),
-                        SizedBox(height: 4),
-
-                        /// Release Type and Year
-                        Text(
-                          '$releaseType • $year',
-                          style: TextStyle(
-                            fontSize: 16,
-                            color: changePrimary.withOpacity(0.5),
-                          ),
-                        ),
-                      ],
+                        ],
+                      ),
                     ),
-                  ),
-                );
-              },
+                  );
+                },
+              ),
             ),
-          ),
         ],
       ),
     );

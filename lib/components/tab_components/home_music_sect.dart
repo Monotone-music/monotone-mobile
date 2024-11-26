@@ -18,8 +18,8 @@ class PlaylistList extends StatelessWidget {
         SizedBox(height: 10),
         gridPlaylistMini(),
         SizedBox(height: 10), // Add some spacing between the widgets
-        M4UPlaylist(),
-        LoginNavigator(),
+        // M4UPlaylist(),
+        // LoginNavigator(),
       ],
     );
   }
