@@ -1,4 +1,6 @@
 import 'package:flutter/material.dart';
+import 'package:monotone_flutter/themes/theme_provider.dart';
+import 'package:provider/provider.dart';
 
 class RegisterForm extends StatefulWidget {
   @override
@@ -12,6 +14,8 @@ class _RegisterFormState extends State<RegisterForm> {
   final _passwordController = TextEditingController();
   final _confirmPasswordController = TextEditingController();
   String _passwordStrength = '';
+  bool _obscureText = true;
+  bool _obscureConfirmText = true;
 
   void _checkPasswordStrength(String password) {
     if (password.length < 6) {
@@ -42,6 +46,9 @@ class _RegisterFormState extends State<RegisterForm> {
   Widget build(BuildContext context) {
     final height = MediaQuery.of(context).size.height;
     final width = MediaQuery.of(context).size.width;
+    final themeProvider = Provider.of<ThemeProvider>(context);
+    final changePrimary = themeProvider.getThemeColorPrimary();
+    final changeSurface = themeProvider.getThemeColorSurface();
 
     return Scaffold(
       body: Padding(
@@ -52,7 +59,14 @@ class _RegisterFormState extends State<RegisterForm> {
             children: [
               TextFormField(
                 controller: _usernameController,
-                decoration: InputDecoration(labelText: 'Username'),
+                decoration: InputDecoration(
+                  labelText: 'Username',
+                  labelStyle: TextStyle(
+                    color: changePrimary.withOpacity(0.5), // Change the color
+                    fontSize: 22.0, // Change the font size
+                    // fontWeight: FontWeight.bold, // Change the font weight
+                  ),
+                ),
                 validator: (value) {
                   if (value == null || value.trim().isEmpty) {
                     return 'Please enter a username';
@@ -69,7 +83,14 @@ class _RegisterFormState extends State<RegisterForm> {
               ///
               TextFormField(
                 controller: _emailController,
-                decoration: InputDecoration(labelText: 'Email'),
+                decoration: InputDecoration(
+                  labelText: 'Email',
+                  labelStyle: TextStyle(
+                    color: changePrimary.withOpacity(0.5), // Change the color
+                    fontSize: 22.0, // Change the font size
+                    // fontWeight: FontWeight.bold, // Change the font weight
+                  ),
+                ),
                 validator: (value) {
                   if (value == null || value.trim().isEmpty) {
                     return 'Please enter an email';
@@ -86,12 +107,29 @@ class _RegisterFormState extends State<RegisterForm> {
               ///
               TextFormField(
                 controller: _passwordController,
-                decoration: InputDecoration(labelText: 'Password'),
-                obscureText: true,
-                onChanged: _checkPasswordStrength,
+                decoration: InputDecoration(
+                  labelText: 'Password',
+                  labelStyle: TextStyle(
+                    color: changePrimary.withOpacity(0.5), // Change the color
+                    fontSize: 22.0, // Change the font size
+                    // fontWeight: FontWeight.bold, // Change the font weight
+                  ),
+                  // border: OutlineInputBorder(),
+                  suffixIcon: IconButton(
+                    icon: Icon(
+                      _obscureText ? Icons.visibility : Icons.visibility_off,
+                    ),
+                    onPressed: () {
+                      setState(() {
+                        _obscureText = !_obscureText;
+                      });
+                    },
+                  ),
+                ),
+                obscureText: _obscureText,
                 validator: (value) {
-                  if (value == null || value.trim().isEmpty) {
-                    return 'Please enter a password';
+                  if (value == null || value.isEmpty) {
+                    return 'Please enter your password';
                   }
                   return null;
                 },
@@ -106,8 +144,28 @@ class _RegisterFormState extends State<RegisterForm> {
               ///
               TextFormField(
                 controller: _confirmPasswordController,
-                decoration: InputDecoration(labelText: 'Confirm Password'),
-                obscureText: true,
+                decoration: InputDecoration(
+                  labelText: 'Confirm password',
+                  labelStyle: TextStyle(
+                    color: changePrimary.withOpacity(0.5), // Change the color
+                    fontSize: 22.0, // Change the font size
+                    // fontWeight: FontWeight.bold, // Change the font weight
+                  ),
+                  // border: OutlineInputBorder(),
+                  suffixIcon: IconButton(
+                    icon: Icon(
+                      _obscureConfirmText
+                          ? Icons.visibility
+                          : Icons.visibility_off,
+                    ),
+                    onPressed: () {
+                      setState(() {
+                        _obscureConfirmText = !_obscureConfirmText;
+                      });
+                    },
+                  ),
+                ),
+                obscureText: _obscureConfirmText,
                 validator: (value) {
                   if (value == null || value.trim().isEmpty) {
                     return 'Please confirm your password';
@@ -123,8 +181,18 @@ class _RegisterFormState extends State<RegisterForm> {
               SizedBox(height: 40),
               ElevatedButton(
                 onPressed: _register,
-                child: Text('Register'),
-              ),
+                child: Text('Login'),
+                style: ElevatedButton.styleFrom(
+                  padding: EdgeInsets.symmetric(horizontal: 50, vertical: 15),
+                  textStyle: TextStyle(fontSize: 20),
+                  backgroundColor: changeSurface, // Background color
+                  foregroundColor: changePrimary, // Text color
+                  shape: RoundedRectangleBorder(
+                    borderRadius: BorderRadius.circular(30), // Rounded corners
+                  ),
+                  elevation: 4, // Elevation
+                ),
+              )
 
               ///
               // SizedBox(height: 40),

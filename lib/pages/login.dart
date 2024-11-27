@@ -5,13 +5,13 @@ class LoginPage extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      body: Center(
-        child: SingleChildScrollView(
-          padding: EdgeInsets.all(32.0),
-          child: LoginForm(),
-        ),
-      ),
-    );
+        appBar: AppBar(),
+        body: Container(
+          padding: EdgeInsets.all(16),
+          child: Center(
+            child: LoginForm(),
+          ),
+        ));
   }
 }
 

@@ -1,10 +1,8 @@
 import 'package:flutter/material.dart';
-import 'package:flutter_secure_storage/flutter_secure_storage.dart';
 import 'package:provider/provider.dart';
 import 'package:http/http.dart' as http;
 import 'dart:convert';
 
-import 'package:monotone_flutter/pages/login.dart';
 import 'package:monotone_flutter/components/tab_components/home_music_sect.dart';
 import 'package:monotone_flutter/components/widgets/skeletons/skeleton_home.dart';
 import 'package:monotone_flutter/themes/theme_provider.dart';
@@ -23,21 +21,10 @@ class _HomePageState extends State<HomePage> {
   @override
   void initState() {
     super.initState();
-    _checkFirstTimeUser();
     releaseGroups = fetchReleaseGroups();
   }
 
-  Future<void> _checkFirstTimeUser() async {
-    final secureStorage = FlutterSecureStorage();
-
-    if (await secureStorage.read(key: 'isLoggedIn')!='true') {
-      // Navigate to login page
-      Navigator.pushReplacement(
-        context,
-        MaterialPageRoute(builder: (context) => LoginPage()),
-      );
-    }
-  }
+  
 
   Future<List<Map<String, String>>> fetchReleaseGroups() async {
     final response =
