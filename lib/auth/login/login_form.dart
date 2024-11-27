@@ -4,7 +4,7 @@ import 'package:flutter_secure_storage/flutter_secure_storage.dart';
 import 'package:monotone_flutter/auth/login/login_button.dart';
 import 'package:monotone_flutter/auth/login/login_loader.dart';
 import 'package:monotone_flutter/auth/login/register_button.dart';
-import 'package:monotone_flutter/pages/home.dart';
+import 'package:monotone_flutter/view/home/home.dart';
 
 class LoginForm extends StatefulWidget {
   @override
