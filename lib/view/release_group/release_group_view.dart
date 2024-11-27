@@ -125,8 +125,7 @@ Widget buildAlbumImageWithBackButton(
         child: Stack(
           children: [
             ImageRenderer(
-              imageUrl:
-                  'https://api2.ibarakoi.online/image/${imageCache[releaseGroup.imageUrl]}',
+              imageUrl: '$BASE_URL/image/${imageCache[releaseGroup.imageUrl]}',
               width: double.infinity,
               height: 400,
               // fit: BoxFit.cover,

@@ -1,6 +1,7 @@
 import 'dart:convert';
 import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
+import 'package:monotone_flutter/common/api_url.dart';
 
 import 'package:monotone_flutter/models/artist_detail_items.dart';
 import 'package:monotone_flutter/view/artist_detail/artist_detail_view.dart';
@@ -24,8 +25,7 @@ class _ArtistDetailLoaderState extends State<ArtistDetailLoader> {
   }
 
   Future<Artist> fetchArtistData(String artistId) async {
-    final response = await http
-        .get(Uri.parse('https://api2.ibarakoi.online/artist/id/$artistId'));
+    final response = await http.get(Uri.parse('$BASE_URL/artist/id/$artistId'));
     if (response.statusCode != 200) {
       throw Exception('Failed to load artist data');
     }
@@ -41,8 +41,7 @@ class _ArtistDetailLoaderState extends State<ArtistDetailLoader> {
   }
 
   Future<Map<String, String>> fetchImageFilenames(List<String> ids) async {
-    final response =
-        await http.get(Uri.parse('https://api2.ibarakoi.online/album'));
+    final response = await http.get(Uri.parse('$BASE_URL/album'));
     if (response.statusCode != 200) {
       throw Exception('Failed to load album data');
     }
@@ -61,7 +60,7 @@ class _ArtistDetailLoaderState extends State<ArtistDetailLoader> {
       for (final releaseGroupJson in releaseGroupsJson) {
         if (releaseGroupJson['_id'] == id) {
           imageFilenames[id] =
-              'https://api2.ibarakoi.online/image/${releaseGroupJson['image']['filename']}';
+              '$BASE_URL/image/${releaseGroupJson['image']['filename']}';
           break;
         }
       }

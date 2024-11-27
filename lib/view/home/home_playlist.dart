@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:monotone_flutter/common/api_url.dart';
 import 'package:monotone_flutter/widgets/image_widgets/image_renderer.dart';
 import 'package:monotone_flutter/view/release_group/release_group.dart';
 import 'package:monotone_flutter/common/themes/theme_provider.dart';
@@ -79,7 +80,7 @@ class _PlaylistMiniState extends State<PlaylistMini> {
             ClipRRect(
               borderRadius: BorderRadius.circular(8.0),
               child: ImageRenderer(
-                imageUrl: 'https://api2.ibarakoi.online/image/$imageUrl',
+                imageUrl: '$BASE_URL/image/$imageUrl',
                 width: 60,
                 height: 60,
               ),

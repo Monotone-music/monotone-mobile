@@ -1,10 +1,11 @@
 import 'dart:convert';
 import 'package:http/http.dart' as http;
+import 'package:monotone_flutter/common/api_url.dart';
 
 import 'package:monotone_flutter/models/search_bar_items.dart'; // Import the SearchItem model
 
 class SearchBarLoader {
-  final String baseUrl = 'https://api2.ibarakoi.online/search/?q=';
+  final String baseUrl = '$BASE_URL/search/?q=';
 
   Future<SearchResults> fetchSearchResults(String query) async {
     // Add a delay to simulate network latency

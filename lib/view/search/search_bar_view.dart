@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:monotone_flutter/common/api_url.dart';
 import 'package:monotone_flutter/common/themes/theme_provider.dart';
 import 'package:monotone_flutter/models/search_bar_items.dart';
 import 'package:monotone_flutter/view/release_group/release_group.dart';
@@ -191,14 +192,12 @@ class CustomSearchDelegate extends SearchDelegate {
       list.addAll(items.map((item) {
         String imageUrl;
         if (item.source.type == 'album') {
-          // print(
-          //     'https://api2.ibarakoi.online/image/${item.source.albumInfo!.image.filename}');
           imageUrl = item.source.albumInfo?.image != null
-              ? 'https://api2.ibarakoi.online/image/${item.source.albumInfo!.image.filename}'
+              ? '$BASE_URL/image/${item.source.albumInfo!.image.filename}'
               : 'assets/image/not_available.png';
         } else if (item.source.type == 'recording') {
           imageUrl = item.source.recordingInfo?.image != null
-              ? 'https://api2.ibarakoi.online/image/${item.source.recordingInfo!.image.filename}'
+              ? '$BASE_URL/image/${item.source.recordingInfo!.image.filename}'
               : 'assets/image/not_available.png';
         } else {
           imageUrl = 'assets/image/not_available.png';

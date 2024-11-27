@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_secure_storage/flutter_secure_storage.dart';
+import 'package:monotone_flutter/common/api_url.dart';
 import 'package:monotone_flutter/widgets/skeletons/skeleton_home.dart';
 import 'package:provider/provider.dart';
 import 'package:http/http.dart' as http;
@@ -39,8 +40,7 @@ class _HomePageState extends State<HomePage> {
   }
 
   Future<List<Map<String, String>>> fetchReleaseGroups() async {
-    final response =
-        await http.get(Uri.parse('https://api2.ibarakoi.online/album/'));
+    final response = await http.get(Uri.parse('$BASE_URL/album/'));
 
     if (response.statusCode != 200) {
       throw Exception('Failed to load release groups');

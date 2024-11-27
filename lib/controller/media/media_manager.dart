@@ -1,4 +1,5 @@
 import 'package:flutter/foundation.dart';
+import 'package:monotone_flutter/common/api_url.dart';
 import 'package:monotone_flutter/models/release_group_model.dart';
 import 'notifiers/play_button_notifier.dart';
 import 'notifiers/progress_notifier.dart';
@@ -86,11 +87,8 @@ class MediaManager {
       album: albumName,
       title: selectedTrack.title,
       artist: selectedTrack.artistNames.join(', '),
-      artUri: Uri.parse(
-          'https://api2.ibarakoi.online/image/${selectedTrack.imageUrl}'),
-      extras: {
-        'url': 'https://api2.ibarakoi.online/tracks/stream/${selectedTrack.id}'
-      },
+      artUri: Uri.parse('$BASE_URL/image/${selectedTrack.imageUrl}'),
+      extras: {'url': '$BASE_URL/tracks/stream/${selectedTrack.id}'},
     );
     await _audioHandler.addQueueItem(selectedMediaItem);
 
@@ -113,11 +111,8 @@ class MediaManager {
         album: albumName,
         title: track.title,
         artist: track.artistNames.join(', '),
-        artUri:
-            Uri.parse('https://api2.ibarakoi.online/image/${track.imageUrl}'),
-        extras: {
-          'url': 'https://api2.ibarakoi.online/tracks/stream/${track.id}'
-        },
+        artUri: Uri.parse('$BASE_URL/image/${track.imageUrl}'),
+        extras: {'url': '$BASE_URL/tracks/stream/${track.id}'},
       );
     }).toList();
     await _audioHandler.addQueueItems(mediaItems);
@@ -151,11 +146,8 @@ class MediaManager {
       album: albumName,
       title: fetchedTrack.title,
       artist: fetchedTrack.artistNames.join(', '),
-      artUri: Uri.parse(
-          'https://api2.ibarakoi.online/image/${fetchedTrack.imageUrl}'),
-      extras: {
-        'url': 'https://api2.ibarakoi.online/tracks/stream/${fetchedTrack.id}'
-      },
+      artUri: Uri.parse('$BASE_URL/image/${fetchedTrack.imageUrl}'),
+      extras: {'url': '$BASE_URL/tracks/stream/${fetchedTrack.id}'},
     );
     // fetchAndPrintApiResponse(mediaItem.extras!['url'] as String);
 

@@ -262,29 +262,3 @@ class ShuffleButton extends StatelessWidget {
     );
   }
 }
-
-//custom widget
-// class ChunkAudioControl extends StatelessWidget {
-//   final _audioHandler = GetIt.instance<MyAudioHandler>();
-
-//   Future<void> _testStreamAudioSource() async {
-//     const apiUrl =
-//         'https://api2.ibarakoi.online/tracks/stream/6740a0c66357c3ed99dedf9e';
-//     print('apiUrl: $apiUrl');
-//     await _audioHandler.addStreamAudioSourceFromApi(apiUrl);
-//   }
-
-//   @override
-//   Widget build(BuildContext context) {
-//     return SizedBox(
-//       width: 300,
-//       height: 50,
-//       child: Center(
-//         child: ElevatedButton(
-//           onPressed: _testStreamAudioSource,
-//           child: const Text('Test Stream Audio Source'),
-//         ),
-//       ),
-//     );
-//   }
-// }
