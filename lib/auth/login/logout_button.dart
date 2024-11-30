@@ -1,19 +1,22 @@
 import 'package:flutter/material.dart';
+
+import 'package:flutter_secure_storage/flutter_secure_storage.dart';
+import 'package:monotone_flutter/pages/login.dart';
+import 'package:monotone_flutter/themes/theme_provider.dart';
 import 'package:provider/provider.dart';
 
-import 'package:monotone_flutter/themes/theme_provider.dart';
-
-class LoginButton extends StatelessWidget {
+class LogoutButton extends StatelessWidget {
   final VoidCallback onPressed;
 
-  const LoginButton({required this.onPressed});
+  LogoutButton({required this.onPressed});
+  final FlutterSecureStorage secureStorage = FlutterSecureStorage();
 
   @override
   Widget build(BuildContext context) {
     final themeProvider = Provider.of<ThemeProvider>(context);
     final changePrimary = themeProvider.getThemeColorPrimary();
     final changeSurface= themeProvider.getThemeColorSurface();
-
+    
     return ElevatedButton(
       onPressed: onPressed,
       child: Text('Login'),
@@ -28,5 +31,15 @@ class LoginButton extends StatelessWidget {
         elevation: 4, // Elevation
       ),
     );
+  }
+
+  Future<void> logout(BuildContext context) async {
+    Navigator.pushReplacement(
+        context, MaterialPageRoute(builder: (context) => LoginPage()));
+
+    ///
+    await secureStorage
+        .deleteAll(); // This will delete all tokens and other stored data
+    // await secureStorage.write(key: 'isLoggedIn', value: 'false');
   }
 }
