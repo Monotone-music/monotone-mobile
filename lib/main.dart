@@ -5,6 +5,15 @@ import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 import 'package:monotone_flutter/interceptor/jwt_interceptor.dart';
 import 'package:monotone_flutter/view/bottom_tab_navi.dart';
+import 'package:audio_service/audio_service.dart';
+import 'package:dio/dio.dart';
+// import 'package:audio_service_example/common.dart';
+import 'package:flutter/material.dart';
+import 'package:monotone_flutter/interceptor/jwt_interceptor.dart';
+import 'package:provider/provider.dart';
+
+// import 'package:get/get.dart';
+import 'package:monotone_flutter/widgets/routes/routes.dart';
 import 'package:monotone_flutter/controller/media/media_manager.dart';
 import 'package:monotone_flutter/controller/media/services/audio_handler.dart';
 import 'package:monotone_flutter/controller/media/services/service_locator.dart';
@@ -25,7 +34,7 @@ void main() async {
   final client = DioClient();
   final alive = await client.keepAlive();
   if (alive?.data == 200) {
-    initialRoute = '/home';
+    initialRoute = '/';
   }
 
   ///
@@ -35,14 +44,8 @@ void main() async {
 class MyApp extends StatefulWidget {
   final String initialRoute;
   const MyApp({super.key, required this.initialRoute});
-  // final AudioHandler audioHandler;
-  // MyApp({required this.audioHandler});
   @override
   State<MyApp> createState() => _MyAppState();
-
-  // Define your named routes
-  static const String loginPage = '/login';
-  static const String homePage = '/home';
 }
 
 class _MyAppState extends State<MyApp> {

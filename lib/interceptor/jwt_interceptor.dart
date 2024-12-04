@@ -17,56 +17,79 @@ class DioClient {
   InterceptorsWrapper getInterceptor() {
     return InterceptorsWrapper(
         //
-        onRequest: (options, handler) async {
+        onRequest: (request, handler) async {
+      // print(request.path);
       String? accessToken = await readAccessToken();
-      options.headers['Authorization'] = 'Bearer $accessToken';
-      return handler.next(options);
+      request.headers['Authorization'] = 'Bearer $accessToken';
+      return handler.next(request);
 
       ///
     }, onResponse: (response, handler) async {
       if (response.statusCode == 200) {
-        var newPath = response.requestOptions.uri.path;
+        var path = response.requestOptions.uri.path;
         //CHECK THE PATH
-        if (newPath == '/auth/login' || newPath == '/auth/refresh') {
-          await _storage.write(
-              key: 'accessToken', value: response.data['data']['accessToken']);
-          await _storage.write(
-              key: 'refreshToken',
-              value: response.data['data']['refreshToken']);
+        switch (path) {
+          case ('/auth/login' || '/auth/refresh'):
+            {
+              saveToken(response);
+
+              /// /USE THIS TO TEST THE AUTHENTICATION
+              // await _storage.delete(key: 'accessToken');
+              // await _storage.delete(key: 'refreshTokenToken');
+              // print('theres nothting');
+              // print(await _storage.read(key: 'accessToken'));
+              break;
+            }
+
+          ///
         }
+
         // print(response.requestOptions.uri.path);
       }
       return handler.next(response);
     },
         // RETURN ERROR IF ENCOUNTER
         onError: (DioException error, handler) async {
-      //CHECK IF ACCESS TOKEN IS EXPIRED
-      if ((error.response?.statusCode == 400 &&
-          error.response?.data['message'] == 'Invalid JWT')) {
-        // CHECK IF REFRESH TOKEN IS AVAILABLE
-        if (await _storage.containsKey(key: 'refreshToken')) {
-          //TAKE A NEW REFRESH TOKEN AND RETRY
-          await refreshToken();
-          return handler.resolve(await _retry(error.requestOptions));
+      String errorMessage = error.response?.data['message'];
+
+      if (error.response?.statusCode == 400) {
+        // SWITCH CASE
+        switch (errorMessage) {
+          //CHECK AND REFRESH TOKEN
+          case ('Invalid JWT' || 'Token expired'):
+            {
+              dynamic oldToken = readRefreshToken();
+              if (oldToken != null) {
+                //IF THE REFRESH LINK RETURN
+                //ANYTHING APART FROM STATUS 200
+                //DELETE EVERY TOKEN IN THE STORAGE
+                dynamic newToken = refreshToken();
+                dynamic checkExist = readAccessToken();
+                if (checkExist != null) saveToken(newToken);
+                return handler.resolve(await _retry(error.requestOptions));
+              }
+            }
+
+          ///
         }
       }
       return handler.next(error);
     });
   }
 
-  Future<void> refreshToken() async {
+  Future<Response> refreshToken() async {
 //TAKE THE REFRESH TOKEN FROM THE URL
-    final refreshTokenUrl = '/auth/refresh';
+    const refreshTokenUrl = '/auth/refresh';
     final refreshToken = await _storage.read(key: 'refreshToken');
     final response = await dioInter
         .post(refreshTokenUrl, data: {'refreshToken': refreshToken});
 // TAKE A NEW ACCESS TOKEN AND DELETE OLD TOKEN
-    if (response.statusCode == 200) {
-      accessToken = response.data;
-    } else {
-      accessToken = null;
-      _storage.deleteAll();
+    if (response.statusCode != 200) {
+      await _storage.delete(key: 'accessToken');
+      await _storage.delete(key: 'refreshTokenToken');
     }
+    print(response.data);
+    return response;
   }
 
   ///RETRY THE REQUEST
@@ -77,6 +100,13 @@ class DioClient {
         data: requestOptions.data,
         queryParameters: requestOptions.queryParameters,
         options: options);
+  }
+
+  Future<void> saveToken(response) async {
+    await _storage.write(
+        key: 'accessToken', value: response.data['data']['accessToken']);
+    await _storage.write(
+        key: 'refreshToken', value: response.data['data']['refreshToken']);
   }
 
   ////// READ ACCESSTOKEN FROM STORAGE

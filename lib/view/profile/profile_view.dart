@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:monotone_flutter/auth/login/logout_button.dart';
 import 'package:monotone_flutter/view/payment/payment.dart';
 import 'package:monotone_flutter/widgets/image_widgets/image_renderer.dart';
 import 'dart:math';
@@ -447,6 +448,13 @@ class ProfileView extends StatelessWidget {
 
                   ///
                 ],
+              ),
+              SizedBox(height: 16.0),
+              LogoutButton(
+                onPressed: () async {
+                  final logoutButton = LogoutButton(onPressed: () {});
+                  await logoutButton.logout(context);
+                },
               ),
 
               ///

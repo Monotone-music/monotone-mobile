@@ -45,8 +45,8 @@ class _DiscoverPageState extends State<DiscoverPage> {
                   // ),
 
                   // _buildPanel(),
-                  // _searchPanel(),
-                  _loginPanel(),
+                  _searchPanel(),
+                  // _loginPanel(),
 
                   ///
                 ],
@@ -67,10 +67,10 @@ class _DiscoverPageState extends State<DiscoverPage> {
     );
   }
 
-//
-  Widget _loginPanel() {
-    return LoginForm();
-  }
+// //
+//   Widget _loginPanel() {
+//     return LoginForm();
+//   }
 
 //
   Widget _buildPanel() {
