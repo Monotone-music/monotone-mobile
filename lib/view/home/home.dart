@@ -1,13 +1,4 @@
 import 'package:flutter/material.dart';
-<<<<<<< HEAD:lib/pages/home.dart
-import 'package:provider/provider.dart';
-import 'package:http/http.dart' as http;
-import 'dart:convert';
-
-import 'package:monotone_flutter/components/tab_components/home_music_sect.dart';
-import 'package:monotone_flutter/components/widgets/skeletons/skeleton_home.dart';
-import 'package:monotone_flutter/themes/theme_provider.dart';
-=======
 import 'package:flutter_secure_storage/flutter_secure_storage.dart';
 import 'package:monotone_flutter/common/api_url.dart';
 import 'package:monotone_flutter/widgets/skeletons/skeleton_home.dart';
@@ -17,7 +8,6 @@ import 'dart:convert';
 import 'package:monotone_flutter/view/login.dart';
 import 'package:monotone_flutter/view/home/home_music_sect.dart';
 import 'package:monotone_flutter/common/themes/theme_provider.dart';
->>>>>>> b8a440a0254d7685d91fd071b3ae95344959b59a:lib/view/home/home.dart
 
 class HomePage extends StatefulWidget {
   const HomePage({super.key});
@@ -36,9 +26,6 @@ class _HomePageState extends State<HomePage> {
     releaseGroups = fetchReleaseGroups();
   }
 
-<<<<<<< HEAD:lib/pages/home.dart
-  
-=======
   Future<void> _checkFirstTimeUser() async {
     final secureStorage = FlutterSecureStorage();
 
@@ -50,7 +37,6 @@ class _HomePageState extends State<HomePage> {
       );
     }
   }
->>>>>>> b8a440a0254d7685d91fd071b3ae95344959b59a:lib/view/home/home.dart
 
   Future<List<Map<String, String>>> fetchReleaseGroups() async {
     final response = await http.get(Uri.parse('$BASE_URL/album/'));

@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:monotone_flutter/view/payment/payment.dart';
 import 'package:monotone_flutter/widgets/image_widgets/image_renderer.dart';
 import 'dart:math';
 import 'package:provider/provider.dart';
@@ -285,27 +286,35 @@ class ProfileView extends StatelessWidget {
                   ),
 
                   ///
-                  Row(
-                    children: [
-                      const Padding(
-                          padding: EdgeInsets.only(bottom: 10.0, left: 15.0)),
+                  GestureDetector(
+                    onTap: () {
+                      Navigator.push(
+                        context,
+                        MaterialPageRoute(builder: (context) => PaymentPage()),
+                      );
+                    },
+                    child: Row(
+                      children: [
+                        const Padding(
+                            padding: EdgeInsets.only(bottom: 10.0, left: 15.0)),
 
-                      ///
-                      const SizedBox(
-                        height: 20,
-                      ),
-
-                      ///
-                      Text(
-                        profile.member ? 'Premium - Member' : 'Free',
-                        style: const TextStyle(
-                          fontSize: 30,
-                          fontWeight: FontWeight.normal,
+                        ///
+                        const SizedBox(
+                          height: 20,
                         ),
-                      ),
 
-                      ///
-                    ],
+                        ///
+                        Text(
+                          profile.member ? 'Premium - Member' : 'Free',
+                          style: const TextStyle(
+                            fontSize: 30,
+                            fontWeight: FontWeight.normal,
+                          ),
+                        ),
+
+                        ///
+                      ],
+                    ),
                   ),
 
                   ///

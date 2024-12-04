@@ -20,7 +20,9 @@ void main() {
           ChangeNotifierProvider(create: (_) => ThemeProvider()),
           // Add any other providers your app needs
         ],
-        child: MyApp(initialRoute: '/login',),
+        child: MyApp(
+          initialRoute: '/login',
+        ),
       ),
     );
 

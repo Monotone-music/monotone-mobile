@@ -1,12 +1,8 @@
 import 'package:flutter/material.dart';
+import 'package:monotone_flutter/common/themes/theme_provider.dart';
 
-<<<<<<< HEAD
-import 'package:monotone_flutter/pages/register.dart';
-import 'package:monotone_flutter/themes/theme_provider.dart';
-import 'package:provider/provider.dart';
-=======
 import 'package:monotone_flutter/view/register.dart';
->>>>>>> b8a440a0254d7685d91fd071b3ae95344959b59a
+import 'package:provider/provider.dart';
 
 class RegisterButton extends StatelessWidget {
   RegisterButton();

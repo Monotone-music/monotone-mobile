@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:monotone_flutter/themes/theme_provider.dart';
+import 'package:monotone_flutter/common/themes/theme_provider.dart';
 import 'package:provider/provider.dart';
 
 class RegisterForm extends StatefulWidget {

@@ -1,8 +1,9 @@
 import 'package:flutter/material.dart';
 
 import 'package:flutter_secure_storage/flutter_secure_storage.dart';
-import 'package:monotone_flutter/pages/login.dart';
-import 'package:monotone_flutter/themes/theme_provider.dart';
+import 'package:monotone_flutter/common/themes/theme_provider.dart';
+import 'package:monotone_flutter/view/login.dart';
+
 import 'package:provider/provider.dart';
 
 class LogoutButton extends StatelessWidget {
@@ -15,8 +16,8 @@ class LogoutButton extends StatelessWidget {
   Widget build(BuildContext context) {
     final themeProvider = Provider.of<ThemeProvider>(context);
     final changePrimary = themeProvider.getThemeColorPrimary();
-    final changeSurface= themeProvider.getThemeColorSurface();
-    
+    final changeSurface = themeProvider.getThemeColorSurface();
+
     return ElevatedButton(
       onPressed: onPressed,
       child: Text('Login'),
