@@ -1,11 +1,12 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
-
 import 'package:monotone_flutter/common/themes/theme_provider.dart';
 import 'package:monotone_flutter/view/register.dart';
 
 class RegisterButton extends StatelessWidget {
-  RegisterButton();
+  final VoidCallback onPressed;
+
+  RegisterButton({required this.onPressed});
 
   @override
   Widget build(BuildContext context) {
@@ -13,36 +14,19 @@ class RegisterButton extends StatelessWidget {
     final changePrimary = themeProvider.getThemeColorPrimary();
     final changeSurface = themeProvider.getThemeColorSurface();
 
-    return Row(
-      mainAxisAlignment: MainAxisAlignment.center,
-      children: [
-        Text(
-          "Don't have an account?",
-          style: TextStyle(fontSize: 15, color: changePrimary.withOpacity(0.5)),
+    return ElevatedButton(
+      onPressed: onPressed,
+      child: Text('Register'),
+      style: ElevatedButton.styleFrom(
+        padding: EdgeInsets.symmetric(horizontal: 50, vertical: 15),
+        textStyle: TextStyle(fontSize: 20),
+        backgroundColor: changeSurface, // Background color
+        foregroundColor: changePrimary, // Text color
+        shape: RoundedRectangleBorder(
+          borderRadius: BorderRadius.circular(30), // Rounded corners
         ),
-
-        ///
-        TextButton(
-          onPressed: () {
-            Navigator.push(
-              context,
-              MaterialPageRoute(builder: (context) => RegisterPage()),
-            );
-          },
-
-          ///
-          child: Text(
-            'Register',
-            style: TextStyle(
-              color: changePrimary,
-            ),
-          ),
-        ),
-
-        ///
-      ],
+        elevation: 4, // Elevation
+      ),
     );
-
-    ///
   }
 }
