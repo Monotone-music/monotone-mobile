@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:monotone_flutter/auth/login/logout_button.dart';
+import 'package:monotone_flutter/controller/payment/subscription_controller.dart';
 import 'package:monotone_flutter/view/payment/payment.dart';
 import 'package:monotone_flutter/widgets/image_widgets/image_renderer.dart';
 import 'dart:math';
@@ -17,6 +18,8 @@ class ProfileView extends StatelessWidget {
   Widget build(BuildContext context) {
     final themeProvider = Provider.of<ThemeProvider>(context);
     final changePrimary = themeProvider.getThemeColorPrimary();
+    final SubscriptionController _subscriptionController =
+        SubscriptionController();
 
     return SingleChildScrollView(
       padding: const EdgeInsets.all(0),
@@ -250,7 +253,7 @@ class ProfileView extends StatelessWidget {
 
               ///
               child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
+                crossAxisAlignment: CrossAxisAlignment.center,
                 children: [
                   ///
                   Row(
@@ -273,7 +276,7 @@ class ProfileView extends StatelessWidget {
                       ///
                       const SizedBox(
                         child: Text(
-                          'Plan',
+                          'Current plan: Free',
                           style: TextStyle(
                               fontSize: 18, fontWeight: FontWeight.bold),
                         ),
@@ -287,56 +290,146 @@ class ProfileView extends StatelessWidget {
                   ),
 
                   ///
-                  GestureDetector(
-                    onTap: () {
-                      Navigator.push(
-                        context,
-                        MaterialPageRoute(builder: (context) => PaymentPage()),
-                      );
-                    },
-                    child: Row(
-                      children: [
-                        const Padding(
-                            padding: EdgeInsets.only(bottom: 10.0, left: 15.0)),
 
-                        ///
-                        const SizedBox(
-                          height: 20,
-                        ),
-
-                        ///
-                        Text(
-                          profile.member ? 'Premium - Member' : 'Free',
-                          style: const TextStyle(
-                            fontSize: 30,
-                            fontWeight: FontWeight.normal,
-                          ),
-                        ),
-
-                        ///
-                      ],
-                    ),
-                  ),
-
-                  ///
-                  const SizedBox(
-                    height: 10,
-                  ),
-
-                  ///
                   Row(
+                    mainAxisAlignment: MainAxisAlignment.spaceEvenly,
                     children: [
-                      const Padding(
-                          padding: EdgeInsets.only(bottom: 10.0, left: 15.0)),
-                      Text(
-                        '${profile.member_type}: ${profile.membership_price_amount}\$ /${profile.membership_price_unit}',
-                        style: const TextStyle(
-                          fontSize: 25,
-                          fontWeight: FontWeight.normal,
+                      GestureDetector(
+                        onTap: () {
+                          _subscriptionController
+                              .createSubscription(500, 'usd')
+                              .then(
+                            (secretKey) async {
+                              await _subscriptionController
+                                  .initPaymentSheet(secretKey);
+                              await _subscriptionController.processPayment();
+                            },
+                          );
+                        },
+                        child: const Column(
+                          mainAxisAlignment: MainAxisAlignment.start,
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: [
+                            Row(
+                              children: [
+                                Padding(
+                                    padding: EdgeInsets.only(
+                                        bottom: 10.0, left: 15.0)),
+
+                                ///
+                                SizedBox(
+                                  height: 20,
+                                ),
+
+                                ///
+                                Text(
+                                  'Premium',
+                                  style: TextStyle(
+                                    fontSize: 20,
+                                    fontWeight: FontWeight.normal,
+                                  ),
+                                ),
+
+                                ///
+                              ],
+                            ),
+
+                            ///
+                            SizedBox(
+                              height: 10,
+                            ),
+
+                            ///
+                            Row(
+                              children: [
+                                Padding(
+                                    padding: EdgeInsets.only(
+                                        bottom: 10.0, left: 15.0)),
+                                Text(
+                                  '5\$ /month',
+                                  style: TextStyle(
+                                    fontSize: 15,
+                                    fontWeight: FontWeight.normal,
+                                  ),
+                                ),
+                              ],
+                            ),
+                          ],
                         ),
-                      )
+                      ),
+                      Padding(
+                        padding: const EdgeInsets.symmetric(horizontal: 5.0),
+                        child: Container(
+                          width: 1.0, // Line thickness
+                          height: 50.0, // Line height
+                          color: Colors.grey.withOpacity(0.3), // Line color
+                        ),
+                      ),
+                      GestureDetector(
+                        onTap: () {
+                          _subscriptionController
+                              .createSubscription(1000, 'usd')
+                              .then(
+                            (secretKey) async {
+                              await _subscriptionController
+                                  .initPaymentSheet(secretKey);
+                              await _subscriptionController.processPayment();
+                            },
+                          );
+                        },
+                        child: Column(
+                          mainAxisAlignment: MainAxisAlignment.start,
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: [
+                            Row(
+                              children: [
+                                Padding(
+                                    padding: EdgeInsets.only(
+                                        bottom: 10.0, left: 15.0)),
+
+                                ///
+                                SizedBox(
+                                  height: 20,
+                                ),
+
+                                ///
+                                Text(
+                                  'Pro',
+                                  style: TextStyle(
+                                    fontSize: 20,
+                                    fontWeight: FontWeight.normal,
+                                  ),
+                                ),
+
+                                ///
+                              ],
+                            ),
+
+                            ///
+                            SizedBox(
+                              height: 10,
+                            ),
+
+                            ///
+                            Row(
+                              children: [
+                                Padding(
+                                    padding: EdgeInsets.only(
+                                        bottom: 10.0, left: 15.0)),
+                                Text(
+                                  '10\$ /month',
+                                  style: TextStyle(
+                                    fontSize: 15,
+                                    fontWeight: FontWeight.normal,
+                                  ),
+                                ),
+                              ],
+                            ),
+                          ],
+                        ),
+                      ),
                     ],
-                  )
+                  ),
 
                   ///
                 ],
@@ -358,11 +451,13 @@ class ProfileView extends StatelessWidget {
                     height: MediaQuery.of(context).size.height * 0.06,
                     child: ListTile(
                       leading: ImageRenderer(
-                          imageUrl: 'assets/image/history_icon.svg'),
+                          imageUrl: 'assets/image/history_icon.svg',
+                          width: 40,
+                          height: 40),
                       title: const Text(
                         "Listening history",
                         style: TextStyle(
-                            fontSize: 25, fontWeight: FontWeight.normal),
+                            fontSize: 20, fontWeight: FontWeight.normal),
                       ),
                       trailing: ImageRenderer(
                           imageUrl: 'assets/image/expand_arrow_icon.svg'),
@@ -378,44 +473,8 @@ class ProfileView extends StatelessWidget {
 
               ///
               Padding(
-                padding: const EdgeInsets.only(left: 20, right: 20),
-                child: Divider(
-                  color: Colors.grey.withOpacity(0.3),
-                  thickness: 1.0, // Line thickness
-                  height: 10,
-                ),
-              ),
-
-              ///
-              Row(
-                children: [
-                  const Padding(padding: EdgeInsets.only(left: 5)),
-                  SizedBox(
-                    width: MediaQuery.of(context).size.width * 0.97,
-                    height: MediaQuery.of(context).size.height * 0.06,
-                    child: ListTile(
-                      leading: ImageRenderer(
-                          imageUrl: 'assets/image/setting_icon.svg'),
-                      title: const Text(
-                        "Settings and privacy",
-                        style: TextStyle(
-                            fontSize: 25, fontWeight: FontWeight.normal),
-                      ),
-                      trailing: ImageRenderer(
-                          imageUrl: 'assets/image/expand_arrow_icon.svg'),
-                      onTap: () {
-                        print('Settings');
-                      },
-                    ),
-                  ),
-
-                  ///
-                ],
-              ),
-
-              ///
-              Padding(
-                padding: const EdgeInsets.only(left: 20, right: 20),
+                padding: const EdgeInsets.only(
+                    left: 20, right: 20, top: 10, bottom: 10),
                 child: Divider(
                   color: Colors.grey.withOpacity(0.3),
                   thickness: 1.0, // Line thickness
@@ -431,12 +490,64 @@ class ProfileView extends StatelessWidget {
                     width: MediaQuery.of(context).size.width * 0.98,
                     height: MediaQuery.of(context).size.height * 0.06,
                     child: ListTile(
-                      leading: ImageRenderer(
-                          imageUrl: 'assets/image/term_and_service_icon.svg'),
+                      leading: SizedBox(
+                        width: 40,
+                        height: 40,
+                        child: Padding(
+                          padding: const EdgeInsets.all(7),
+                          child: ImageRenderer(
+                              imageUrl: 'assets/image/setting_icon.svg',
+                              width: 30,
+                              height: 30),
+                        ),
+                      ),
+                      title: const Text(
+                        "Settings and privacy",
+                        style: TextStyle(
+                            fontSize: 20, fontWeight: FontWeight.normal),
+                      ),
+                      trailing: ImageRenderer(
+                        imageUrl: 'assets/image/expand_arrow_icon.svg',
+                      ),
+                      onTap: () {
+                        print('Settings');
+                      },
+                    ),
+                  ),
+
+                  ///
+                ],
+              ),
+
+              ///
+              Padding(
+                padding: const EdgeInsets.only(
+                    left: 20, right: 20, top: 10, bottom: 10),
+                child: Divider(
+                  color: Colors.grey.withOpacity(0.3),
+                  thickness: 1.0, // Line thickness
+                  height: 10,
+                ),
+              ),
+
+              ///
+              Row(
+                children: [
+                  const Padding(padding: EdgeInsets.all(0)),
+                  SizedBox(
+                    width: MediaQuery.of(context).size.width * 0.98,
+                    height: MediaQuery.of(context).size.height * 0.06,
+                    child: ListTile(
+                      leading: SizedBox(
+                        width: 40,
+                        height: 40,
+                        child: ImageRenderer(
+                            imageUrl: 'assets/image/term_and_service_icon.svg'),
+                      ),
                       title: const Text(
                         "Our terms and services",
                         style: TextStyle(
-                            fontSize: 25, fontWeight: FontWeight.normal),
+                            fontSize: 20, fontWeight: FontWeight.normal),
                       ),
                       trailing: ImageRenderer(
                           imageUrl: 'assets/image/expand_arrow_icon.svg'),
@@ -444,10 +555,19 @@ class ProfileView extends StatelessWidget {
                         print('Term and services pressed');
                       },
                     ),
-                  )
+                  ),
 
                   ///
                 ],
+              ),
+              Padding(
+                padding: const EdgeInsets.only(
+                    left: 20, right: 20, top: 10, bottom: 10),
+                child: Divider(
+                  color: Colors.grey.withOpacity(0.3),
+                  thickness: 1.0, // Line thickness
+                  height: 10,
+                ),
               ),
               SizedBox(height: 16.0),
               LogoutButton(
@@ -456,6 +576,7 @@ class ProfileView extends StatelessWidget {
                   await logoutButton.logout(context);
                 },
               ),
+              SizedBox(height: 16.0),
 
               ///
             ],

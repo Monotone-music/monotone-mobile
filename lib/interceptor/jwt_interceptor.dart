@@ -142,7 +142,7 @@ class DioClient {
 
   Future<Response?> keepAlive() async {
     try {
-      final response = await dioInter.get(BASE_URL + '/keepalive/');
+      final response = await dioInter.post(BASE_URL + '/auth/keep-alive/');
       print(response);
       return response;
     } catch (e) {

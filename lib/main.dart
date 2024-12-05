@@ -2,6 +2,7 @@ import 'dart:async';
 
 import 'package:app_links/app_links.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_stripe/flutter_stripe.dart';
 import 'package:go_router/go_router.dart';
 import 'package:monotone_flutter/interceptor/jwt_interceptor.dart';
 import 'package:monotone_flutter/view/bottom_tab_navi.dart';
@@ -25,14 +26,17 @@ import 'package:provider/provider.dart';
 // TrackHandler _trackHandler = TrackHandler();
 // late AudioHandler audioHandler;
 void main() async {
-  String initialRoute = '/login';
+  String initialRoute = '/';
   WidgetsFlutterBinding.ensureInitialized();
+  Stripe.publishableKey =
+      'pk_test_51PR8baLcSoLMTRiQjjqFJopXNY76FOx5YuYfyrQ9WwK4iA32jyWvNXzNdesfHkfyJv4QKXEhceUjL7qltHnaaLxk00qdPpyN4O';
 
   await setupServiceLocator();
   //Run
 
   final client = DioClient();
   final alive = await client.keepAlive();
+  print('alive response: ${alive?.data}');
   if (alive?.data == 200) {
     initialRoute = '/';
   }
@@ -59,6 +63,23 @@ class _MyAppState extends State<MyApp> {
     getIt<MediaManager>().init();
     _appLinks = AppLinks();
     _initDeepLinkListener();
+    _router = GoRouter(
+      initialLocation: widget.initialRoute,
+      routes: <RouteBase>[
+        GoRoute(
+          path: '/login',
+          builder: (context, state) {
+            return LoginPage();
+          },
+        ),
+        GoRoute(
+          path: '/',
+          builder: (context, state) {
+            return BottomTabNavigator();
+          },
+        ),
+      ],
+    );
   }
 
   void _initDeepLinkListener() {
@@ -80,24 +101,6 @@ class _MyAppState extends State<MyApp> {
 
   @override
   Widget build(BuildContext context) {
-    _router = GoRouter(
-      // initialLocation: widget.initialRoute,
-      routes: <RouteBase>[
-        GoRoute(
-          path: '/login',
-          builder: (context, state) {
-            return LoginPage();
-          },
-        ),
-        GoRoute(
-          path: '/',
-          builder: (context, state) {
-            return BottomTabNavigator();
-          },
-        ),
-      ],
-    );
-
     return MultiProvider(
       providers: [
         ChangeNotifierProvider(

@@ -1,8 +1,13 @@
 import 'package:flutter/material.dart';
+import 'package:monotone_flutter/controller/payment/subscription_controller.dart';
 import 'package:monotone_flutter/view/payment/transaction_status.dart';
 import 'package:qr_flutter/qr_flutter.dart';
+import 'package:monotone_flutter/controller/payment/services/stripe_services.dart';
 
 class PaymentPage extends StatelessWidget {
+  final StripeServices _stripeServices = StripeServices();
+  final SubscriptionController _subscriptionController =
+      SubscriptionController();
   final _formKey = GlobalKey<FormState>();
   final _cardNumberController = TextEditingController();
   final _expiryDateController = TextEditingController();
@@ -34,8 +39,12 @@ class PaymentPage extends StatelessWidget {
               SizedBox(height: 20),
               ElevatedButton(
                 onPressed: () {
-                  // Simulate payment process
-                  _processPayment(context);
+                  _subscriptionController.createSubscription(5000, 'usd').then(
+                    (secretKey) async {
+                      await _subscriptionController.initPaymentSheet(secretKey);
+                      await _subscriptionController.processPayment();
+                    },
+                  );
                 },
                 child: Text('Complete Payment'),
               ),

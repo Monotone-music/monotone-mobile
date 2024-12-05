@@ -64,8 +64,7 @@ class _LoginFormState extends State<LoginForm> {
           _errorMessage = 'There must be something wrong';
         });
       } else {
-        GoRouter.of(context).go('/home');
-        context.go('/home');
+        GoRouter.of(context).go('/');
       }
     }
   }
@@ -106,7 +105,7 @@ class _LoginFormState extends State<LoginForm> {
                 child: Column(
                   mainAxisSize: MainAxisSize.min,
                   children: [
-                    SizedBox(height: 40.0),
+                    // SizedBox(height: 40.0),
                     Text(
                       'Monotone',
                       style: TextStyle(

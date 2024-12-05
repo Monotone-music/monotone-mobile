@@ -45,7 +45,7 @@ class _TransactionStatusPageState extends State<TransactionStatusPage> {
                 // Navigate back to home profile page
                 Navigator.pushNamedAndRemoveUntil(
                   context,
-                  '/home',
+                  '/',
                   (Route<dynamic> route) => false,
                 );
               },
