@@ -9,7 +9,7 @@ Widget buildPlaylist(BuildContext context) {
       ),
       // const CurrentSongTitle(),
 
-      // const AddRemoveSongButtons(),
+      AddRemoveSongButtons(),
     ],
   );
 }
