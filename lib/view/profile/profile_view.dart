@@ -12,7 +12,7 @@ import 'package:monotone_flutter/models/profile_items.dart';
 import 'package:monotone_flutter/common/themes/theme_provider.dart';
 
 class ProfileView extends StatelessWidget {
-  final ProfileItems profile;
+  final Map<String, String> profile;
 
   ProfileView({required this.profile});
 
@@ -34,7 +34,8 @@ class ProfileView extends StatelessWidget {
             decoration: BoxDecoration(
               image: DecorationImage(
                 image: NetworkImage(
-                    profile.avatar), // Replace with your image path
+                  'https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcSbfe6jVBKeEynH9EtUr5gnN927eTZUJiuV8Q&s',
+                ), // Replace with your image path
                 fit: BoxFit.cover,
                 colorFilter: ColorFilter.mode(
                   changePrimary.withOpacity(0.8),
@@ -63,7 +64,8 @@ class ProfileView extends StatelessWidget {
                       ),
                       child: ClipOval(
                         child: ImageRenderer(
-                          imageUrl: profile.avatar,
+                          imageUrl:
+                              'https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcSbfe6jVBKeEynH9EtUr5gnN927eTZUJiuV8Q&s',
                           height: min(
                               MediaQuery.sizeOf(context).height * 0.13, 100),
                           width:
@@ -95,7 +97,7 @@ class ProfileView extends StatelessWidget {
                               SizedBox(
                                 width: MediaQuery.of(context).size.width * 0.35,
                                 child: Text(
-                                  profile.name,
+                                  profile['displayName'] ?? 'User Name',
                                   style: const TextStyle(
                                     fontSize: 25,
                                     fontWeight: FontWeight.bold,
@@ -152,7 +154,8 @@ class ProfileView extends StatelessWidget {
                                       MediaQuery.of(context).size.width * 0.30,
                                   child: Text.rich(TextSpan(children: [
                                     TextSpan(
-                                      text: '${profile.follower}',
+                                      // text: '${profile.follower}',
+                                      text: '100',
                                       style: TextStyle(
                                           fontSize: 18,
                                           fontWeight: FontWeight.bold,
@@ -172,7 +175,8 @@ class ProfileView extends StatelessWidget {
                                       MediaQuery.of(context).size.width * 0.30,
                                   child: Text.rich(TextSpan(children: [
                                     TextSpan(
-                                      text: '${profile.following}',
+                                      // text: '${profile.following}',
+                                      text: '100',
                                       style: TextStyle(
                                           fontSize: 18,
                                           fontWeight: FontWeight.bold,
@@ -203,7 +207,8 @@ class ProfileView extends StatelessWidget {
                                       width: MediaQuery.of(context).size.width *
                                           0.6,
                                       child: Text(
-                                        profile.identifier,
+                                        // profile.identifier,
+                                        'User ID: 123456',
                                         style: TextStyle(
                                             fontSize: 17,
                                             color:
@@ -276,10 +281,10 @@ class ProfileView extends StatelessWidget {
                       ),
 
                       ///
-                      const SizedBox(
+                      SizedBox(
                         child: Text(
-                          'Current plan: Free',
-                          style: TextStyle(
+                          'Current plan: ${profile['membershipType']}',
+                          style: const TextStyle(
                               fontSize: 18, fontWeight: FontWeight.bold),
                         ),
                       )

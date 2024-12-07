@@ -1,11 +1,7 @@
 import 'dart:convert';
-<<<<<<< HEAD
-import 'package:http/http.dart' as http;
-import 'package:monotone_flutter/common/api_url.dart';
-=======
 import 'package:http_interceptor/http_interceptor.dart';
+import 'package:monotone_flutter/common/api_url.dart';
 import 'package:monotone_flutter/interceptor/jwt_interceptor.dart';
->>>>>>> af87226b49359c090f6dd48b3d81f21b81352b2a
 
 import 'package:monotone_flutter/models/search_bar_items.dart'; // Import the SearchItem model
 

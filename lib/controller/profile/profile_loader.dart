@@ -3,7 +3,7 @@ import 'package:monotone_flutter/models/profile_items.dart';
 import 'package:monotone_flutter/view/profile/profile_view.dart';
 
 class ProfileLoader extends StatefulWidget {
-  final Future<ProfileItems> Function() fetchProfileData;
+  final Future<Map<String, String>> Function() fetchProfileData;
 
   ProfileLoader({required this.fetchProfileData});
 
@@ -12,7 +12,7 @@ class ProfileLoader extends StatefulWidget {
 }
 
 class _ProfileLoaderState extends State<ProfileLoader> {
-  late Future<ProfileItems> profileFuture;
+  late Future<Map<String, String>> profileFuture;
 
   @override
   void initState() {
@@ -22,7 +22,7 @@ class _ProfileLoaderState extends State<ProfileLoader> {
 
   @override
   Widget build(BuildContext context) {
-    return FutureBuilder<ProfileItems>(
+    return FutureBuilder<Map<String, String>>(
       future: profileFuture,
       builder: (context, snapshot) {
         if (snapshot.connectionState == ConnectionState.waiting) {

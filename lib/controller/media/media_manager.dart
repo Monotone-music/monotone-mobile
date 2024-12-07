@@ -1,11 +1,8 @@
 import 'package:flutter/foundation.dart';
-<<<<<<< HEAD
-import 'package:monotone_flutter/common/api_url.dart';
-=======
 import 'package:flutter_secure_storage/flutter_secure_storage.dart';
 import 'package:http_interceptor/http_interceptor.dart';
+import 'package:monotone_flutter/common/api_url.dart';
 import 'package:monotone_flutter/interceptor/jwt_interceptor.dart';
->>>>>>> af87226b49359c090f6dd48b3d81f21b81352b2a
 import 'package:monotone_flutter/models/release_group_model.dart';
 import 'notifiers/play_button_notifier.dart';
 import 'notifiers/progress_notifier.dart';
@@ -33,6 +30,7 @@ class MediaManager {
   MediaItem? get currentMediaItem => _audioHandler.mediaItem.value;
 
   final _audioHandler = getIt<AudioHandler>();
+  var queueCounter = 0;
 
   // Events: Calls coming from the UI
   void init() async {
@@ -89,18 +87,7 @@ class MediaManager {
 
     // Add the selected track first
     final selectedTrack = playlist[index];
-<<<<<<< HEAD
-    final selectedMediaItem = MediaItem(
-      id: selectedTrack.id,
-      album: albumName,
-      title: selectedTrack.title,
-      artist: selectedTrack.artistNames.join(', '),
-      artUri: Uri.parse('$BASE_URL/image/${selectedTrack.imageUrl}'),
-      extras: {'url': '$BASE_URL/tracks/stream/${selectedTrack.id}'},
-    );
-=======
     final selectedMediaItem = await _createMediaItem(selectedTrack, albumName);
->>>>>>> af87226b49359c090f6dd48b3d81f21b81352b2a
     await _audioHandler.addQueueItem(selectedMediaItem);
 
     // Add the rest of the playlist
@@ -124,7 +111,7 @@ class MediaManager {
     // print(imageResponse.body);
     // final accessToken = await _storage.read(key: 'accessToken');
     return MediaItem(
-      id: track.id,
+      id: '${track.id}_${queueCounter++}',
       album: albumName,
       title: track.title,
       artist: track.artistNames.join(', '),
@@ -139,23 +126,9 @@ class MediaManager {
 
   void loadPlaylist(List<Track> playlist, String albumName) async {
     print('playlist loading');
-<<<<<<< HEAD
-    // final songRepository = getIt<PlaylistRepository>();
-    final mediaItems = playlist.map((track) {
-      return MediaItem(
-        id: track.id,
-        album: albumName,
-        title: track.title,
-        artist: track.artistNames.join(', '),
-        artUri: Uri.parse('$BASE_URL/image/${track.imageUrl}'),
-        extras: {'url': '$BASE_URL/tracks/stream/${track.id}'},
-      );
-    }).toList();
-=======
     final mediaItems = await Future.wait(playlist.map((track) async {
       return await _createMediaItem(track, albumName);
     }).toList());
->>>>>>> af87226b49359c090f6dd48b3d81f21b81352b2a
     await _audioHandler.addQueueItems(mediaItems);
     print('playlist loaded: ${mediaItems}');
     // auto play the track after finish loading
@@ -183,7 +156,7 @@ class MediaManager {
 
     final fetchedTrack = track;
     final mediaItem = MediaItem(
-      id: fetchedTrack.id,
+      id: '${fetchedTrack.id}_${queueCounter++}',
       album: albumName,
       title: fetchedTrack.title,
       artist: fetchedTrack.artistNames.join(', '),

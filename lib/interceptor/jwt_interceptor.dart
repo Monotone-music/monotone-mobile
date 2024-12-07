@@ -80,27 +80,6 @@ class JwtInterceptor implements InterceptorContract {
     }
   }
 
-<<<<<<< HEAD
-  Future<Response> post(String path, dynamic data) async {
-    try {
-      final response = await dioInter.post(path, data: data);
-      // print(response);
-      return response;
-    } catch (e) {
-      print('Error during POST request: $e');
-      rethrow;
-    }
-  }
-
-  Future<Response?> keepAlive() async {
-    try {
-      final response = await dioInter.post(BASE_URL + '/auth/keep-alive/');
-      print(response);
-      return response;
-    } catch (e) {
-      print('Error during keepAlive request: $e');
-      return null; // Return null or a default Response object
-=======
   Future<void> saveToken(String tokenType, String value) async {
     switch (tokenType) {
       case 'accessToken':
@@ -109,7 +88,6 @@ class JwtInterceptor implements InterceptorContract {
       case 'refreshToken':
         await _storage.write(key: tokenType, value: value);
         break;
->>>>>>> af87226b49359c090f6dd48b3d81f21b81352b2a
     }
   }
 }

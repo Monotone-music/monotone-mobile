@@ -1,6 +1,9 @@
 // import 'package:monotone_mobile/stripe_services.dart';
 
+import 'dart:convert';
+
 import 'package:dio/dio.dart';
+import 'package:http_interceptor/http_interceptor.dart';
 import 'package:monotone_flutter/common/api_url.dart';
 import 'package:monotone_flutter/controller/payment/services/stripe_services.dart';
 import 'package:monotone_flutter/interceptor/jwt_interceptor.dart';
@@ -26,6 +29,7 @@ class SubscriptionController {
   Future<void> initPaymentSheet(String secretKey) async {
     try {
       await _stripeServices.init(secretKey);
+      print('Payment sheet initialized successfully.');
     } catch (e) {
       print('Error initializing payment sheet: $e');
     }
@@ -40,21 +44,33 @@ class SubscriptionController {
   }
 
   Future<String> createSubscription(int amount, String currency) async {
+    final httpClient = InterceptedClient.build(interceptors: [
+      JwtInterceptor(),
+    ]);
     const api = '$BASE_URL/payment/create-intent';
+    print('Creating subscription...');
+
     String resData;
-    final dioClient = DioClient();
     try {
-      final response = await dioClient.post(
-        api,
-        {
-          'amount': amount,
-          'currency': currency,
-        },
-      );
+      final response = await httpClient.post(Uri.parse(api),
+          headers: {
+            'Content-Type': 'application/json',
+          },
+          body: jsonEncode(
+            {
+              'amount': amount.toString(),
+              'currency': currency,
+              'metadata': {
+                'ky': 's',
+              },
+            },
+          ));
       if (response.statusCode == 200) {
         // Handle successful subscription creation
         print('Subscription created successfully');
-        final Map<String, dynamic> data = response.data;
+        var body = jsonDecode(response.body);
+        print('Response body: ${body['data']['intent']['client_secret']}');
+        final Map<String, dynamic> data = body;
         data['data']['intent']['client_secret'];
 
         print('Client secret: ${data['data']['intent']['client_secret']}');

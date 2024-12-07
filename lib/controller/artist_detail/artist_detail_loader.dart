@@ -1,10 +1,4 @@
 import 'dart:convert';
-<<<<<<< HEAD
-import 'package:flutter/material.dart';
-import 'package:http/http.dart' as http;
-import 'package:monotone_flutter/common/api_url.dart';
-=======
->>>>>>> af87226b49359c090f6dd48b3d81f21b81352b2a
 
 import 'package:flutter/material.dart';
 import 'package:http_interceptor/http_interceptor.dart';
@@ -35,12 +29,8 @@ class _ArtistDetailLoaderState extends State<ArtistDetailLoader> {
   }
 
   Future<Artist> fetchArtistData(String artistId) async {
-<<<<<<< HEAD
-    final response = await http.get(Uri.parse('$BASE_URL/artist/id/$artistId'));
-=======
     final response = await httpClient
         .get(Uri.parse('https://api2.ibarakoi.online/artist/id/$artistId'));
->>>>>>> af87226b49359c090f6dd48b3d81f21b81352b2a
     if (response.statusCode != 200) {
       throw Exception('Failed to load artist data');
     }
@@ -56,12 +46,8 @@ class _ArtistDetailLoaderState extends State<ArtistDetailLoader> {
   }
 
   Future<Map<String, String>> fetchImageFilenames(List<String> ids) async {
-<<<<<<< HEAD
-    final response = await http.get(Uri.parse('$BASE_URL/album'));
-=======
     final response =
         await httpClient.get(Uri.parse('https://api2.ibarakoi.online/album'));
->>>>>>> af87226b49359c090f6dd48b3d81f21b81352b2a
     if (response.statusCode != 200) {
       throw Exception('Failed to load album data');
     }
@@ -80,10 +66,6 @@ class _ArtistDetailLoaderState extends State<ArtistDetailLoader> {
     for (final id in ids) {
       for (final releaseGroupJson in releaseGroupsJson) {
         if (releaseGroupJson['_id'] == id) {
-<<<<<<< HEAD
-          imageFilenames[id] =
-              '$BASE_URL/image/${releaseGroupJson['image']['filename']}';
-=======
           final imageUrl =
               'https://api2.ibarakoi.online/image/${releaseGroupJson['image']['filename']}';
           final response = await httpClient.get(
@@ -92,7 +74,6 @@ class _ArtistDetailLoaderState extends State<ArtistDetailLoader> {
           if (response.statusCode == 200) {
             imageFilenames[id] = imageUrl;
           }
->>>>>>> af87226b49359c090f6dd48b3d81f21b81352b2a
           break;
         }
       }

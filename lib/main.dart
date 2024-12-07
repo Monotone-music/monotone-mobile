@@ -4,6 +4,7 @@ import 'package:app_links/app_links.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_stripe/flutter_stripe.dart';
 import 'package:go_router/go_router.dart';
+import 'package:http_interceptor/http_interceptor.dart';
 import 'package:monotone_flutter/interceptor/jwt_interceptor.dart';
 import 'package:monotone_flutter/view/bottom_tab_navi.dart';
 import 'package:audio_service/audio_service.dart';
@@ -34,11 +35,13 @@ void main() async {
   await setupServiceLocator();
   //Run
 
-  // final client = DioClient();
-  // final alive = await client.keepAlive();
+  // final httpClient = InterceptedClient.build(interceptors: [
+  //   JwtInterceptor(),
+  // ]);
+  // final alive = await httpClient.keepAlive();
   // print('alive response: ${alive?.data}');
   // if (alive?.data == 200) {
-  //   initialRoute = '/';
+  initialRoute = '/login';
   // }
 
   ///

@@ -52,7 +52,7 @@ class _MediaToolbarState extends State<MediaToolbar> {
             padding: const EdgeInsets.all(0.0),
             margin: const EdgeInsets.all(0.0),
             width: screenWidth,
-            height: 100.0,
+            height: 105.0,
             color:
                 isDarkMode ? const Color(0xFF333842) : const Color(0xFFAAB3C6),
             // padding: const EdgeInsets.all(4.0),

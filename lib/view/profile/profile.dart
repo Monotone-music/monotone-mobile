@@ -40,11 +40,7 @@ class ProfileBody extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     // Fetch the profile data from the service
-    Future<ProfileItems> fetchProfile() async {
-      // Simulate a network call or data fetching
-      await Future.delayed(Duration(seconds: 1));
-      return ProfileDataService().getProfileData();
-    }
+    final fetchProfile = () => ProfileDataService().fetchProfileApi();
 
     return ProfileLoader(fetchProfileData: fetchProfile);
   }

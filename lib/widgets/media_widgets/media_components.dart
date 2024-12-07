@@ -52,49 +52,40 @@ class Playlist extends StatelessWidget {
               final isPlaying =
                   mediaItem.id == pageManager.currentMediaItem?.id;
               return ListTile(
+                titleAlignment: ListTileTitleAlignment.center,
+                tileColor: isPlaying
+                    ? isDarkMode
+                        ? Colors.white.withOpacity(0.2)
+                        : Colors.black.withOpacity(0.1)
+                    : null,
                 leading: ClipRRect(
                   borderRadius: BorderRadius.circular(8.0),
-                  child: FutureBuilder<Response>(
-                    future: httpClient.get(
-                      Uri.parse(mediaItem.artUri?.toString() ?? ''),
-                    ),
-                    builder: (context, snapshot) {
-                      if (snapshot.connectionState == ConnectionState.waiting) {
-                        return Shimmer.fromColors(
-                          baseColor: Colors.grey[300]!,
-                          highlightColor: Colors.grey[100]!,
-                          child: Container(
-                            width: 50,
-                            height: 50,
-                            color: Colors.white,
-                          ),
-                        );
-                      } else if (snapshot.hasError) {
-                        return Image.asset(
-                          'assets/image/not_available.png',
-                          width: 50,
-                          height: 50,
-                        );
-                      } else if (snapshot.hasData) {
-                        final imageData = snapshot.data?.bodyBytes;
-                        return ImageRenderer(
-                          imageUrl: imageData,
-                          width: 50,
-                          height: 50,
-                        );
-                      } else {
-                        return Image.asset(
-                          'assets/image/album_1.png',
-                          width: 50,
-                          height: 50,
-                        );
-                      }
-                    },
+                  child: ImageRenderer(
+                    imageUrl: mediaItem.artUri?.toString() ??
+                        'assets/image/album_1.png',
+                    width: 50,
+                    height: 50,
                   ),
                 ),
                 title: Text(mediaItem.title),
                 subtitle: Text(
                   mediaItem.artist ?? 'Unknown Artist',
+                  style: Theme.of(context).textTheme.bodyMedium?.copyWith(
+                      color: isDarkMode
+                          ? Colors.white.withOpacity(0.7)
+                          : Colors.black,
+                      fontWeight: FontWeight.w300),
+                ),
+                onTap: () {
+                  getIt<AudioHandler>().skipToQueueItem(index);
+                },
+                trailing: IconButton(
+                  alignment: Alignment.center,
+                  icon: const Icon(Icons.remove_rounded),
+                  onPressed: () {
+                    getIt<AudioHandler>().removeQueueItemAt(index);
+                    // print('delete song at index: $index');
+                  },
                 ),
               );
             },
