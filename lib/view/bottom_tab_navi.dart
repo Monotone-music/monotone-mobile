@@ -58,85 +58,104 @@ class _BottomTabNavigatorState extends State<BottomTabNavigator> {
       body: Column(
         children: [
           Expanded(child: _tabs[_currentIndex]),
-          BottomNavigationBar(
-            currentIndex: _currentIndex,
-            selectedItemColor:
-                isDarkMode ? const Color(0xFF898989) : const Color(0xFF6E6E6E),
-            unselectedItemColor:
-                isDarkMode ? const Color(0xFF898989) : const Color(0xFF6E6E6E),
-            onTap: (index) {
-              setState(() {
-                _currentIndex = index;
-              });
-            },
-            items: [
-              BottomNavigationBarItem(
-                icon: ImageRenderer(
-                  imageUrl: 'assets/image/home_icon.svg',
-                  height: MediaQuery.of(context).size.height *
-                      0.05, // Adjust the height as needed
-                  width: MediaQuery.of(context).size.width *
-                      0.05, // Adjust the width as needed
+          Container(
+            // height: 65,
+            child: BottomNavigationBar(
+              currentIndex: _currentIndex,
+              // showSelectedLabels: false,
+              // showUnselectedLabels: false,
+              selectedItemColor: isDarkMode
+                  ? const Color(0xFF898989)
+                  : const Color(0xFF6E6E6E),
+              unselectedItemColor: isDarkMode
+                  ? const Color(0xFF898989)
+                  : const Color(0xFF6E6E6E),
+              onTap: (index) {
+                setState(() {
+                  _currentIndex = index;
+                });
+              },
+              items: [
+                BottomNavigationBarItem(
+                  icon: ImageRenderer(
+                    imageUrl: 'assets/image/home_icon.svg',
+                    height: MediaQuery.of(context).size.height *
+                        0.04, // Adjust the height as needed
+                    width: MediaQuery.of(context).size.width *
+                        0.04, // Adjust the width as needed
+                  ),
+                  activeIcon: ImageRenderer(
+                    imageUrl: 'assets/image/home_active_icon.svg',
+                    height: MediaQuery.of(context).size.height *
+                        0.04, // Adjust the height as needed
+                    width: MediaQuery.of(context).size.width * 0.04,
+                  ),
+                  label: 'Home',
                 ),
-                activeIcon: ImageRenderer(
-                  imageUrl: 'assets/image/home_active_icon.svg',
+                BottomNavigationBarItem(
+                  icon: ImageRenderer(
+                    imageUrl: 'assets/image/discover_icon.svg',
+                    height: MediaQuery.of(context).size.height *
+                        0.04, // Adjust the height as needed
+                    width: MediaQuery.of(context).size.width * 0.04,
+                  ),
+                  activeIcon: ImageRenderer(
+                    imageUrl:
+                        'assets/image/discover_active_icon.svg', ///// Discover has not received active icon yet
+                    height: MediaQuery.of(context).size.height *
+                        0.04, // Adjust the height as needed
+                    width: MediaQuery.of(context).size.width *
+                        0.04, // Adjust the width as needed
+                  ),
+                  label: 'Discover',
                 ),
-                label: 'Home',
-              ),
-              BottomNavigationBarItem(
-                icon: ImageRenderer(
-                  imageUrl: 'assets/image/discover_icon.svg',
-                  height: MediaQuery.of(context).size.height *
-                      0.05, // Adjust the height as needed
-                  width: MediaQuery.of(context).size.width * 0.05,
+                BottomNavigationBarItem(
+                  icon: ImageRenderer(
+                    imageUrl: 'assets/image/search_icon.svg',
+                    height: MediaQuery.of(context).size.height *
+                        0.04, // Adjust the height as needed
+                    width: MediaQuery.of(context).size.width * 0.04,
+                  ),
+                  activeIcon: ImageRenderer(
+                    imageUrl: 'assets/image/search_active_icon.svg',
+                    height: MediaQuery.of(context).size.height *
+                        0.04, // Adjust the height as needed
+                    width: MediaQuery.of(context).size.width * 0.04,
+                  ),
+                  label: 'Search',
                 ),
-                activeIcon: ImageRenderer(
-                  imageUrl:
-                      'assets/image/discover_active_icon.svg', ///// Discover has not received active icon yet
-                  height: MediaQuery.of(context).size.height *
-                      0.05, // Adjust the height as needed
-                  width: MediaQuery.of(context).size.width *
-                      0.05, // Adjust the width as needed
+                BottomNavigationBarItem(
+                  icon: ImageRenderer(
+                    imageUrl: 'assets/image/library_icon.svg',
+                    height: MediaQuery.of(context).size.height *
+                        0.04, // Adjust the height as needed
+                    width: MediaQuery.of(context).size.width * 0.04,
+                  ),
+                  activeIcon: ImageRenderer(
+                    imageUrl: 'assets/image/library_active_icon.svg',
+                    height: MediaQuery.of(context).size.height *
+                        0.04, // Adjust the height as needed
+                    width: MediaQuery.of(context).size.width * 0.04,
+                  ),
+                  label: 'Library',
                 ),
-                label: 'Discover',
-              ),
-              BottomNavigationBarItem(
-                icon: ImageRenderer(
-                  imageUrl: 'assets/image/search_icon.svg',
-                  height: MediaQuery.of(context).size.height *
-                      0.05, // Adjust the height as needed
-                  width: MediaQuery.of(context).size.width * 0.05,
+                BottomNavigationBarItem(
+                  icon: ImageRenderer(
+                    imageUrl: 'assets/image/me_icon.svg',
+                    height: MediaQuery.of(context).size.height *
+                        0.04, // Adjust the height as needed
+                    width: MediaQuery.of(context).size.width * 0.04,
+                  ),
+                  activeIcon: ImageRenderer(
+                    imageUrl: 'assets/image/me_active_icon.svg',
+                    height: MediaQuery.of(context).size.height *
+                        0.04, // Adjust the height as needed
+                    width: MediaQuery.of(context).size.width * 0.04,
+                  ),
+                  label: 'Me',
                 ),
-                activeIcon: ImageRenderer(
-                  imageUrl: 'assets/image/search_active_icon.svg',
-                ),
-                label: 'Search',
-              ),
-              BottomNavigationBarItem(
-                icon: ImageRenderer(
-                  imageUrl: 'assets/image/library_icon.svg',
-                  height: MediaQuery.of(context).size.height *
-                      0.05, // Adjust the height as needed
-                  width: MediaQuery.of(context).size.width * 0.05,
-                ),
-                activeIcon: ImageRenderer(
-                  imageUrl: 'assets/image/library_active_icon.svg',
-                ),
-                label: 'Library',
-              ),
-              BottomNavigationBarItem(
-                icon: ImageRenderer(
-                  imageUrl: 'assets/image/me_icon.svg',
-                  height: MediaQuery.of(context).size.height *
-                      0.05, // Adjust the height as needed
-                  width: MediaQuery.of(context).size.width * 0.05,
-                ),
-                activeIcon: ImageRenderer(
-                  imageUrl: 'assets/image/me_active_icon.svg',
-                ),
-                label: 'Me',
-              ),
-            ],
+              ],
+            ),
           ),
           if (_isMediaPlayerVisible)
             MediaToolbar(

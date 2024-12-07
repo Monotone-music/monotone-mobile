@@ -49,50 +49,43 @@ class Playlist extends StatelessWidget {
             itemCount: playlist.length,
             itemBuilder: (context, index) {
               final mediaItem = playlist[index];
+              final isPlaying =
+                  mediaItem.id == pageManager.currentMediaItem?.id;
               return ListTile(
+                titleAlignment: ListTileTitleAlignment.center,
+                tileColor: isPlaying
+                    ? isDarkMode
+                        ? Colors.white.withOpacity(0.2)
+                        : Colors.black.withOpacity(0.1)
+                    : null,
                 leading: ClipRRect(
                   borderRadius: BorderRadius.circular(8.0),
-                  child: FutureBuilder<Response>(
-                    future: httpClient.get(
-                      Uri.parse(mediaItem.artUri?.toString() ?? ''),
-                    ),
-                    builder: (context, snapshot) {
-                      if (snapshot.connectionState == ConnectionState.waiting) {
-                        return Shimmer.fromColors(
-                          baseColor: Colors.grey[300]!,
-                          highlightColor: Colors.grey[100]!,
-                          child: Container(
-                            width: 50,
-                            height: 50,
-                            color: Colors.white,
-                          ),
-                        );
-                      } else if (snapshot.hasError) {
-                        return Image.asset(
-                          'assets/image/not_available.png',
-                          width: 50,
-                          height: 50,
-                        );
-                      } else if (snapshot.hasData) {
-                        final imageData = snapshot.data?.bodyBytes;
-                        return ImageRenderer(
-                          imageUrl: imageData,
-                          width: 50,
-                          height: 50,
-                        );
-                      } else {
-                        return Image.asset(
-                          'assets/image/album_1.png',
-                          width: 50,
-                          height: 50,
-                        );
-                      }
-                    },
+                  child: ImageRenderer(
+                    imageUrl: mediaItem.artUri?.toString() ??
+                        'assets/image/album_1.png',
+                    width: 50,
+                    height: 50,
                   ),
                 ),
                 title: Text(mediaItem.title),
                 subtitle: Text(
                   mediaItem.artist ?? 'Unknown Artist',
+                  style: Theme.of(context).textTheme.bodyMedium?.copyWith(
+                      color: isDarkMode
+                          ? Colors.white.withOpacity(0.7)
+                          : Colors.black,
+                      fontWeight: FontWeight.w300),
+                ),
+                onTap: () {
+                  getIt<AudioHandler>().skipToQueueItem(index);
+                },
+                trailing: IconButton(
+                  alignment: Alignment.center,
+                  icon: const Icon(Icons.remove_rounded),
+                  onPressed: () {
+                    getIt<AudioHandler>().removeQueueItemAt(index);
+                    // print('delete song at index: $index');
+                  },
                 ),
               );
             },
@@ -128,7 +121,9 @@ class AddRemoveSongButtons extends StatelessWidget {
 }
 
 class AudioProgressBar extends StatelessWidget {
-  const AudioProgressBar({Key? key}) : super(key: key);
+  final bool? isTimeIndicatorInvisible;
+  const AudioProgressBar({Key? key, this.isTimeIndicatorInvisible})
+      : super(key: key);
   @override
   Widget build(BuildContext context) {
     final pageManager = getIt<MediaManager>();
@@ -138,10 +133,42 @@ class AudioProgressBar extends StatelessWidget {
         return ProgressBar(
           barHeight: 3.0,
           thumbRadius: 5.0,
+          thumbCanPaintOutsideBar: false,
           progress: value.current,
           buffered: value.buffered,
           total: value.total,
           onSeek: pageManager.seek,
+          timeLabelLocation: isTimeIndicatorInvisible == true
+              ? TimeLabelLocation.none
+              : TimeLabelLocation.below,
+        );
+      },
+    );
+  }
+}
+
+class AudioProgressBarSmall extends StatelessWidget {
+  final bool? isTimeIndicatorInvisible;
+  const AudioProgressBarSmall({Key? key, this.isTimeIndicatorInvisible})
+      : super(key: key);
+  @override
+  Widget build(BuildContext context) {
+    final pageManager = getIt<MediaManager>();
+    return ValueListenableBuilder<ProgressBarState>(
+      valueListenable: pageManager.progressNotifier,
+      builder: (_, value, __) {
+        return ProgressBar(
+          barHeight: 2.0,
+          thumbRadius: 4.0,
+          thumbCanPaintOutsideBar: false,
+          thumbGlowRadius: 15,
+          progress: value.current,
+          buffered: value.buffered,
+          total: value.total,
+          onSeek: pageManager.seek,
+          timeLabelLocation: isTimeIndicatorInvisible == true
+              ? TimeLabelLocation.none
+              : TimeLabelLocation.below,
         );
       },
     );
@@ -169,7 +196,8 @@ class AudioControlButtons extends StatelessWidget {
 }
 
 class RepeatButton extends StatelessWidget {
-  const RepeatButton({Key? key}) : super(key: key);
+  final double? size;
+  const RepeatButton({Key? key, this.size}) : super(key: key);
   @override
   Widget build(BuildContext context) {
     final pageManager = getIt<MediaManager>();
@@ -190,6 +218,7 @@ class RepeatButton extends StatelessWidget {
         }
         return IconButton(
           icon: icon,
+          iconSize: size,
           onPressed: pageManager.repeat,
         );
       },
@@ -198,7 +227,8 @@ class RepeatButton extends StatelessWidget {
 }
 
 class PreviousSongButton extends StatelessWidget {
-  const PreviousSongButton({Key? key}) : super(key: key);
+  final double? size;
+  const PreviousSongButton({Key? key, this.size}) : super(key: key);
   @override
   Widget build(BuildContext context) {
     final pageManager = getIt<MediaManager>();
@@ -207,6 +237,7 @@ class PreviousSongButton extends StatelessWidget {
       builder: (_, isFirst, __) {
         return IconButton(
           icon: const Icon(Icons.skip_previous),
+          iconSize: size,
           onPressed: (isFirst) ? null : pageManager.previous,
         );
       },
@@ -225,7 +256,7 @@ class PlayButton extends StatelessWidget {
         switch (value) {
           case ButtonState.loading:
             return Container(
-              margin: const EdgeInsets.all(8.0),
+              // margin: const EdgeInsets.all(2.0),
               width: 32.0,
               height: 32.0,
               child: const CircularProgressIndicator(),
@@ -249,7 +280,8 @@ class PlayButton extends StatelessWidget {
 }
 
 class NextSongButton extends StatelessWidget {
-  const NextSongButton({Key? key}) : super(key: key);
+  final double? size;
+  const NextSongButton({Key? key, this.size}) : super(key: key);
   @override
   Widget build(BuildContext context) {
     final pageManager = getIt<MediaManager>();
@@ -258,6 +290,7 @@ class NextSongButton extends StatelessWidget {
       builder: (_, isLast, __) {
         return IconButton(
           icon: const Icon(Icons.skip_next),
+          iconSize: size,
           onPressed: (isLast) ? null : pageManager.next,
         );
       },
@@ -266,7 +299,8 @@ class NextSongButton extends StatelessWidget {
 }
 
 class ShuffleButton extends StatelessWidget {
-  const ShuffleButton({Key? key}) : super(key: key);
+  final double? size;
+  const ShuffleButton({Key? key, this.size}) : super(key: key);
   @override
   Widget build(BuildContext context) {
     final pageManager = getIt<MediaManager>();
@@ -277,35 +311,10 @@ class ShuffleButton extends StatelessWidget {
           icon: (isEnabled)
               ? const Icon(Icons.shuffle)
               : const Icon(Icons.shuffle, color: Colors.grey),
+          iconSize: size,
           onPressed: pageManager.shuffle,
         );
       },
     );
   }
 }
-
-//custom widget
-// class ChunkAudioControl extends StatelessWidget {
-//   final _audioHandler = GetIt.instance<MyAudioHandler>();
-
-//   Future<void> _testStreamAudioSource() async {
-//     const apiUrl =
-//         'https://api2.ibarakoi.online/tracks/stream/6740a0c66357c3ed99dedf9e';
-//     print('apiUrl: $apiUrl');
-//     await _audioHandler.addStreamAudioSourceFromApi(apiUrl);
-//   }
-
-//   @override
-//   Widget build(BuildContext context) {
-//     return SizedBox(
-//       width: 300,
-//       height: 50,
-//       child: Center(
-//         child: ElevatedButton(
-//           onPressed: _testStreamAudioSource,
-//           child: const Text('Test Stream Audio Source'),
-//         ),
-//       ),
-//     );
-//   }
-// }

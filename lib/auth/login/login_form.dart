@@ -6,7 +6,8 @@ import 'package:provider/provider.dart';
 import 'package:monotone_flutter/view/profile/profile.dart';
 
 import 'package:monotone_flutter/common/themes/theme_provider.dart';
-import 'package:monotone_flutter/view/bottom_tab_navi.dart';
+import 'package:provider/provider.dart';
+import 'package:go_router/go_router.dart';
 import 'package:monotone_flutter/widgets/routes/routes.dart';
 import 'package:monotone_flutter/auth/login/login_button.dart';
 import 'package:monotone_flutter/auth/login/login_loader.dart';
@@ -67,11 +68,7 @@ class _LoginFormState extends State<LoginForm> {
           _errorMessage = 'There must be something wrong';
         });
       } else {
-        // Navigate to home page
-        Navigator.pushReplacement(
-          context,
-          MaterialPageRoute(builder: (context) => BottomTabNavigator()),
-        );
+        GoRouter.of(context).go('/');
       }
     }
   }
@@ -112,7 +109,7 @@ class _LoginFormState extends State<LoginForm> {
                 child: Column(
                   mainAxisSize: MainAxisSize.min,
                   children: [
-                    SizedBox(height: 40.0),
+                    // SizedBox(height: 40.0),
                     Text(
                       'Monotone',
                       style: TextStyle(

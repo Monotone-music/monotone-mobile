@@ -49,11 +49,13 @@ class _MediaToolbarState extends State<MediaToolbar> {
         return GestureDetector(
           onTap: _toggleMediaPlayer,
           child: Container(
+            padding: const EdgeInsets.all(0.0),
+            margin: const EdgeInsets.all(0.0),
             width: screenWidth,
-            height: 60.0,
+            height: 105.0,
             color:
                 isDarkMode ? const Color(0xFF333842) : const Color(0xFFAAB3C6),
-            padding: const EdgeInsets.all(8.0),
+            // padding: const EdgeInsets.all(4.0),
             child: ValueListenableBuilder<String>(
               valueListenable: pageManager.currentSongTitleNotifier,
               builder: (context, currentSongTitle, child) {
@@ -61,51 +63,92 @@ class _MediaToolbarState extends State<MediaToolbar> {
                 final imageUrl = currentMediaItem?.artUri?.toString() ??
                     'assets/image/not_available.png';
                 final trackName = currentMediaItem?.title ?? 'No media loaded';
-                final artistName = currentMediaItem?.artist ?? ':D';
+                final artistName =
+                    currentMediaItem?.artist ?? 'Xue hue piao piao';
 
-                return Row(
+                return Column(
                   children: [
-                    // Media thumbnail
-                    ClipRRect(
-                      borderRadius: BorderRadius.circular(8.0),
-                      child: ImageRenderer(
-                        imageUrl: imageUrl,
-                        width: 50,
-                        height: 50,
-                        // fit: BoxFit.cover,
-                      ),
-                    ),
-                    const SizedBox(width: 8.0),
-                    // Track Name and Artist Name
-                    Expanded(
-                      child: Column(
-                        crossAxisAlignment: CrossAxisAlignment.start,
-                        mainAxisAlignment: MainAxisAlignment.center,
-                        children: [
-                          Text(
-                            trackName,
-                            style: Theme.of(context).textTheme.bodyMedium,
-                            overflow: TextOverflow.ellipsis,
+                    Row(
+                      mainAxisAlignment: MainAxisAlignment.center,
+                      crossAxisAlignment: CrossAxisAlignment.center,
+                      children: [
+                        // Media thumbnail
+                        SizedBox(
+                          width: 6.0,
+                        ),
+                        ClipRRect(
+                          borderRadius: BorderRadius.circular(8),
+                          child: ImageRenderer(
+                            imageUrl: imageUrl,
+                            width: 85,
+                            height: 85,
+                            // fit: BoxFit.cover,
                           ),
-                          const SizedBox(height: 4.0),
-                          Text(
-                            artistName,
-                            style: Theme.of(context)
-                                .textTheme
-                                .bodySmall!
-                                .copyWith(
-                                  color: isDarkMode
-                                      ? const Color(0xFFAAB3C6).withOpacity(0.6)
-                                      : const Color(0xFF333842)
-                                          .withOpacity(0.6),
+                        ),
+                        // const SizedBox(width: 8.0),
+                        // Track Name and Artist Name
+                        Expanded(
+                          child: Column(
+                            crossAxisAlignment: CrossAxisAlignment.center,
+                            mainAxisAlignment: MainAxisAlignment.center,
+                            children: [
+                              const Padding(
+                                padding: EdgeInsets.only(
+                                  left: 10.0,
+                                  right: 10.0,
+                                  top: 4.0,
+                                  bottom: 4.0,
                                 ),
-                            overflow: TextOverflow.ellipsis,
+                                child: AudioProgressBarSmall(
+                                  isTimeIndicatorInvisible: true,
+                                ),
+                              ),
+                              Text(
+                                trackName,
+                                style: Theme.of(context).textTheme.bodyMedium,
+                                overflow: TextOverflow.ellipsis,
+                              ),
+                              // const SizedBox(height: 4.0),
+                              Text(
+                                artistName,
+                                style: Theme.of(context)
+                                    .textTheme
+                                    .bodySmall!
+                                    .copyWith(
+                                      color: isDarkMode
+                                          ? const Color(0xFFAAB3C6)
+                                              .withOpacity(0.6)
+                                          : const Color(0xFF333842)
+                                              .withOpacity(0.6),
+                                      // fontSize: 10,
+                                    ),
+                                overflow: TextOverflow.ellipsis,
+                              ),
+                              const Row(
+                                mainAxisAlignment:
+                                    MainAxisAlignment.spaceEvenly,
+                                crossAxisAlignment: CrossAxisAlignment.center,
+                                children: [
+                                  RepeatButton(
+                                    size: 20,
+                                  ),
+                                  PreviousSongButton(
+                                    size: 20,
+                                  ),
+                                  PlayButton(),
+                                  NextSongButton(
+                                    size: 20,
+                                  ),
+                                  ShuffleButton(
+                                    size: 20,
+                                  ),
+                                ],
+                              ),
+                            ],
                           ),
-                        ],
-                      ),
+                        ),
+                      ],
                     ),
-                    // Other toolbar elements (e.g., play/pause button)
-                    const PlayButton(),
                   ],
                 );
               },

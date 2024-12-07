@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_secure_storage/flutter_secure_storage.dart';
 import 'package:http_interceptor/http_interceptor.dart';
 import 'package:provider/provider.dart';
 import 'dart:convert';
@@ -24,6 +25,18 @@ class _HomePageState extends State<HomePage> {
   void initState() {
     super.initState();
     releaseGroups = fetchReleaseGroups();
+  }
+
+  Future<void> _checkFirstTimeUser() async {
+    final secureStorage = FlutterSecureStorage();
+
+    if (await secureStorage.read(key: 'isLoggedIn') != 'true') {
+      // Navigate to login page
+      Navigator.pushReplacement(
+        context,
+        MaterialPageRoute(builder: (context) => LoginPage()),
+      );
+    }
   }
 
   Future<List<Map<String, String>>> fetchReleaseGroups() async {

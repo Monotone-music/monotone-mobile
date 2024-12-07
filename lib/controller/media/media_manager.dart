@@ -1,6 +1,7 @@
 import 'package:flutter/foundation.dart';
 import 'package:flutter_secure_storage/flutter_secure_storage.dart';
 import 'package:http_interceptor/http_interceptor.dart';
+import 'package:monotone_flutter/common/api_url.dart';
 import 'package:monotone_flutter/interceptor/jwt_interceptor.dart';
 import 'package:monotone_flutter/models/release_group_model.dart';
 import 'notifiers/play_button_notifier.dart';
@@ -158,11 +159,8 @@ class MediaManager {
       album: albumName,
       title: fetchedTrack.title,
       artist: fetchedTrack.artistNames.join(', '),
-      artUri: Uri.parse(
-          'https://api2.ibarakoi.online/image/${fetchedTrack.imageUrl}'),
-      extras: {
-        'url': 'https://api2.ibarakoi.online/tracks/stream/${fetchedTrack.id}'
-      },
+      artUri: Uri.parse('$BASE_URL/image/${fetchedTrack.imageUrl}'),
+      extras: {'url': '$BASE_URL/tracks/stream/${fetchedTrack.id}'},
     );
     // fetchAndPrintApiResponse(mediaItem.extras!['url'] as String);
 

@@ -1,11 +1,12 @@
 import 'dart:convert';
 import 'package:http_interceptor/http_interceptor.dart';
+import 'package:monotone_flutter/common/api_url.dart';
 import 'package:monotone_flutter/interceptor/jwt_interceptor.dart';
 
 import 'package:monotone_flutter/models/search_bar_items.dart'; // Import the SearchItem model
 
 class SearchBarLoader {
-  final String baseUrl = 'https://api2.ibarakoi.online/search/?q=';
+  final String baseUrl = '$BASE_URL/search/?q=';
 
   Future<SearchResults> fetchSearchResults(String query) async {
     final httpClient = InterceptedClient.build(interceptors: [
