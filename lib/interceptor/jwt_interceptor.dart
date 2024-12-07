@@ -21,8 +21,11 @@ class JwtInterceptor implements InterceptorContract {
     if (accessToken != null) {
       request.headers['Authorization'] = 'Bearer $accessToken';
     }
-    print(request.url.data);
 
+    // Log the request body
+    // if (request is Request) {
+    //   print('Request body: ${request.body}');
+    // }
     return request;
   }
 
@@ -77,6 +80,7 @@ class JwtInterceptor implements InterceptorContract {
       return token;
     } catch (e) {
       print(e);
+      return null;
     }
   }
 
@@ -103,9 +107,13 @@ class ExpiredTokenRetryPolicy extends RetryPolicy {
   @override
   Future<bool> shouldAttemptRetryOnResponse(BaseResponse response) async {
     if (response.statusCode == 401) {
-      _refreshTokenService.refreshToken();
-      print('Retry again');
-      return true;
+      print('Retrying...');
+      final newToken = await _refreshTokenService.refreshToken();
+      if (newToken != null) {
+        // Add the new token to the request headers
+        response.request?.headers['Authorization'] = 'Bearer $newToken';
+        return true;
+      }
     }
     return false;
   }

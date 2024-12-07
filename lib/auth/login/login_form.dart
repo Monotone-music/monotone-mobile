@@ -10,7 +10,7 @@ import 'package:provider/provider.dart';
 import 'package:go_router/go_router.dart';
 import 'package:monotone_flutter/widgets/routes/routes.dart';
 import 'package:monotone_flutter/auth/login/login_button.dart';
-import 'package:monotone_flutter/auth/login/login_loader.dart';
+import 'package:monotone_flutter/auth/login/services/login_loader.dart';
 
 class LoginForm extends StatefulWidget {
   @override

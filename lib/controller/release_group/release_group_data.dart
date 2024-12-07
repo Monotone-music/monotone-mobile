@@ -8,7 +8,7 @@ import 'package:monotone_flutter/models/release_group_model.dart';
 Future<Map<String, dynamic>> fetchReleaseGroupData(String id) async {
   final httpClient = InterceptedClient.build(interceptors: [
     JwtInterceptor(),
-  ]);
+  ], retryPolicy: ExpiredTokenRetryPolicy());
 
   final releaseGroupResponse =
       await httpClient.get(Uri.parse('$BASE_URL/album/id/$id'));

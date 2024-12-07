@@ -20,7 +20,7 @@ class _ArtistDetailLoaderState extends State<ArtistDetailLoader> {
   late Future<Artist> artistFuture;
   final httpClient = InterceptedClient.build(interceptors: [
     JwtInterceptor(),
-  ]);
+  ],retryPolicy: ExpiredTokenRetryPolicy());
 
   @override
   void initState() {

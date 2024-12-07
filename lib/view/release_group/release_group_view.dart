@@ -120,7 +120,7 @@ Widget buildAlbumImageWithBackButton(
     ThemeProvider themeProvider) {
   final httpClient = InterceptedClient.build(interceptors: [
     JwtInterceptor(),
-  ]);
+  ], retryPolicy: ExpiredTokenRetryPolicy());
   return Stack(
     children: [
       Container(
@@ -303,7 +303,7 @@ Widget buildTrackList(BuildContext context, ReleaseGroup releaseGroup,
     bool isDarkMode, Map<String, String> imageCache) {
   final httpClient = InterceptedClient.build(interceptors: [
     JwtInterceptor(),
-  ]);
+  ], retryPolicy: ExpiredTokenRetryPolicy());
 
   ///
   return ListView.builder(

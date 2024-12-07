@@ -11,7 +11,7 @@ class SearchBarLoader {
   Future<SearchResults> fetchSearchResults(String query) async {
     final httpClient = InterceptedClient.build(interceptors: [
       JwtInterceptor(),
-    ]);
+    ], retryPolicy: ExpiredTokenRetryPolicy());
     // Add a delay to simulate network latency
     await Future.delayed(Duration(seconds: 1));
     final response = await httpClient.get(Uri.parse('$baseUrl$query'));

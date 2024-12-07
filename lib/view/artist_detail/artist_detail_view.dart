@@ -18,7 +18,7 @@ class ArtistDetailView extends StatelessWidget {
 
   final httpClient = InterceptedClient.build(interceptors: [
     JwtInterceptor(),
-  ]);
+  ], retryPolicy: ExpiredTokenRetryPolicy());
 
   ///
   @override

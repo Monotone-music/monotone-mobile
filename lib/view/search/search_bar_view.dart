@@ -60,7 +60,7 @@ class CustomSearchDelegate extends SearchDelegate {
   final SearchBarLoader searchBarLoader = SearchBarLoader();
   final httpClient = InterceptedClient.build(interceptors: [
     JwtInterceptor(),
-  ]);
+  ], retryPolicy: ExpiredTokenRetryPolicy());
 
   ///SET DELAY TIME
   final SearchDebouncer debouncer =
