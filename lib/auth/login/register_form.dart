@@ -1,9 +1,9 @@
 import 'dart:math';
+import 'package:monotone_flutter/auth/login/services/register_loader.dart';
 import 'package:provider/provider.dart';
 import 'package:flutter/material.dart';
 
 import 'package:monotone_flutter/auth/login/register_button.dart';
-import 'package:monotone_flutter/auth/login/register_loader.dart';
 import 'package:monotone_flutter/common/themes/theme_provider.dart';
 import 'package:monotone_flutter/widgets/routes/routes.dart';
 
