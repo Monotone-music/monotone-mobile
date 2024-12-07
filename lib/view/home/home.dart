@@ -42,7 +42,7 @@ class _HomePageState extends State<HomePage> {
   Future<List<Map<String, String>>> fetchReleaseGroups() async {
     final httpClient = InterceptedClient.build(interceptors: [
       JwtInterceptor(),
-    ]);
+    ], retryPolicy: ExpiredTokenRetryPolicy());
     final response =
         await httpClient.get(Uri.parse('https://api2.ibarakoi.online/album/'));
 

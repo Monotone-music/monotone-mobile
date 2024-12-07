@@ -40,7 +40,7 @@ class Playlist extends StatelessWidget {
     final pageManager = getIt<MediaManager>();
     final httpClient = InterceptedClient.build(interceptors: [
       JwtInterceptor(),
-    ]);
+    ], retryPolicy: ExpiredTokenRetryPolicy());
     return Expanded(
       child: ValueListenableBuilder<List<MediaItem>>(
         valueListenable: pageManager.playlistNotifier,
@@ -51,6 +51,7 @@ class Playlist extends StatelessWidget {
               final mediaItem = playlist[index];
               final isPlaying =
                   mediaItem.id == pageManager.currentMediaItem?.id;
+              // print('Media Item: ${mediaItem.artist}');
               return ListTile(
                 titleAlignment: ListTileTitleAlignment.center,
                 tileColor: isPlaying

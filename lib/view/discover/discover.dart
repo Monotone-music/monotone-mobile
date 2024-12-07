@@ -83,7 +83,7 @@ class _DiscoverPageState extends State<DiscoverPage> {
   Widget _buildPanel() {
     final httpClient = InterceptedClient.build(interceptors: [
       JwtInterceptor(),
-    ]);
+    ], retryPolicy: ExpiredTokenRetryPolicy());
     final baseUrl =
         'https://api2.ibarakoi.online/image/091d57bd-5799-4f26-916d-b510fe1e5f96';
 

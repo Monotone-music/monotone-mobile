@@ -37,7 +37,7 @@ class _PlaylistMiniState extends State<PlaylistMini> {
     final imageUrl = widget.trackItem['imageUrl'];
     final httpClient = InterceptedClient.build(interceptors: [
       JwtInterceptor(),
-    ]);
+    ], retryPolicy: ExpiredTokenRetryPolicy());
 
     return GestureDetector(
       onTap: () async {
@@ -89,7 +89,7 @@ class _PlaylistMiniState extends State<PlaylistMini> {
                     final imageData = snapshot.data?.bodyBytes;
                     if (imageData != null) {
                       return ImageRenderer(
-                        imageUrl:  imageData,
+                        imageUrl: imageData,
                         width: 60,
                         height: 60,
                       );

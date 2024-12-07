@@ -103,8 +103,8 @@ class MediaManager {
     final imageResponse = await httpClient.get(
       Uri.parse('https://api2.ibarakoi.online/image/${track.imageUrl}'),
     );
-    // final imageUrl =
-    //     imageResponse.statusCode == 200 ? imageResponse.body : null;
+    final imageUrl =
+        imageResponse.statusCode == 200 ? imageResponse.body : null;
 
     // Retrieve the token from secure storage
     // print(imageResponse.body);
@@ -114,7 +114,7 @@ class MediaManager {
       album: albumName,
       title: track.title,
       artist: track.artistNames.join(', '),
-      // artUri: imageUrl != null ? Uri.parse(imageUrl) : null,
+      artUri: imageUrl != null ? Uri.parse(imageUrl) : null,
       // artHeaders:
       //     accessToken != null ? {'Authorization': 'Bearer $accessToken'} : null,
       extras: {

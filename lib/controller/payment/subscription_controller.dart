@@ -45,7 +45,7 @@ class SubscriptionController {
   Future<String> createSubscription(int amount, String currency) async {
     final httpClient = InterceptedClient.build(interceptors: [
       JwtInterceptor(),
-    ]);
+    ], retryPolicy: ExpiredTokenRetryPolicy());
     const api = '$BASE_URL/payment/create-intent';
     String resData;
     try {

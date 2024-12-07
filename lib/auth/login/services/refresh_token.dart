@@ -7,7 +7,7 @@ class RefreshTokenService {
   final FlutterSecureStorage _storage = const FlutterSecureStorage();
   final String BASE_URL = 'https://api2.ibarakoi.online';
 
-  Future<void> refreshToken() async {
+  Future<String?> refreshToken() async {
     final refreshToken = await _storage.read(key: 'refreshToken');
     if (refreshToken == null) {
       print('No refresh token found');
@@ -25,7 +25,6 @@ class RefreshTokenService {
       body: jsonEncode({'refreshToken': refreshToken}),
     );
 
-    print('Refresh token response body: ${response.body}');
 
     if (response.statusCode == 200) {
       final body = jsonDecode(response.body);
@@ -33,8 +32,10 @@ class RefreshTokenService {
       final newRefreshToken = body['data']['refreshToken'];
       await _storage.write(key: 'accessToken', value: newAccessToken);
       await _storage.write(key: 'refreshToken', value: newRefreshToken);
+      return newAccessToken;
     } else {
-      // print('Failed to refresh token: ${response.body}');
+      print('Failed to refresh token: ${response.body}');
+      return null;
       // Handle refresh token failure (e.g., log out the user)
     }
   }

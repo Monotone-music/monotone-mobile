@@ -13,7 +13,7 @@ Widget buildMainPlayer(BuildContext context, MyAudioHandler mediaPlayerProvider,
   print('main Player: ${imageUrl}');
   final httpClient = InterceptedClient.build(interceptors: [
     JwtInterceptor(),
-  ]);
+  ], retryPolicy: ExpiredTokenRetryPolicy());
   return Container(
     height: MediaQuery.of(context).size.height,
     padding: const EdgeInsets.all(1.0),
@@ -46,7 +46,6 @@ Widget buildMainPlayer(BuildContext context, MyAudioHandler mediaPlayerProvider,
                 return Icon(Icons.error);
               } else if (snapshot.hasData) {
                 final imageData = snapshot.data?.bodyBytes;
-                print('Anime Man: ${imageData}');
                 if (imageData is Uint8List) {
                   return ImageRenderer(
                     imageUrl: imageData,
