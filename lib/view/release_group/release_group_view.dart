@@ -1,8 +1,9 @@
 import 'package:flutter/material.dart';
-import 'package:monotone_flutter/common/api_url.dart';
+import 'package:http_interceptor/http_interceptor.dart';
 import 'package:monotone_flutter/common/themes/theme_provider.dart';
 import 'package:monotone_flutter/controller/media/media_manager.dart';
 import 'package:monotone_flutter/controller/media/services/service_locator.dart';
+import 'package:monotone_flutter/interceptor/jwt_interceptor.dart';
 import 'package:monotone_flutter/models/release_group_model.dart';
 import 'package:monotone_flutter/widgets/image_widgets/image_renderer.dart';
 
@@ -117,35 +118,66 @@ Widget buildAlbumImageWithBackButton(
     ReleaseGroup releaseGroup,
     Map<String, String> imageCache,
     ThemeProvider themeProvider) {
+  final httpClient = InterceptedClient.build(interceptors: [
+    JwtInterceptor(),
+  ]);
   return Stack(
     children: [
       Container(
         height: 400,
         width: double.infinity,
-        child: Stack(
-          children: [
-            ImageRenderer(
-              imageUrl: '$BASE_URL/image/${imageCache[releaseGroup.imageUrl]}',
-              width: double.infinity,
-              height: 400,
-              // fit: BoxFit.cover,
+        child: FutureBuilder<Response>(
+          future: httpClient.get(
+            Uri.parse(
+              'https://api2.ibarakoi.online/image/${imageCache[releaseGroup.imageUrl]}',
             ),
-            Container(
-              decoration: BoxDecoration(
-                gradient: LinearGradient(
-                  begin: Alignment.topCenter,
-                  end: Alignment.bottomCenter,
-                  colors: [
-                    Colors.transparent,
-                    themeProvider.getThemeColorSurface().withOpacity(0.1),
-                    themeProvider.getThemeColorSurface().withOpacity(0.3),
-                    themeProvider.getThemeColorSurface().withOpacity(0.5),
-                    themeProvider.getThemeColorSurface(),
-                  ],
+          ),
+          builder: (context, snapshot) {
+            if (snapshot.connectionState == ConnectionState.waiting) {
+              return Shimmer.fromColors(
+                baseColor: Colors.grey[300]!,
+                highlightColor: Colors.grey[100]!,
+                child: Container(
+                  width: 50,
+                  height: 50,
+                  color: Colors.white,
                 ),
-              ),
-            ),
-          ],
+              );
+            } else if (snapshot.hasError) {
+              return Center(child: Icon(Icons.error));
+            } else if (snapshot.hasData) {
+              final imageData = snapshot.data?.bodyBytes;
+              return Stack(
+                children: [
+                  ImageRenderer(
+                    imageUrl: imageData,
+                    width: double.infinity,
+                    height: 400,
+                    // fit: BoxFit.cover,
+                  ),
+                  Container(
+                    decoration: BoxDecoration(
+                      gradient: LinearGradient(
+                        begin: Alignment.topCenter,
+                        end: Alignment.bottomCenter,
+                        colors: [
+                          Colors.transparent,
+                          themeProvider.getThemeColorSurface().withOpacity(0.1),
+                          themeProvider.getThemeColorSurface().withOpacity(0.3),
+                          themeProvider.getThemeColorSurface().withOpacity(0.5),
+                          themeProvider.getThemeColorSurface(),
+                        ],
+                      ),
+                    ),
+                  ),
+                ],
+              );
+            } else {
+              return Center(
+                child: Image.asset('assets/image/not_available.png'),
+              );
+            }
+          },
         ),
       ),
       Positioned(
@@ -269,6 +301,11 @@ Widget buildAlbumImageWithBackButton(
 
 Widget buildTrackList(BuildContext context, ReleaseGroup releaseGroup,
     bool isDarkMode, Map<String, String> imageCache) {
+  final httpClient = InterceptedClient.build(interceptors: [
+    JwtInterceptor(),
+  ]);
+
+  ///
   return ListView.builder(
     shrinkWrap: true,
     physics: const NeverScrollableScrollPhysics(),
@@ -286,18 +323,40 @@ Widget buildTrackList(BuildContext context, ReleaseGroup releaseGroup,
                 textAlign: TextAlign.end,
               ),
             ),
-            // Text(
-            //   track.position.toString(),
-            //   textAlign: TextAlign.end,
-            // ),
             const SizedBox(width: 15),
-
             ClipRRect(
               borderRadius: BorderRadius.circular(8.0),
-              child: ImageRenderer(
-                imageUrl: '$BASE_URL/image/${imageCache[track.imageUrl]}',
-                width: 60,
-                height: 60,
+              child: FutureBuilder<Response>(
+                future: httpClient.get(
+                  Uri.parse(
+                    'https://api2.ibarakoi.online/image/${imageCache[track.imageUrl]}',
+                  ),
+                ),
+                builder: (context, snapshot) {
+                  if (snapshot.connectionState == ConnectionState.waiting) {
+                    return Shimmer.fromColors(
+                      baseColor: Colors.grey[300]!,
+                      highlightColor: Colors.grey[100]!,
+                      child: Container(
+                        width: 50,
+                        height: 50,
+                        color: Colors.white,
+                      ),
+                    );
+                  } else if (snapshot.hasError) {
+                    return Icon(Icons.error);
+                  } else if (snapshot.hasData) {
+                    final imageData = snapshot.data?.bodyBytes;
+                    return ImageRenderer(
+                      imageUrl: imageData,
+                      width: 60,
+                      height: 60,
+                    );
+                  } else {
+                    return Image.asset('assets/image/not_available.png',
+                        width: 60, height: 60);
+                  }
+                },
               ),
             ),
           ],

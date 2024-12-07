@@ -1,6 +1,10 @@
 import 'dart:math';
 import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
+import 'package:provider/provider.dart';
+
+import 'package:monotone_flutter/view/profile/profile.dart';
+
 import 'package:monotone_flutter/common/themes/theme_provider.dart';
 import 'package:provider/provider.dart';
 import 'package:go_router/go_router.dart';

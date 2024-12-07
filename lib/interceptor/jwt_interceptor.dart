@@ -1,134 +1,86 @@
-import 'package:dio/dio.dart';
+import 'dart:convert';
+import 'package:http/http.dart' as http;
+
 import 'package:flutter_secure_storage/flutter_secure_storage.dart';
+import 'package:http_interceptor/http_interceptor.dart';
+import 'package:monotone_flutter/auth/login/services/refresh_token.dart';
 
-//COULD BE A CLASS, PROVIDER ... BASED ON YOUR INTENTIONS
-class DioClient {
-  Dio dioInter = Dio();
-  String BASE_URL = 'https://api2.ibarakoi.online';
-  String? accessToken;
-
+class JwtInterceptor implements InterceptorContract {
   final _storage = const FlutterSecureStorage();
+  final BASE_URL = 'https://api2.ibarakoi.online';
 
-  DioClient() {
-    dioInter.interceptors.add(getInterceptor());
-  }
-
-// InterceptorsWrapper
-  InterceptorsWrapper getInterceptor() {
-    return InterceptorsWrapper(
-        //
-        onRequest: (request, handler) async {
-      // print(request.path);
-      String? accessToken = await readAccessToken();
-      request.headers['Authorization'] = 'Bearer $accessToken';
-      return handler.next(request);
-
-      ///
-    }, onResponse: (response, handler) async {
-      if (response.statusCode == 200) {
-        var path = response.requestOptions.uri.path;
-        //CHECK THE PATH
-        switch (path) {
-          case ('/auth/login' || '/auth/refresh'):
-            {
-              saveToken(response);
-
-              /// /USE THIS TO TEST THE AUTHENTICATION
-              // await _storage.delete(key: 'accessToken');
-              // await _storage.delete(key: 'refreshTokenToken');
-              // print('theres nothting');
-              // print(await _storage.read(key: 'accessToken'));
-              break;
-            }
-
-          ///
-        }
-
-        // print(response.requestOptions.uri.path);
-      }
-      return handler.next(response);
-    },
-        // RETURN ERROR IF ENCOUNTER
-        onError: (DioException error, handler) async {
-      String errorMessage = error.response?.data['message'];
-
-      if (error.response?.statusCode == 400) {
-        // SWITCH CASE
-        switch (errorMessage) {
-          //CHECK AND REFRESH TOKEN
-          case ('Invalid JWT' || 'Token expired'):
-            {
-              dynamic oldToken = readRefreshToken();
-              if (oldToken != null) {
-                //IF THE REFRESH LINK RETURN
-                //ANYTHING APART FROM STATUS 200
-                //DELETE EVERY TOKEN IN THE STORAGE
-                dynamic newToken = refreshToken();
-                dynamic checkExist = readAccessToken();
-                if (checkExist != null) saveToken(newToken);
-                return handler.resolve(await _retry(error.requestOptions));
-              }
-            }
-
-          ///
-        }
-      }
-      return handler.next(error);
-    });
-  }
-
-  Future<Response> refreshToken() async {
-//TAKE THE REFRESH TOKEN FROM THE URL
-    const refreshTokenUrl = '/auth/refresh';
-    final refreshToken = await _storage.read(key: 'refreshToken');
-    final response = await dioInter
-        .post(refreshTokenUrl, data: {'refreshToken': refreshToken});
-// TAKE A NEW ACCESS TOKEN AND DELETE OLD TOKEN
-    if (response.statusCode != 200) {
-      await _storage.delete(key: 'accessToken');
-      await _storage.delete(key: 'refreshTokenToken');
+  ///REQUIRED FUNCTION
+  @override
+  Future<BaseRequest> interceptRequest({required BaseRequest request}) async {
+    if (request.url.path == '/auth/login') {
+      return request;
     }
-    print(response.data);
+
+    ///
+    String? accessToken = await readToken('accessToken');
+    if (accessToken != null) {
+      request.headers['Authorization'] = 'Bearer $accessToken';
+    }
+    print(request.url.data);
+
+    return request;
+  }
+
+  @override
+  Future<BaseResponse> interceptResponse(
+      {required BaseResponse response}) async {
+    int statusCode = response.statusCode;
+
+    if (response.request?.url.path == '/auth/login' ||
+        response.request?.url.path == '/auth/refresh') {
+      ///
+      if (response is Response) {
+        var body = jsonDecode(response.body);
+        switch (statusCode) {
+          case 200:
+            await saveToken('accessToken', body['data']['accessToken']);
+            await saveToken('refreshToken', body['data']['refreshToken']);
+            break;
+          case 401:
+            print('Refresh failed');
+            break;
+        }
+
+        ///
+      }
+    }
     return response;
   }
 
-  ///RETRY THE REQUEST
-  Future<Response<dynamic>> _retry(RequestOptions requestOptions) async {
-    final options =
-        Options(method: requestOptions.method, headers: requestOptions.headers);
-    return dioInter.request<dynamic>(requestOptions.path,
-        data: requestOptions.data,
-        queryParameters: requestOptions.queryParameters,
-        options: options);
+  @override
+  Future<bool> shouldInterceptRequest() async {
+    return true;
   }
 
-  Future<void> saveToken(response) async {
-    await _storage.write(
-        key: 'accessToken', value: response.data['data']['accessToken']);
-    await _storage.write(
-        key: 'refreshToken', value: response.data['data']['refreshToken']);
+  @override
+  Future<bool> shouldInterceptResponse() async {
+    return true;
   }
 
-  ////// READ ACCESSTOKEN FROM STORAGE
-  Future<String?> readAccessToken() async {
-    return await _storage.read(key: 'accessToken');
-  }
-
-  /// READ REFRESH TOKEN FROM STORAGE
-  Future<String?> readRefreshToken() async {
-    return await _storage.read(key: 'refreshToken');
-  }
-
-  Future<Response> get(String path) async {
+  /// LOGIC FUNCTION
+  Future<String?> readToken(String tokenType) async {
+    var token;
     try {
-      final response = await dioInter.get(path);
-      return response;
+      switch (tokenType) {
+        case 'accessToken':
+          token = await _storage.read(key: tokenType);
+          break;
+        case 'refreshToken':
+          token = await _storage.read(key: tokenType);
+          break;
+      }
+      return token;
     } catch (e) {
-      print('Error during GET request: $e');
-      rethrow;
+      print(e);
     }
   }
 
+<<<<<<< HEAD
   Future<Response> post(String path, dynamic data) async {
     try {
       final response = await dioInter.post(path, data: data);
@@ -148,6 +100,35 @@ class DioClient {
     } catch (e) {
       print('Error during keepAlive request: $e');
       return null; // Return null or a default Response object
+=======
+  Future<void> saveToken(String tokenType, String value) async {
+    switch (tokenType) {
+      case 'accessToken':
+        await _storage.write(key: tokenType, value: value);
+        break;
+      case 'refreshToken':
+        await _storage.write(key: tokenType, value: value);
+        break;
+>>>>>>> af87226b49359c090f6dd48b3d81f21b81352b2a
     }
+  }
+}
+
+class ExpiredTokenRetryPolicy extends RetryPolicy {
+  final RefreshTokenService _refreshTokenService = RefreshTokenService();
+
+  @override
+  bool shouldAttemptRetryOnException(Exception reason, BaseRequest request) {
+    return true;
+  }
+
+  @override
+  Future<bool> shouldAttemptRetryOnResponse(BaseResponse response) async {
+    if (response.statusCode == 401) {
+      _refreshTokenService.refreshToken();
+      print('Retry again');
+      return true;
+    }
+    return false;
   }
 }

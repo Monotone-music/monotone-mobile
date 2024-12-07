@@ -1,11 +1,11 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_secure_storage/flutter_secure_storage.dart';
-import 'package:monotone_flutter/common/api_url.dart';
-import 'package:monotone_flutter/widgets/skeletons/skeleton_home.dart';
+import 'package:http_interceptor/http_interceptor.dart';
 import 'package:provider/provider.dart';
-import 'package:http/http.dart' as http;
 import 'dart:convert';
 
+import 'package:monotone_flutter/interceptor/jwt_interceptor.dart';
+import 'package:monotone_flutter/widgets/skeletons/skeleton_home.dart';
 import 'package:monotone_flutter/view/login.dart';
 import 'package:monotone_flutter/view/home/home_music_sect.dart';
 import 'package:monotone_flutter/common/themes/theme_provider.dart';
@@ -40,13 +40,17 @@ class _HomePageState extends State<HomePage> {
   }
 
   Future<List<Map<String, String>>> fetchReleaseGroups() async {
-    final response = await http.get(Uri.parse('$BASE_URL/album/'));
+    final httpClient = InterceptedClient.build(interceptors: [
+      JwtInterceptor(),
+    ]);
+    final response =
+        await httpClient.get(Uri.parse('https://api2.ibarakoi.online/album/'));
 
     if (response.statusCode != 200) {
       throw Exception('Failed to load release groups');
     }
-
-    final data = json.decode(response.body)['data']['releaseGroup'];
+    var body = jsonDecode(response.body);
+    final data = body['data']['releaseGroup'];
     return List<Map<String, String>>.from(data.map((item) => {
           'id': item['_id'].toString(),
           'title': item['title'].toString(),

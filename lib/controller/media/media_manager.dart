@@ -1,5 +1,11 @@
 import 'package:flutter/foundation.dart';
+<<<<<<< HEAD
 import 'package:monotone_flutter/common/api_url.dart';
+=======
+import 'package:flutter_secure_storage/flutter_secure_storage.dart';
+import 'package:http_interceptor/http_interceptor.dart';
+import 'package:monotone_flutter/interceptor/jwt_interceptor.dart';
+>>>>>>> af87226b49359c090f6dd48b3d81f21b81352b2a
 import 'package:monotone_flutter/models/release_group_model.dart';
 import 'notifiers/play_button_notifier.dart';
 import 'notifiers/progress_notifier.dart';
@@ -19,7 +25,10 @@ class MediaManager {
   final playButtonNotifier = PlayButtonNotifier();
   final isLastSongNotifier = ValueNotifier<bool>(true);
   final isShuffleModeEnabledNotifier = ValueNotifier<bool>(false);
-
+  final FlutterSecureStorage _storage = const FlutterSecureStorage();
+  final http.Client httpClient = InterceptedClient.build(interceptors: [
+    JwtInterceptor(),
+  ]);
   // Extra
   MediaItem? get currentMediaItem => _audioHandler.mediaItem.value;
 
@@ -77,11 +86,10 @@ class MediaManager {
     await _audioHandler.stop();
     await _audioHandler.seek(Duration.zero);
     removeAll();
-    // loadPlaylist(playlist, albumName);
-    // stop();
 
     // Add the selected track first
     final selectedTrack = playlist[index];
+<<<<<<< HEAD
     final selectedMediaItem = MediaItem(
       id: selectedTrack.id,
       album: albumName,
@@ -90,6 +98,9 @@ class MediaManager {
       artUri: Uri.parse('$BASE_URL/image/${selectedTrack.imageUrl}'),
       extras: {'url': '$BASE_URL/tracks/stream/${selectedTrack.id}'},
     );
+=======
+    final selectedMediaItem = await _createMediaItem(selectedTrack, albumName);
+>>>>>>> af87226b49359c090f6dd48b3d81f21b81352b2a
     await _audioHandler.addQueueItem(selectedMediaItem);
 
     // Add the rest of the playlist
@@ -102,8 +113,33 @@ class MediaManager {
     play();
   }
 
+  Future<MediaItem> _createMediaItem(Track track, String albumName) async {
+    final imageResponse = await httpClient.get(
+      Uri.parse('https://api2.ibarakoi.online/image/${track.imageUrl}'),
+    );
+    // final imageUrl =
+    //     imageResponse.statusCode == 200 ? imageResponse.body : null;
+
+    // Retrieve the token from secure storage
+    // print(imageResponse.body);
+    // final accessToken = await _storage.read(key: 'accessToken');
+    return MediaItem(
+      id: track.id,
+      album: albumName,
+      title: track.title,
+      artist: track.artistNames.join(', '),
+      // artUri: imageUrl != null ? Uri.parse(imageUrl) : null,
+      // artHeaders:
+      //     accessToken != null ? {'Authorization': 'Bearer $accessToken'} : null,
+      extras: {
+        'url': 'https://api2.ibarakoi.online/tracks/stream/${track.id}',
+      },
+    );
+  }
+
   void loadPlaylist(List<Track> playlist, String albumName) async {
     print('playlist loading');
+<<<<<<< HEAD
     // final songRepository = getIt<PlaylistRepository>();
     final mediaItems = playlist.map((track) {
       return MediaItem(
@@ -115,6 +151,11 @@ class MediaManager {
         extras: {'url': '$BASE_URL/tracks/stream/${track.id}'},
       );
     }).toList();
+=======
+    final mediaItems = await Future.wait(playlist.map((track) async {
+      return await _createMediaItem(track, albumName);
+    }).toList());
+>>>>>>> af87226b49359c090f6dd48b3d81f21b81352b2a
     await _audioHandler.addQueueItems(mediaItems);
     print('playlist loaded: ${mediaItems}');
     // auto play the track after finish loading

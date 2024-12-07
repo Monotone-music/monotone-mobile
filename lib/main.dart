@@ -34,12 +34,12 @@ void main() async {
   await setupServiceLocator();
   //Run
 
-  final client = DioClient();
-  final alive = await client.keepAlive();
-  print('alive response: ${alive?.data}');
-  if (alive?.data == 200) {
-    initialRoute = '/';
-  }
+  // final client = DioClient();
+  // final alive = await client.keepAlive();
+  // print('alive response: ${alive?.data}');
+  // if (alive?.data == 200) {
+  //   initialRoute = '/';
+  // }
 
   ///
   runApp(MyApp(initialRoute: initialRoute));

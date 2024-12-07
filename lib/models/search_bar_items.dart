@@ -35,7 +35,7 @@ class AlbumInfo {
   final List<String> release;
   final String releaseType;
   final String title;
-  final Image image;
+  final mediaImage image;
 
   AlbumInfo({
     required this.releaseEvent,
@@ -60,7 +60,7 @@ class AlbumInfo {
       release: releases,
       releaseType: json['releaseType'],
       title: json['title'],
-      image: Image.fromJson(json['image']),
+      image: mediaImage.fromJson(json['image']),
     );
   }
 }
@@ -82,7 +82,7 @@ class ReleaseEvent {
   }
 }
 
-class Image {
+class mediaImage {
   final int width;
   final int height;
   final String id;
@@ -92,7 +92,7 @@ class Image {
   final int size;
   final String hash;
 
-  Image({
+  mediaImage({
     required this.width,
     required this.height,
     required this.id,
@@ -103,8 +103,8 @@ class Image {
     required this.hash,
   });
 
-  factory Image.fromJson(Map<String, dynamic> json) {
-    return Image(
+  factory mediaImage.fromJson(Map<String, dynamic> json) {
+    return mediaImage(
       width: json['dimensions']['width'],
       height: json['dimensions']['height'],
       id: json['_id'],
@@ -126,7 +126,7 @@ class RecordingInfo {
   final String displayedArtist;
   final double duration;
   final String title;
-  final Image image;
+  final mediaImage image;
   final Media media;
 
   RecordingInfo({
@@ -155,7 +155,7 @@ class RecordingInfo {
       displayedArtist: json['displayedArtist'],
       duration: (json['duration'] as num).toDouble(),
       title: json['title'],
-      image: Image.fromJson(json['image']),
+      image: mediaImage.fromJson(json['image']),
       media: Media.fromJson(json['media']),
     );
   }

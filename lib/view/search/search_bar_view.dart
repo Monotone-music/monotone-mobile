@@ -1,12 +1,19 @@
+import 'dart:async';
+
 import 'package:flutter/material.dart';
 import 'package:monotone_flutter/common/api_url.dart';
+import 'package:http_interceptor/http_interceptor.dart';
+import 'package:monotone_flutter/widgets/time_bouncer_widgets/search_debouncer.dart';
+import 'package:provider/provider.dart';
+
 import 'package:monotone_flutter/common/themes/theme_provider.dart';
 import 'package:monotone_flutter/models/search_bar_items.dart';
 import 'package:monotone_flutter/view/release_group/release_group.dart';
 import 'package:monotone_flutter/widgets/image_widgets/image_renderer.dart';
-import 'package:provider/provider.dart';
 import 'package:monotone_flutter/controller/search/search_bar_loader.dart';
 import 'package:monotone_flutter/view/artist_detail/artist_detail.dart';
+import 'package:monotone_flutter/interceptor/jwt_interceptor.dart';
+import 'package:shimmer/shimmer.dart';
 
 class SearchBarView extends StatefulWidget {
   final String hintText;
@@ -51,8 +58,20 @@ class _SearchBarViewState extends State<SearchBarView> {
 
 class CustomSearchDelegate extends SearchDelegate {
   final SearchBarLoader searchBarLoader = SearchBarLoader();
+  final httpClient = InterceptedClient.build(interceptors: [
+    JwtInterceptor(),
+  ]);
+
+  ///SET DELAY TIME
+  final SearchDebouncer debouncer =
+      SearchDebouncer(delay: Duration(seconds: 1));
+  dynamic result;
+
   List<SearchItem> searchResults = [];
 
+  ///LOGIC FUNCITON
+
+  /// VIEW FUNCITON
   @override
   List<Widget> buildActions(BuildContext context) {
     return [
@@ -79,15 +98,28 @@ class CustomSearchDelegate extends SearchDelegate {
 
   @override
   Widget buildResults(BuildContext context) {
+    debouncer.debounce(() {
+      result = searchBarLoader.fetchSearchResults(query);
+    });
+
     if (query.isEmpty) {
       return Center(
           child: Text('No results found', style: TextStyle(fontSize: 18)));
     }
+
     return FutureBuilder<SearchResults>(
-      future: searchBarLoader.fetchSearchResults(query),
+      future: result,
       builder: (context, snapshot) {
         if (snapshot.connectionState == ConnectionState.waiting) {
-          return Center(child: CircularProgressIndicator());
+          return Shimmer.fromColors(
+            baseColor: Colors.grey[300]!,
+            highlightColor: Colors.grey[100]!,
+            child: Container(
+              width: 40,
+              height: 40,
+              color: Colors.white,
+            ),
+          );
         } else if (snapshot.hasError) {
           return Center(
               child: Text('Error: ${snapshot.error}',
@@ -114,14 +146,20 @@ class CustomSearchDelegate extends SearchDelegate {
 
   @override
   Widget buildSuggestions(BuildContext context) {
+    debouncer.debounce(() {
+      result = searchBarLoader.fetchSearchResults(query);
+    });
+
     if (query.isEmpty) {
       return Container();
     }
     return FutureBuilder<SearchResults>(
-      future: searchBarLoader.fetchSearchResults(query),
+      future: result,
       builder: (context, snapshot) {
         if (snapshot.connectionState == ConnectionState.waiting) {
-          return Center(child: CircularProgressIndicator());
+          return Center(
+            child: CircularProgressIndicator(),
+          );
         } else if (snapshot.hasError) {
           return Center(
               child: Text('Error: ${snapshot.error}',
@@ -190,58 +228,122 @@ class CustomSearchDelegate extends SearchDelegate {
     if (items.isNotEmpty) {
       list.add(_buildSectionTitle(title));
       list.addAll(items.map((item) {
-        String imageUrl;
-        if (item.source.type == 'album') {
-          imageUrl = item.source.albumInfo?.image != null
-              ? '$BASE_URL/image/${item.source.albumInfo!.image.filename}'
-              : 'assets/image/not_available.png';
-        } else if (item.source.type == 'recording') {
-          imageUrl = item.source.recordingInfo?.image != null
-              ? '$BASE_URL/image/${item.source.recordingInfo!.image.filename}'
-              : 'assets/image/not_available.png';
-        } else {
-          imageUrl = 'assets/image/not_available.png';
+        String imageUrl = 'assets/image/not_available.png'; // Placeholder image
+
+        if (item.source.type == 'album' &&
+            item.source.albumInfo?.image != null) {
+          imageUrl =
+              'https://api2.ibarakoi.online/image/${item.source.albumInfo!.image.filename}';
+        } else if (item.source.type == 'recording' &&
+            item.source.recordingInfo?.image != null) {
+          imageUrl =
+              'https://api2.ibarakoi.online/image/${item.source.recordingInfo!.image.filename}';
         }
 
-        ///
-        return InkWell(
-          onTap: () {
-            if (item.source.type == 'album') {
-              Navigator.push(
-                context,
-                MaterialPageRoute(
-                  builder: (context) =>
-                      ReleaseGroupPage(id: item.source.albumInfo!.id),
+        return FutureBuilder<Response>(
+          future: httpClient.get(
+            Uri.parse(imageUrl),
+          ),
+          builder: (context, snapshot) {
+            if (snapshot.connectionState == ConnectionState.waiting) {
+              return ListTile(
+                leading: Shimmer.fromColors(
+                  baseColor: Colors.grey[300]!,
+                  highlightColor: Colors.grey[100]!,
+                  child: Container(
+                    width: 50,
+                    height: 50,
+                    color: Colors.white,
+                  ),
+                ),
+                title: Text(item.source.value ?? 'No title',
+                    style: TextStyle(fontSize: 24)),
+                subtitle: Text(
+                  item.source.type != null
+                      ? '${item.source.type![0].toUpperCase()}${item.source.type!.substring(1)}'
+                      : 'No type',
+                  style: TextStyle(
+                      fontSize: 16, color: changePrimary.withOpacity(0.5)),
                 ),
               );
-            } // Handle item tap
-            if (item.source.type == 'recording') {
-              Navigator.push(
-                  context,
-                  MaterialPageRoute(
-                    builder: (context) => ArtistDetailPage(
-                        artistId: item.source.recordingInfo!.artists[0].id),
-                  ));
+            } else if (snapshot.hasError) {
+              return ListTile(
+                leading: Icon(Icons.error),
+                title: Text(item.source.value ?? 'No title',
+                    style: TextStyle(fontSize: 24)),
+                subtitle: Text(
+                  item.source.type != null
+                      ? '${item.source.type![0].toUpperCase()}${item.source.type!.substring(1)}'
+                      : 'No type',
+                  style: TextStyle(
+                      fontSize: 16, color: changePrimary.withOpacity(0.5)),
+                ),
+              );
+            } else if (snapshot.hasData) {
+              final imageData = snapshot.data?.bodyBytes;
+              return InkWell(
+                onTap: () {
+                  if (item.source.type == 'album') {
+                    Navigator.push(
+                      context,
+                      MaterialPageRoute(
+                        builder: (context) =>
+                            ReleaseGroupPage(id: item.source.albumInfo!.id),
+                      ),
+                    );
+                  } // Handle item tap
+                  if (item.source.type == 'recording') {
+                    Navigator.push(
+                      context,
+                      MaterialPageRoute(
+                        builder: (context) => ArtistDetailPage(
+                          artistId: item.source.recordingInfo!.artists[0].id,
+                        ),
+                      ),
+                    );
+                  }
+                },
+                child: ListTile(
+                  leading: imageData != null
+                      ? ImageRenderer(
+                          imageUrl: imageData,
+                          width: 50,
+                          height: 50,
+                        )
+                      : ImageRenderer(
+                          imageUrl: 'assets/image/not_available.png',
+                          width: 50,
+                          height: 50,
+                        ),
+                  title: Text(item.source.value ?? 'No title',
+                      style: TextStyle(fontSize: 20)),
+                  subtitle: Text(
+                    item.source.type != null
+                        ? '${item.source.type![0].toUpperCase()}${item.source.type!.substring(1)}'
+                        : 'No type',
+                    style: TextStyle(
+                        fontSize: 16, color: changePrimary.withOpacity(0.5)),
+                  ),
+                ),
+              );
+            } else {
+              return ListTile(
+                leading: Image.asset('assets/image/not_available.png',
+                    width: 50, height: 50),
+                title: Text(item.source.value ?? 'No title',
+                    style: TextStyle(fontSize: 24)),
+                subtitle: Text(
+                  item.source.type != null
+                      ? '${item.source.type![0].toUpperCase()}${item.source.type!.substring(1)}'
+                      : 'No type',
+                  style: TextStyle(
+                      fontSize: 16, color: changePrimary.withOpacity(0.5)),
+                ),
+              );
+
+              ///
             }
           },
-
-          ///
-          child: ListTile(
-            leading: ImageRenderer(
-              imageUrl: imageUrl,
-              width: 50,
-              height: 50,
-            ),
-            title: Text(item.source.value ?? 'No title',
-                style: TextStyle(fontSize: 24)),
-            subtitle: Text(
-              item.source.type != null
-                  ? '${item.source.type![0].toUpperCase()}${item.source.type!.substring(1)}'
-                  : 'No type',
-              style: TextStyle(
-                  fontSize: 16, color: changePrimary.withOpacity(0.5)),
-            ),
-          ),
         );
 
         ///

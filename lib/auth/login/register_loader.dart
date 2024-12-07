@@ -1,29 +1,30 @@
+import 'dart:convert';
+
 import 'package:dio/dio.dart';
+import 'package:http_interceptor/http_interceptor.dart';
 import 'package:monotone_flutter/interceptor/jwt_interceptor.dart';
 
 class RegisterLoader {
-  final String apiUrl = 'https://api2.ibarakoi.online/account/register';
+  final Uri apiUrl = Uri.parse('https://api2.ibarakoi.online/account/register');
 
   Future<String> register(
       String username, String password, String email) async {
-    final dioInterceptor = DioClient();
+    final httpClient = InterceptedClient.build(interceptors: [
+      JwtInterceptor(),
+    ]);
     try {
-      final response = await dioInterceptor.post(
+      var body = jsonEncode({'username': username, 'password': password, 'email':email});
+      final response = await httpClient.post(
         apiUrl,
-        {
-          'username': username,
-          'email': email,
-          'password': password,
-        },
+        body: body,
+        headers: {"Content-Type": "application/json"},
       );
 
       if (response.statusCode == 201) {
         // Parse the JSON response
-        final Map<String, dynamic> jsonResponse = response.data;
-        final String message = jsonResponse['message'];
+        print(response);
 
         // Print the message
-        print('Message: $message');
 
         // Return the message
         return 'Login successful';
