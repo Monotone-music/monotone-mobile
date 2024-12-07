@@ -45,8 +45,18 @@ dependencies:
   audio_service: ^0.18.15
   permission_handler: ^11.3.0
   rxdart: ^0.28.0
-  on_audio_query: ^2.9.0
   get_it: ^7.2.0
+  skeletonizer: ^1.4.2
+  shimmer: ^3.0.0
+  auto_scroll_text: ^0.0.6
+  flutter_secure_storage: ^9.2.2
+  shared_preferences: ^2.0.6
+  http_interceptor: ^2.0.0
+  dio: ^5.7.0
+  go_router: ^5.0.0
+  app_links: ^4.0.0
+  qr_flutter: ^4.1.0
+  flutter_stripe: ^11.3.0
 
 dev_dependencies:
   flutter_test:
@@ -101,6 +111,15 @@ flutter:
     - assets/image/setting_icon.svg
     - assets/image/expand_arrow_icon.svg
     - assets/image/history_icon.svg
+    - assets/image/play_button_icon.svg
+    - assets/image/vertical_more_icon.svg
+    - assets/image/backgrounds/log_page_background.jpg
+    - assets/image/backgrounds/log_page_background2.jpg
+    - assets/image/backgrounds/log_page_background3.jpg
+    - assets/image/backgrounds/log_page_background4.jpg
+    - assets/image/backgrounds/log_page_background5.jpg
+    - assets/image/backgrounds/log_page_background6.jpg
+    - assets/image/backgrounds/log_page_background7.jpg
 
   # An image asset can refer to one or more resolution-specific "variants", see
   # https://flutter.dev/to/resolution-aware-images

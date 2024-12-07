@@ -1,46 +1,104 @@
-import 'package:audio_service/audio_service.dart';
-// import 'package:audio_service_example/common.dart';
-import 'package:flutter/foundation.dart';
+import 'dart:async';
+
+import 'package:app_links/app_links.dart';
 import 'package:flutter/material.dart';
-// import 'package:get/get.dart';
-import 'package:monotone_flutter/components/component_views/bottom_tab_navi.dart';
-import 'package:monotone_flutter/page_manager.dart';
-import 'package:monotone_flutter/services/audio_handler.dart';
-import 'package:monotone_flutter/services/service_locator.dart';
-import 'package:monotone_flutter/themes/theme_provider.dart';
+import 'package:flutter_stripe/flutter_stripe.dart';
+import 'package:go_router/go_router.dart';
+import 'package:http_interceptor/http_interceptor.dart';
+import 'package:monotone_flutter/interceptor/jwt_interceptor.dart';
+import 'package:monotone_flutter/view/bottom_tab_navi.dart';
+import 'package:audio_service/audio_service.dart';
+import 'package:dio/dio.dart';
+// import 'package:audio_service_example/common.dart';
+import 'package:flutter/material.dart';
+import 'package:monotone_flutter/interceptor/jwt_interceptor.dart';
 import 'package:provider/provider.dart';
-import 'package:monotone_flutter/components/logic_components/media_player_provider.dart';
-import 'package:permission_handler/permission_handler.dart';
+
+// import 'package:get/get.dart';
+import 'package:monotone_flutter/widgets/routes/routes.dart';
+import 'package:monotone_flutter/controller/media/media_manager.dart';
+import 'package:monotone_flutter/controller/media/services/audio_handler.dart';
+import 'package:monotone_flutter/controller/media/services/service_locator.dart';
+import 'package:monotone_flutter/common/themes/theme_provider.dart';
+import 'package:monotone_flutter/view/login.dart';
+import 'package:provider/provider.dart';
 
 // Create a singleton instance of TrackHandler
 // TrackHandler _trackHandler = TrackHandler();
 // late AudioHandler audioHandler;
 void main() async {
+  String initialRoute = '/';
   WidgetsFlutterBinding.ensureInitialized();
+  Stripe.publishableKey =
+      'pk_test_51PR8baLcSoLMTRiQjjqFJopXNY76FOx5YuYfyrQ9WwK4iA32jyWvNXzNdesfHkfyJv4QKXEhceUjL7qltHnaaLxk00qdPpyN4O';
 
   await setupServiceLocator();
-  runApp(const MyApp());
+  //Run
+
+  // final httpClient = InterceptedClient.build(interceptors: [
+  //   JwtInterceptor(),
+  // ]);
+  // final alive = await httpClient.keepAlive();
+  // print('alive response: ${alive?.data}');
+  // if (alive?.data == 200) {
+  initialRoute = '/login';
+  // }
+
+  ///
+  runApp(MyApp(initialRoute: initialRoute));
 }
 
 class MyApp extends StatefulWidget {
-  const MyApp({super.key});
-
-  // final AudioHandler audioHandler;
-  // MyApp({required this.audioHandler});
+  final String initialRoute;
+  const MyApp({super.key, required this.initialRoute});
   @override
   State<MyApp> createState() => _MyAppState();
 }
 
 class _MyAppState extends State<MyApp> {
+  late StreamSubscription<Uri> _sub;
+  late AppLinks _appLinks;
+  late GoRouter _router;
+
   @override
   void initState() {
     super.initState();
-    getIt<PageManager>().init();
+    getIt<MediaManager>().init();
+    _appLinks = AppLinks();
+    _initDeepLinkListener();
+    _router = GoRouter(
+      initialLocation: widget.initialRoute,
+      routes: <RouteBase>[
+        GoRoute(
+          path: '/login',
+          builder: (context, state) {
+            return LoginPage();
+          },
+        ),
+        GoRoute(
+          path: '/',
+          builder: (context, state) {
+            return BottomTabNavigator();
+          },
+        ),
+      ],
+    );
+  }
+
+  void _initDeepLinkListener() {
+    _sub = _appLinks.uriLinkStream.listen((Uri uri) {
+      if (uri != null) {
+        _router.go(uri.path);
+      }
+    }, onError: (err) {
+      print('Failed to handle deep link: $err');
+    });
   }
 
   @override
   void dispose() {
-    getIt<PageManager>().dispose();
+    getIt<MediaManager>().dispose();
+    _sub.cancel();
     super.dispose();
   }
 
@@ -57,11 +115,13 @@ class _MyAppState extends State<MyApp> {
       ],
       child: Consumer<ThemeProvider>(
         builder: (context, themeProvider, child) {
-          return MaterialApp(
+          return MaterialApp.router(
             title: 'Monotone',
-            home: BottomTabNavigator(),
             debugShowCheckedModeBanner: false,
             theme: Provider.of<ThemeProvider>(context).themeData,
+            routerConfig: _router,
+
+            ///
           );
         },
       ),

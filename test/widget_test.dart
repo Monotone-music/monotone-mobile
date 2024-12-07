@@ -9,7 +9,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:provider/provider.dart';
 import 'package:monotone_flutter/main.dart';
-import 'package:monotone_flutter/themes/theme_provider.dart';
+import 'package:monotone_flutter/common/themes/theme_provider.dart';
 
 void main() {
   testWidgets('Counter increments smoke test', (WidgetTester tester) async {
@@ -20,7 +20,9 @@ void main() {
           ChangeNotifierProvider(create: (_) => ThemeProvider()),
           // Add any other providers your app needs
         ],
-        child: MyApp(),
+        child: MyApp(
+          initialRoute: '/login',
+        ),
       ),
     );
 
