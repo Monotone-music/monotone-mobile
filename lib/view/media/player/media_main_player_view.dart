@@ -10,10 +10,10 @@ import 'package:shimmer/shimmer.dart';
 
 Widget buildMainPlayer(BuildContext context, MyAudioHandler mediaPlayerProvider,
     imageUrl, title, artistName) {
-  print('main Player: ${imageUrl}');
   final httpClient = InterceptedClient.build(interceptors: [
     JwtInterceptor(),
   ], retryPolicy: ExpiredTokenRetryPolicy());
+
   return Container(
     height: MediaQuery.of(context).size.height,
     padding: const EdgeInsets.all(1.0),
@@ -28,7 +28,7 @@ Widget buildMainPlayer(BuildContext context, MyAudioHandler mediaPlayerProvider,
           child: FutureBuilder<Response>(
             future: httpClient.get(
               Uri.parse(
-                'https://api2.ibarakoi.online/image/$imageUrl',
+                '$imageUrl',
               ),
             ),
             builder: (context, snapshot) {
@@ -52,9 +52,9 @@ Widget buildMainPlayer(BuildContext context, MyAudioHandler mediaPlayerProvider,
                     width: 350,
                     height: 350,
                   );
-                }else{
-                   return Image.asset('assets/image/not_available.png',
-                    width: 350, height: 350);
+                } else {
+                  return Image.asset('assets/image/not_available.png',
+                      width: 350, height: 350);
                 }
               } else {
                 return Image.asset('assets/image/not_available.png',
