@@ -128,7 +128,7 @@ class MyAudioHandler extends BaseAudioHandler
     try {
       final audioSource = _createAudioSource(mediaItem);
       await _playlist.add(audioSource);
-      print('item added: ${audioSource.tag}');
+      // print('item added: ${audioSource.tag}');
 
       // notify system
       // final newQueue = List<MediaItem>.from(queue.value)..add(mediaItem);

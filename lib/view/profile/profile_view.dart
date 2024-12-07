@@ -1,9 +1,9 @@
 import 'package:flutter/material.dart';
-import 'package:monotone_flutter/auth/login/logout_button.dart';
-import 'package:monotone_flutter/widgets/image_widgets/image_renderer.dart';
 import 'dart:math';
 import 'package:provider/provider.dart';
 
+import 'package:monotone_flutter/auth/login/logout_button.dart';
+import 'package:monotone_flutter/widgets/image_widgets/image_renderer.dart';
 import 'package:monotone_flutter/models/profile_items.dart';
 import 'package:monotone_flutter/common/themes/theme_provider.dart';
 

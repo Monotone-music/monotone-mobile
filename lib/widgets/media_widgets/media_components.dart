@@ -1,6 +1,6 @@
 import 'package:audio_service/audio_service.dart';
 import 'package:flutter/material.dart';
-import 'package:get_it/get_it.dart';
+import 'package:http_interceptor/http_interceptor.dart';
 import 'package:monotone_flutter/controller/media/notifiers/play_button_notifier.dart';
 import 'package:monotone_flutter/controller/media/notifiers/progress_notifier.dart';
 import 'package:monotone_flutter/controller/media/notifiers/repeat_button_notifier.dart';
@@ -9,8 +9,10 @@ import 'package:monotone_flutter/controller/media/services/audio_handler.dart';
 import 'package:monotone_flutter/controller/media/services/service_locator.dart';
 import 'package:audio_video_progress_bar/audio_video_progress_bar.dart';
 import 'package:monotone_flutter/common/themes/theme_provider.dart';
+import 'package:monotone_flutter/interceptor/jwt_interceptor.dart';
 import 'package:monotone_flutter/widgets/image_widgets/image_renderer.dart';
 import 'package:provider/provider.dart';
+import 'package:shimmer/shimmer.dart';
 
 class CurrentSongTitle extends StatelessWidget {
   const CurrentSongTitle({Key? key}) : super(key: key);
@@ -36,6 +38,9 @@ class Playlist extends StatelessWidget {
     final themeProvider = Provider.of<ThemeProvider>(context);
     final isDarkMode = themeProvider.isDarkMode;
     final pageManager = getIt<MediaManager>();
+    final httpClient = InterceptedClient.build(interceptors: [
+      JwtInterceptor(),
+    ]);
     return Expanded(
       child: ValueListenableBuilder<List<MediaItem>>(
         valueListenable: pageManager.playlistNotifier,
@@ -45,35 +50,51 @@ class Playlist extends StatelessWidget {
             itemBuilder: (context, index) {
               final mediaItem = playlist[index];
               return ListTile(
-                  leading: ClipRRect(
-                    borderRadius: BorderRadius.circular(8.0),
-                    child: ImageRenderer(
-                      imageUrl: mediaItem.artUri?.toString() ??
-                          'assets/image/album_1.png',
-                      width: 50,
-                      height: 50,
+                leading: ClipRRect(
+                  borderRadius: BorderRadius.circular(8.0),
+                  child: FutureBuilder<Response>(
+                    future: httpClient.get(
+                      Uri.parse(mediaItem.artUri?.toString() ?? ''),
                     ),
-                  ),
-                  title: Text(mediaItem.title),
-                  subtitle: Text(
-                    mediaItem.artist ?? 'Unknown Artist',
-                    style: Theme.of(context).textTheme.bodyMedium?.copyWith(
-                        color: isDarkMode
-                            ? Colors.white.withOpacity(0.7)
-                            : Colors.black,
-                        fontWeight: FontWeight.w300),
-                  ),
-                  onTap: () {
-                    getIt<AudioHandler>().skipToQueueItem(index);
-                  },
-                  trailing: IconButton(
-                    alignment: Alignment.centerRight,
-                    icon: const Icon(Icons.minimize_outlined),
-                    onPressed: () {
-                      getIt<AudioHandler>().removeQueueItemAt(index);
-                      // print('delete song at index: $index');
+                    builder: (context, snapshot) {
+                      if (snapshot.connectionState == ConnectionState.waiting) {
+                        return Shimmer.fromColors(
+                          baseColor: Colors.grey[300]!,
+                          highlightColor: Colors.grey[100]!,
+                          child: Container(
+                            width: 50,
+                            height: 50,
+                            color: Colors.white,
+                          ),
+                        );
+                      } else if (snapshot.hasError) {
+                        return Image.asset(
+                          'assets/image/not_available.png',
+                          width: 50,
+                          height: 50,
+                        );
+                      } else if (snapshot.hasData) {
+                        final imageData = snapshot.data?.bodyBytes;
+                        return ImageRenderer(
+                          imageUrl: imageData,
+                          width: 50,
+                          height: 50,
+                        );
+                      } else {
+                        return Image.asset(
+                          'assets/image/album_1.png',
+                          width: 50,
+                          height: 50,
+                        );
+                      }
                     },
-                  ));
+                  ),
+                ),
+                title: Text(mediaItem.title),
+                subtitle: Text(
+                  mediaItem.artist ?? 'Unknown Artist',
+                ),
+              );
             },
           );
         },

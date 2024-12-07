@@ -1,5 +1,12 @@
+import 'dart:convert';
+import 'dart:typed_data';
+
 import 'package:flutter/material.dart';
+import 'package:http_interceptor/http_interceptor.dart';
+
 import 'package:monotone_flutter/auth/login/login_form.dart';
+import 'package:monotone_flutter/widgets/image_widgets/image_renderer.dart';
+import 'package:monotone_flutter/interceptor/jwt_interceptor.dart';
 import 'package:monotone_flutter/view/artist_detail/artist_detail.dart';
 import 'package:monotone_flutter/view/search/search_bar_view.dart';
 
@@ -44,8 +51,8 @@ class _DiscoverPageState extends State<DiscoverPage> {
                   //   ),
                   // ),
 
-                  // _buildPanel(),
-                  _searchPanel(),
+                  _buildPanel(),
+                  // _searchPanel(),
                   // _loginPanel(),
 
                   ///
@@ -74,20 +81,61 @@ class _DiscoverPageState extends State<DiscoverPage> {
 
 //
   Widget _buildPanel() {
-    return SizedBox(
-        width: double.infinity,
-        child: ElevatedButton(
-            child: Text("Go to second page"),
-            onPressed: () {
-              Navigator.push(
-                context,
-                MaterialPageRoute(
-                  builder: (context) => ArtistDetailPage(
-                    artistId: '',
-                    focusOnTextField: false,
-                  ),
-                ),
-              );
-            }));
+    final httpClient = InterceptedClient.build(interceptors: [
+      JwtInterceptor(),
+    ]);
+    final baseUrl =
+        'https://api2.ibarakoi.online/image/091d57bd-5799-4f26-916d-b510fe1e5f96';
+
+    return FutureBuilder<Response>(
+      future: _fetchImage(httpClient, baseUrl),
+      builder: (context, snapshot) {
+        if (snapshot.connectionState == ConnectionState.waiting) {
+          return Center(child: CircularProgressIndicator());
+        } else if (snapshot.hasError) {
+          return Center(child: Text('Error: ${snapshot.error}'));
+        } else if (!snapshot.hasData) {
+          return Center(child: Text('No data found'));
+        } else {
+          final imageUrl = snapshot
+              .data?.bodyBytes; // Assuming the URL is in the 'url' field
+          // print(imageUrl);
+          if (imageUrl != null) {
+            return SizedBox(
+              child: ImageRenderer(
+                imageUrl: imageUrl,
+                height: 200,
+                width: 200,
+              ),
+            );
+          } else
+            return SizedBox(
+              child: ImageRenderer(
+                height: 200,
+                width: 200,
+                imageUrl: 'assets/image/not_available.png',
+              ),
+            );
+
+          ///
+        }
+      },
+
+      ///
+    );
+  }
+
+  Future<Response> _fetchImage(dioInterceptor, String baseUrl) async {
+    await Future.delayed(Duration(seconds: 1));
+    final httpClient = InterceptedClient.build(
+      interceptors: [
+        JwtInterceptor(),
+      ],
+      retryPolicy: ExpiredTokenRetryPolicy(),
+    );
+    final response = await httpClient.get(
+      Uri.parse(baseUrl),
+    );
+    return response;
   }
 }

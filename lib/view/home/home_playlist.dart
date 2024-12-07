@@ -1,8 +1,13 @@
+import 'dart:developer';
+
 import 'package:flutter/material.dart';
+import 'package:http_interceptor/http_interceptor.dart';
+import 'package:monotone_flutter/interceptor/jwt_interceptor.dart';
 import 'package:monotone_flutter/widgets/image_widgets/image_renderer.dart';
 import 'package:monotone_flutter/view/release_group/release_group.dart';
 import 'package:monotone_flutter/common/themes/theme_provider.dart';
 import 'package:provider/provider.dart';
+import 'package:shimmer/shimmer.dart';
 
 class PlaylistMini extends StatefulWidget {
   final Map<String, String> trackItem;
@@ -29,6 +34,10 @@ class _PlaylistMiniState extends State<PlaylistMini> {
     final themeProvider = Provider.of<ThemeProvider>(context);
     final isDarkMode = themeProvider.isDarkMode;
     final screenWidth = MediaQuery.of(context).size.width;
+    final imageUrl = widget.trackItem['imageUrl'];
+    final httpClient = InterceptedClient.build(interceptors: [
+      JwtInterceptor(),
+    ]);
 
     return GestureDetector(
       onTap: () async {
@@ -53,35 +62,52 @@ class _PlaylistMiniState extends State<PlaylistMini> {
         margin: const EdgeInsets.symmetric(horizontal: 6.0, vertical: 4.0),
         child: Row(
           children: [
-            // FutureBuilder<String>(
-            //   future: imageUrl,
-            //   builder: (context, snapshot) {
-            //     if (snapshot.connectionState == ConnectionState.waiting) {
-            //       return SizedBox(
-            //         width: 50,
-            //         height: 50,
-            //         child: const CircularProgressIndicator(),
-            //       );
-            //     } else if (snapshot.hasError || snapshot.data!.isEmpty) {
-            //       return Icon(Icons.music_note,
-            //           size: 50,
-            //           color: isDarkMode ? Colors.white : Colors.black);
-            //     } else {
-            //       return Image.network(
-            //         snapshot.data!,
-            //         width: 50,
-            //         height: 50,
-            //         fit: BoxFit.cover,
-            //       );
-            //     }
-            //   },
-            // ),
             ClipRRect(
               borderRadius: BorderRadius.circular(8.0),
-              child: ImageRenderer(
-                imageUrl: 'https://api2.ibarakoi.online/image/$imageUrl',
-                width: 60,
-                height: 60,
+              child: FutureBuilder<Response>(
+                future: httpClient.get(
+                  Uri.parse('https://api2.ibarakoi.online/image/$imageUrl'),
+                ),
+                builder: (context, snapshot) {
+                  if (snapshot.connectionState == ConnectionState.waiting) {
+                    return Shimmer.fromColors(
+                      baseColor: Colors.grey[300]!,
+                      highlightColor: Colors.grey[100]!,
+                      child: Container(
+                        width: 50,
+                        height: 50,
+                        color: Colors.white,
+                      ),
+                    );
+                  } else if (snapshot.hasError) {
+                    return SizedBox(
+                      width: 60,
+                      height: 60,
+                      child: Icon(Icons.error),
+                    );
+                  } else if (snapshot.hasData) {
+                    final imageData = snapshot.data?.bodyBytes;
+                    if (imageData != null) {
+                      return ImageRenderer(
+                        imageUrl:  imageData,
+                        width: 60,
+                        height: 60,
+                      );
+                    } else {
+                      return SizedBox(
+                        width: 60,
+                        height: 60,
+                        child: Image.asset('assets/image/not_available.png'),
+                      );
+                    }
+                  } else {
+                    return SizedBox(
+                      width: 60,
+                      height: 60,
+                      child: Image.asset('assets/image/not_available.png'),
+                    );
+                  }
+                },
               ),
             ),
             // , height: 50, width: 50),

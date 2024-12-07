@@ -1,16 +1,11 @@
 import 'package:flutter/material.dart';
-import 'package:http/http.dart' as http;
+import 'package:provider/provider.dart';
+
 import 'package:monotone_flutter/controller/release_group/release_group_data.dart';
 import 'package:monotone_flutter/view/media/toolbar/media_toolbar.dart';
 import 'package:monotone_flutter/models/release_group_model.dart';
-import 'package:monotone_flutter/controller/media/media_manager.dart';
-import 'package:monotone_flutter/controller/media/services/service_locator.dart';
 import 'package:monotone_flutter/common/themes/theme_provider.dart';
 import 'package:monotone_flutter/view/release_group/release_group_view.dart';
-import 'package:monotone_flutter/widgets/image_widgets/image_renderer.dart';
-import 'package:provider/provider.dart';
-import 'package:shimmer/shimmer.dart';
-import 'dart:convert';
 
 class ReleaseGroupPage extends StatefulWidget {
   final String id;

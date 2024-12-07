@@ -1,28 +1,25 @@
+import 'dart:convert';
+
 import 'package:dio/dio.dart';
+import 'package:http_interceptor/http_interceptor.dart';
 import 'package:monotone_flutter/interceptor/jwt_interceptor.dart';
 
 class LoginLoader {
-  final String apiUrl = 'https://api2.ibarakoi.online/auth/login';
+  final Uri apiUrl = Uri.parse('https://api2.ibarakoi.online/auth/login');
 
   Future<String> login(String username, String password) async {
-    final dioInterceptor = DioClient();
+    final httpClient = InterceptedClient.build(interceptors: [
+      JwtInterceptor(),
+    ]);
     try {
-      final response = await dioInterceptor.post(
+      var body = jsonEncode({'username': username, 'password': password});
+      final response = await httpClient.post(
         apiUrl,
-        {
-          'username': username,
-          'password': password,
-        },
+        body: body,
+        headers: {"Content-Type": "application/json"},
       );
 
       if (response.statusCode == 200) {
-        // Parse the JSON response
-        final Map<String, dynamic> jsonResponse = response.data;
-        final String message = jsonResponse['message'];
-
-        // Print the message
-        print('Message: $message');
-
         // Return the message
         return 'Login successful';
       } else {
@@ -35,6 +32,8 @@ class LoginLoader {
         if (e.response!.statusCode == 400) {
           return 'Bad Request';
         } else if (e.response!.statusCode == 401) {
+          return 'Unauthorized';
+        } else if (e.response!.statusCode == 404) {
           return 'Unauthorized';
         } else {
           // Handle other status codes

@@ -1,14 +1,22 @@
+import 'dart:typed_data';
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/flutter_svg.dart';
+import 'package:monotone_flutter/interceptor/jwt_interceptor.dart';
 
 class ImageRenderer extends StatelessWidget {
   final dynamic imageUrl;
   final double? height;
   final double? width;
+  final bool? hasToken;
   final String altImage = 'assets/image/not_available.png';
 
-  ImageRenderer({Key? key, required this.imageUrl, this.height, this.width})
-      : super(key: key);
+  ImageRenderer({
+    Key? key,
+    required this.imageUrl,
+    this.height,
+    this.width,
+    this.hasToken = false,
+  }) : super(key: key);
 
   @override
   Widget build(BuildContext context) {
@@ -16,7 +24,10 @@ class ImageRenderer extends StatelessWidget {
   }
 
   /// Build image according to .svg, .png, .jpg, or network
-  Widget _buildImage(dynamic imageUrl) {
+  Widget _buildImage(
+    dynamic imageUrl,
+  ) {
+    String IMAGE_URL = 'https://api2.ibarakoi.online/image/';
     if (imageUrl == null) {
       print('Run into error image');
       return _buildAltImage();
@@ -32,6 +43,22 @@ class ImageRenderer extends StatelessWidget {
           return _buildAltImage();
         },
       );
+
+      ///
+    } else if (imageUrl is Uint8List) {
+      return Image.memory(
+        imageUrl,
+        height: height,
+        width: width,
+        fit: BoxFit.cover,
+        errorBuilder:
+            (BuildContext context, Object error, StackTrace? stackTrace) {
+          print('Error loading asset image: $error');
+          return _buildAltImage();
+        },
+      );
+
+      ///
     } else if (imageUrl is String) {
       if (imageUrl.startsWith('http')) {
         if (imageUrl.endsWith('.svg')) {
@@ -56,6 +83,8 @@ class ImageRenderer extends StatelessWidget {
             },
           );
         }
+
+        ///
       } else {
         if (imageUrl.endsWith('.svg')) {
           return SvgPicture.asset(
@@ -66,6 +95,8 @@ class ImageRenderer extends StatelessWidget {
             fit: BoxFit.cover,
             placeholderBuilder: (BuildContext context) => _buildAltImage(),
           );
+
+          ///
         } else {
           return Image.asset(
             imageUrl,
@@ -80,6 +111,8 @@ class ImageRenderer extends StatelessWidget {
           );
         }
       }
+
+      ///
     } else {
       return Image.asset(
         imageUrl,

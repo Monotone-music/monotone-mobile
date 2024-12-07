@@ -1,7 +1,9 @@
 import 'dart:convert';
-import 'package:flutter/material.dart';
-import 'package:http/http.dart' as http;
 
+import 'package:flutter/material.dart';
+import 'package:http_interceptor/http_interceptor.dart';
+
+import 'package:monotone_flutter/interceptor/jwt_interceptor.dart';
 import 'package:monotone_flutter/models/artist_detail_items.dart';
 import 'package:monotone_flutter/view/artist_detail/artist_detail_view.dart';
 
@@ -16,6 +18,9 @@ class ArtistDetailLoader extends StatefulWidget {
 
 class _ArtistDetailLoaderState extends State<ArtistDetailLoader> {
   late Future<Artist> artistFuture;
+  final httpClient = InterceptedClient.build(interceptors: [
+    JwtInterceptor(),
+  ]);
 
   @override
   void initState() {
@@ -24,7 +29,7 @@ class _ArtistDetailLoaderState extends State<ArtistDetailLoader> {
   }
 
   Future<Artist> fetchArtistData(String artistId) async {
-    final response = await http
+    final response = await httpClient
         .get(Uri.parse('https://api2.ibarakoi.online/artist/id/$artistId'));
     if (response.statusCode != 200) {
       throw Exception('Failed to load artist data');
@@ -42,12 +47,13 @@ class _ArtistDetailLoaderState extends State<ArtistDetailLoader> {
 
   Future<Map<String, String>> fetchImageFilenames(List<String> ids) async {
     final response =
-        await http.get(Uri.parse('https://api2.ibarakoi.online/album'));
+        await httpClient.get(Uri.parse('https://api2.ibarakoi.online/album'));
     if (response.statusCode != 200) {
       throw Exception('Failed to load album data');
     }
 
-    final Map<String, dynamic> jsonResponse = json.decode(response.body);
+    var body = jsonDecode(response.body);
+    final Map<String, dynamic> jsonResponse = body;
     if (!jsonResponse.containsKey('data') ||
         !jsonResponse['data'].containsKey('releaseGroup')) {
       throw Exception('Album data not found');
@@ -60,8 +66,14 @@ class _ArtistDetailLoaderState extends State<ArtistDetailLoader> {
     for (final id in ids) {
       for (final releaseGroupJson in releaseGroupsJson) {
         if (releaseGroupJson['_id'] == id) {
-          imageFilenames[id] =
+          final imageUrl =
               'https://api2.ibarakoi.online/image/${releaseGroupJson['image']['filename']}';
+          final response = await httpClient.get(
+            Uri.parse(imageUrl),
+          );
+          if (response.statusCode == 200) {
+            imageFilenames[id] = imageUrl;
+          }
           break;
         }
       }
