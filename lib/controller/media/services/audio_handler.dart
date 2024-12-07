@@ -131,13 +131,13 @@ class MyAudioHandler extends BaseAudioHandler
 
       ///Risky factor: 1
       ///
-      // await _playlist.add(audioSource);
+      await _playlist.add(audioSource);
       print('item added: ${audioSource.tag}');
 
       // notify system
       ///Risky factor: 2
-      final newQueue = List<MediaItem>.from(queue.value)..add(mediaItem);
-      queue.add(newQueue);
+      // final newQueue = List<MediaItem>.from(queue.value)..add(mediaItem);
+      // queue.add(newQueue);
       print('Added: ${_playlist.children.iterator}');
     } catch (e) {
       print('Error adding item to queue: $e');
@@ -155,18 +155,21 @@ class MyAudioHandler extends BaseAudioHandler
   @override
   Future<void> removeQueueItemAt(int index) async {
     ///TODO: further test alongside with the addQueueItem() method for debugging
-    print('Queue items: ${_playlist.children.toString()}');
     if (index < 0 || index >= queue.value.length || queue.value.isEmpty) return;
+    if (index < 0 || index >= _playlist.children.length) return;
 
     ///Risky factor: 3
     ///
-    // await _playlist.removeAt(index);
+    await _playlist.removeAt(index);
 
     print('Removed item at index: $index');
+    if (_playlist.children.isEmpty) queue.add([]);
 
     ///Risky factor: 4
-    final newQueue = List<MediaItem>.from(queue.value)..removeAt((index));
-    queue.add(newQueue);
+    // final newQueue = List<MediaItem>.from(queue.value)..removeAt(index);
+    // // final newQueue = queue.value.removeAt(index);
+
+    // queue.add(newQueue);
   }
 
   @override
