@@ -95,19 +95,31 @@ class _PlaylistState extends State<Playlist> {
                                 ),
                               );
                             } else if (snapshot.hasError) {
-                              return Icon(Icons.error);
+                              return ImageRenderer(
+                                imageUrl: 'assets/image/not_available.png',
+                                width: 50,
+                                height: 50,
+                              );
                             } else if (snapshot.hasData) {
                               return ImageRenderer(
-                                imageUrl:  snapshot.data!,
+                                imageUrl: snapshot.data!,
                                 width: 50,
                                 height: 50,
                               );
                             } else {
-                              return Icon(Icons.error);
+                              return ImageRenderer(
+                                imageUrl: 'assets/image/not_available.png',
+                                width: 50,
+                                height: 50,
+                              );
                             }
                           },
                         )
-                      : Icon(Icons.image_not_supported),
+                      : ImageRenderer(
+                          imageUrl: 'assets/image/not_available.png',
+                          width: 50,
+                          height: 50,
+                        ),
                 ),
                 title: Text(mediaItem.title),
                 subtitle: Text(

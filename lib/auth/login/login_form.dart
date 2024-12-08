@@ -3,7 +3,6 @@ import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 
-
 import 'package:monotone_flutter/common/themes/theme_provider.dart';
 import 'package:go_router/go_router.dart';
 import 'package:monotone_flutter/widgets/routes/routes.dart';
@@ -66,7 +65,7 @@ class _LoginFormState extends State<LoginForm> {
           _errorMessage = 'There must be something wrong';
         });
       } else {
-        GoRouter.of(context).go('/');
+        Navigator.pushReplacementNamed(context, '/home');
       }
     }
   }
