@@ -1,18 +1,20 @@
-import 'package:audio_service/audio_service.dart';
+import 'package:flutter/foundation.dart';
+import 'package:shimmer/shimmer.dart';
 import 'package:flutter/material.dart';
+import 'package:audio_service/audio_service.dart';
 import 'package:http_interceptor/http_interceptor.dart';
+import 'package:audio_video_progress_bar/audio_video_progress_bar.dart';
+import 'package:provider/provider.dart';
+
 import 'package:monotone_flutter/controller/media/notifiers/play_button_notifier.dart';
 import 'package:monotone_flutter/controller/media/notifiers/progress_notifier.dart';
 import 'package:monotone_flutter/controller/media/notifiers/repeat_button_notifier.dart';
 import 'package:monotone_flutter/controller/media/media_manager.dart';
 import 'package:monotone_flutter/controller/media/services/audio_handler.dart';
 import 'package:monotone_flutter/controller/media/services/service_locator.dart';
-import 'package:audio_video_progress_bar/audio_video_progress_bar.dart';
 import 'package:monotone_flutter/common/themes/theme_provider.dart';
 import 'package:monotone_flutter/interceptor/jwt_interceptor.dart';
 import 'package:monotone_flutter/widgets/image_widgets/image_renderer.dart';
-import 'package:provider/provider.dart';
-import 'package:shimmer/shimmer.dart';
 
 class CurrentSongTitle extends StatelessWidget {
   const CurrentSongTitle({Key? key}) : super(key: key);
@@ -31,16 +33,34 @@ class CurrentSongTitle extends StatelessWidget {
   }
 }
 
-class Playlist extends StatelessWidget {
+class Playlist extends StatefulWidget {
   const Playlist({Key? key}) : super(key: key);
+
+  @override
+  _PlaylistState createState() => _PlaylistState();
+}
+
+class _PlaylistState extends State<Playlist> {
+  late Future<Uint8List> imageFuture;
+  final httpClient = InterceptedClient.build(interceptors: [
+    JwtInterceptor(),
+  ], retryPolicy: ExpiredTokenRetryPolicy());
+
+  Future<Uint8List> fetchImage(Uri artUri) async {
+    final response = await httpClient.get(artUri);
+
+    if (response.statusCode == 200) {
+      return response.bodyBytes;
+    } else {
+      throw Exception('Failed to load image');
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
     final themeProvider = Provider.of<ThemeProvider>(context);
     final isDarkMode = themeProvider.isDarkMode;
     final pageManager = getIt<MediaManager>();
-    final httpClient = InterceptedClient.build(interceptors: [
-      JwtInterceptor(),
-    ], retryPolicy: ExpiredTokenRetryPolicy());
     return Expanded(
       child: ValueListenableBuilder<List<MediaItem>>(
         valueListenable: pageManager.playlistNotifier,
@@ -51,9 +71,7 @@ class Playlist extends StatelessWidget {
               final mediaItem = playlist[index];
               final isPlaying =
                   mediaItem.id == pageManager.currentMediaItem?.id;
-              // print('Media Item: ${mediaItem.artist}');
               return ListTile(
-                titleAlignment: ListTileTitleAlignment.center,
                 tileColor: isPlaying
                     ? isDarkMode
                         ? Colors.white.withOpacity(0.2)
@@ -61,12 +79,47 @@ class Playlist extends StatelessWidget {
                     : null,
                 leading: ClipRRect(
                   borderRadius: BorderRadius.circular(8.0),
-                  child: ImageRenderer(
-                    imageUrl: mediaItem.artUri?.toString() ??
-                        'assets/image/album_1.png',
-                    width: 50,
-                    height: 50,
-                  ),
+                  child: mediaItem.artUri != null
+                      ? FutureBuilder<Uint8List>(
+                          future: fetchImage(mediaItem.artUri!),
+                          builder: (context, snapshot) {
+                            if (snapshot.connectionState ==
+                                ConnectionState.waiting) {
+                              return Shimmer.fromColors(
+                                baseColor: Colors.grey[300]!,
+                                highlightColor: Colors.grey[100]!,
+                                child: Container(
+                                  width: 50,
+                                  height: 50,
+                                  color: Colors.white,
+                                ),
+                              );
+                            } else if (snapshot.hasError) {
+                              return ImageRenderer(
+                                imageUrl: 'assets/image/not_available.png',
+                                width: 50,
+                                height: 50,
+                              );
+                            } else if (snapshot.hasData) {
+                              return ImageRenderer(
+                                imageUrl: snapshot.data!,
+                                width: 50,
+                                height: 50,
+                              );
+                            } else {
+                              return ImageRenderer(
+                                imageUrl: 'assets/image/not_available.png',
+                                width: 50,
+                                height: 50,
+                              );
+                            }
+                          },
+                        )
+                      : ImageRenderer(
+                          imageUrl: 'assets/image/not_available.png',
+                          width: 50,
+                          height: 50,
+                        ),
                 ),
                 title: Text(mediaItem.title),
                 subtitle: Text(

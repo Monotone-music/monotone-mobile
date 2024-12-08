@@ -338,13 +338,17 @@ Widget buildTrackList(BuildContext context, ReleaseGroup releaseGroup,
                       baseColor: Colors.grey[300]!,
                       highlightColor: Colors.grey[100]!,
                       child: Container(
-                        width: 50,
-                        height: 50,
+                        width: 60,
+                        height: 60,
                         color: Colors.white,
                       ),
                     );
                   } else if (snapshot.hasError) {
-                    return Icon(Icons.error);
+                    return ImageRenderer(
+                      imageUrl: 'assets/image/not_available.png',
+                      width: 60,
+                      height: 60,
+                    );
                   } else if (snapshot.hasData) {
                     final imageData = snapshot.data?.bodyBytes;
                     return ImageRenderer(
@@ -353,8 +357,11 @@ Widget buildTrackList(BuildContext context, ReleaseGroup releaseGroup,
                       height: 60,
                     );
                   } else {
-                    return Image.asset('assets/image/not_available.png',
-                        width: 60, height: 60);
+                    return ImageRenderer(
+                      imageUrl: 'assets/image/not_available.png',
+                      width: 60,
+                      height: 60,
+                    );
                   }
                 },
               ),
@@ -373,34 +380,65 @@ Widget buildTrackList(BuildContext context, ReleaseGroup releaseGroup,
                 fontWeight: FontWeight.w300,
               ),
         ),
-        trailing: PopupMenuButton<int>(
-          icon: Icon(Icons.more_vert),
-          onSelected: (value) {
-            if (value == 0) {
-              // Handle add to favorite action
-            } else if (value == 1) {
-              // Handle add to queue action
-            }
-          },
-          itemBuilder: (context) => [
-            PopupMenuItem<int>(
-              value: 0,
-              child: ListTile(
-                leading: Icon(Icons.favorite),
-                title: Text('Add to Favorite'),
+        trailing: SizedBox(
+          width: MediaQuery.of(context).size.width * 0.25,
+          child: Row(
+            children: [
+              Spacer(),
+              SizedBox(
+                width: MediaQuery.of(context).size.width * 0.14,
+                child: Text(
+                  '${track.view}',
+                  textAlign: TextAlign.right,
+                  style: TextStyle(
+                    color: isDarkMode
+                        ? Colors.white.withOpacity(0.7)
+                        : Colors.black.withOpacity(0.7),
+                    fontSize: 13, // Adjust the font size as needed
+                  ),
+                  overflow: TextOverflow.fade,
+                  maxLines: 1,
+                  softWrap: false,
+                ),
               ),
-            ),
-            PopupMenuItem<int>(
-              value: 1,
-              child: ListTile(
-                leading: Icon(Icons.queue),
-                title: Text('Add to Queue'),
-                onTap: () {
-                  getIt<MediaManager>().loadTrack(track, releaseGroup.name);
-                }, // Add track to queue
+
+              ///
+              PopupMenuButton<int>(
+                icon: Icon(Icons.more_vert),
+                onSelected: (value) {
+                  if (value == 0) {
+                    // Handle add to favorite action
+                  } else if (value == 1) {
+                    // Handle add to queue action
+                  }
+                },
+                itemBuilder: (context) => [
+                  PopupMenuItem<int>(
+                    value: 0,
+                    child: ListTile(
+                      leading: Icon(Icons.favorite),
+                      title: Text('Add to Favorite'),
+                    ),
+                  ),
+                  PopupMenuItem<int>(
+                    value: 1,
+                    child: ListTile(
+                      leading: Icon(Icons.queue),
+                      title: Text('Add to Queue'),
+                      onTap: () {
+                        getIt<MediaManager>()
+                            .loadTrack(track, releaseGroup.name);
+                      }, // Add track to queue
+                    ),
+                  ),
+
+                  ///
+                ],
               ),
-            ),
-          ],
+
+              ///
+            ],
+          ),
         ),
         onTap: () async {
           // Play the track

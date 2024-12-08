@@ -101,23 +101,14 @@ class MediaManager {
   }
 
   Future<MediaItem> _createMediaItem(Track track, String albumName) async {
-    final imageResponse = await httpClient.get(
-      Uri.parse('https://api2.ibarakoi.online/image/${track.imageUrl}'),
-    );
-    final imageUrl =
-        imageResponse.statusCode == 200 ? imageResponse.body : null;
-
-    // Retrieve the token from secure storage
-    // print(imageResponse.body);
-    // final accessToken = await _storage.read(key: 'accessToken');
+    final accessToken = await _storage.read(key: 'accessToken');
     return MediaItem(
       id: '${track.id}_${queueCounter++}',
       album: albumName,
       title: track.title,
       artist: track.artistNames.join(', '),
-      artUri: imageUrl != null ? Uri.parse(imageUrl) : null,
-      // artHeaders:
-      //     accessToken != null ? {'Authorization': 'Bearer $accessToken'} : null,
+      artUri: Uri.parse('https://api2.ibarakoi.online/image/${track.imageUrl}'),
+      artHeaders: {'Authorization': 'Bearer $accessToken'},
       extras: {
         'url': 'https://api2.ibarakoi.online/tracks/stream/${track.id}',
       },
@@ -153,6 +144,7 @@ class MediaManager {
     // final songRepository = getIt<PlaylistRepository>();
 
     print('track loading');
+    final accessToken = await _storage.read(key: 'accessToken');
 
     final fetchedTrack = track;
     final mediaItem = MediaItem(
@@ -160,6 +152,7 @@ class MediaManager {
       album: albumName,
       title: fetchedTrack.title,
       artist: fetchedTrack.artistNames.join(', '),
+      artHeaders: {'Authorization': 'Bearer $accessToken'},
       artUri: Uri.parse('$BASE_URL/image/${fetchedTrack.imageUrl}'),
       extras: {'url': '$BASE_URL/tracks/stream/${fetchedTrack.id}'},
     );

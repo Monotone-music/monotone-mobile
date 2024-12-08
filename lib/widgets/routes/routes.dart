@@ -1,4 +1,8 @@
+import 'dart:async';
+
+import 'package:app_links/app_links.dart';
 import 'package:flutter/material.dart';
+import 'package:go_router/go_router.dart';
 
 import 'package:monotone_flutter/view/bottom_tab_navi.dart';
 import 'package:monotone_flutter/view/login.dart';
@@ -9,14 +13,52 @@ class AppRoutes {
   static const String loginPage = '/login';
   static const String registerPage = '/register';
   static const String homePage = '/home';
-  static const String customerProfile ='/profile';
+  static const String customerProfile = '/profile';
+  late StreamSubscription<Uri> _sub;
+  late AppLinks _appLinks;
+  late GoRouter router;
 
-  static Map<String, WidgetBuilder> getRoutes() {
-    return {
-      loginPage: (context) => LoginPage(),
-      registerPage: (context) => RegisterPage(),
-      homePage: (context) => const BottomTabNavigator(),
-      customerProfile: (context) => ProfilePage()
-    };
+  AppRoutes() {
+    _appLinks = AppLinks();
+    _initDeepLinkListener();
+    router = GoRouter(
+      initialLocation: '/login',
+      routes: [
+        GoRoute(
+          path: '/',
+          builder: (context, state) => BottomTabNavigator(),
+        ),
+        GoRoute(
+          path: '/login',
+          builder: (context, state) => LoginPage(),
+        ),
+        GoRoute(
+          path: '/register',
+          builder: (context, state) => RegisterPage(),
+        ),
+        GoRoute(
+          path: '/home',
+          builder: (context, state) => const BottomTabNavigator(),
+        ),
+        GoRoute(
+          path: '/profile',
+          builder: (context, state) => ProfilePage(),
+        ),
+      ],
+    );
+  }
+
+  void _initDeepLinkListener() {
+    _sub = _appLinks.uriLinkStream.listen((Uri uri) {
+      if (uri != null) {
+        router.go(uri.path);
+      }
+    }, onError: (err) {
+      print('Failed to handle deep link: $err');
+    });
+  }
+
+  GoRouter getRoutes() {
+    return router;
   }
 }

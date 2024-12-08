@@ -9,14 +9,16 @@ class PlaylistList extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Column(
-      children: [
-        SizedBox(height: 10),
-        gridPlaylistMini(),
-        SizedBox(height: 10), // Add some spacing between the widgets
-        // M4UPlaylist(),
-        // LoginNavigator(),
-      ],
+    return SingleChildScrollView(
+      child: Column(
+        children: [
+          SizedBox(height: 10),
+          gridPlaylistMini(),
+          SizedBox(height: 10), // Add some spacing between the widgets
+          // M4UPlaylist(),
+          // LoginNavigator(),
+        ],
+      ),
     );
   }
 

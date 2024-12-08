@@ -20,8 +20,6 @@ import 'package:monotone_flutter/controller/media/media_manager.dart';
 import 'package:monotone_flutter/controller/media/services/audio_handler.dart';
 import 'package:monotone_flutter/controller/media/services/service_locator.dart';
 import 'package:monotone_flutter/common/themes/theme_provider.dart';
-import 'package:monotone_flutter/view/login.dart';
-import 'package:provider/provider.dart';
 
 // Create a singleton instance of TrackHandler
 // TrackHandler _trackHandler = TrackHandler();
@@ -57,42 +55,12 @@ class MyApp extends StatefulWidget {
 
 class _MyAppState extends State<MyApp> {
   late StreamSubscription<Uri> _sub;
-  late AppLinks _appLinks;
-  late GoRouter _router;
 
   @override
   void initState() {
     super.initState();
     getIt<MediaManager>().init();
-    _appLinks = AppLinks();
-    _initDeepLinkListener();
-    _router = GoRouter(
-      initialLocation: widget.initialRoute,
-      routes: <RouteBase>[
-        GoRoute(
-          path: '/login',
-          builder: (context, state) {
-            return LoginPage();
-          },
-        ),
-        GoRoute(
-          path: '/',
-          builder: (context, state) {
-            return BottomTabNavigator();
-          },
-        ),
-      ],
-    );
-  }
-
-  void _initDeepLinkListener() {
-    _sub = _appLinks.uriLinkStream.listen((Uri uri) {
-      if (uri != null) {
-        _router.go(uri.path);
-      }
-    }, onError: (err) {
-      print('Failed to handle deep link: $err');
-    });
+    AppRoutes();
   }
 
   @override
@@ -119,9 +87,7 @@ class _MyAppState extends State<MyApp> {
             title: 'Monotone',
             debugShowCheckedModeBanner: false,
             theme: Provider.of<ThemeProvider>(context).themeData,
-            routerConfig: _router,
-
-            ///
+            routerConfig: AppRoutes().getRoutes(), // Use GoRouter for routes
           );
         },
       ),

@@ -37,8 +37,7 @@ class LogoutButton extends StatelessWidget {
   }
 
   Future<void> logout(BuildContext context) async {
-    Navigator.pushReplacement(
-        context, MaterialPageRoute(builder: (context) => LoginPage()));
+    Navigator.pushReplacementNamed(context, '/login');
 
     ///
     await secureStorage
