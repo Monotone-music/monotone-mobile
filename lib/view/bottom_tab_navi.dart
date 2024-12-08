@@ -44,7 +44,7 @@ class _BottomTabNavigatorState extends State<BottomTabNavigator> {
   final List<Widget> _tabs = [
     // Add your tab screens here
     HomePage(),
-    DiscoverPage(),
+    // DiscoverPage(),
     SearchPage(),
     LibraryPage(),
     ProfilePage(),
@@ -92,23 +92,23 @@ class _BottomTabNavigatorState extends State<BottomTabNavigator> {
                   ),
                   label: 'Home',
                 ),
-                BottomNavigationBarItem(
-                  icon: ImageRenderer(
-                    imageUrl: 'assets/image/discover_icon.svg',
-                    height: MediaQuery.of(context).size.height *
-                        0.04, // Adjust the height as needed
-                    width: MediaQuery.of(context).size.width * 0.04,
-                  ),
-                  activeIcon: ImageRenderer(
-                    imageUrl:
-                        'assets/image/discover_active_icon.svg', ///// Discover has not received active icon yet
-                    height: MediaQuery.of(context).size.height *
-                        0.04, // Adjust the height as needed
-                    width: MediaQuery.of(context).size.width *
-                        0.04, // Adjust the width as needed
-                  ),
-                  label: 'Discover',
-                ),
+                // BottomNavigationBarItem(
+                //   icon: ImageRenderer(
+                //     imageUrl: 'assets/image/discover_icon.svg',
+                //     height: MediaQuery.of(context).size.height *
+                //         0.04, // Adjust the height as needed
+                //     width: MediaQuery.of(context).size.width * 0.04,
+                //   ),
+                //   activeIcon: ImageRenderer(
+                //     imageUrl:
+                //         'assets/image/discover_active_icon.svg', ///// Discover has not received active icon yet
+                //     height: MediaQuery.of(context).size.height *
+                //         0.04, // Adjust the height as needed
+                //     width: MediaQuery.of(context).size.width *
+                //         0.04, // Adjust the width as needed
+                //   ),
+                //   label: 'Discover',
+                // ),
                 BottomNavigationBarItem(
                   icon: ImageRenderer(
                     imageUrl: 'assets/image/search_icon.svg',

@@ -78,15 +78,15 @@ class _HomePageState extends State<HomePage> {
     final screenWidth = MediaQuery.of(context).size.width;
 
     return DefaultTabController(
-      length: 3,
+      length: 1,
       child: Scaffold(
         appBar: AppBar(
           title: TabBar(
             onTap: _onButtonPressed,
             tabs: const [
               Tab(text: 'Music'),
-              Tab(text: 'Podcasts'),
-              Tab(text: 'Audiobooks'),
+              // Tab(text: 'Podcasts'),
+              // Tab(text: 'Audiobooks'),
             ],
           ),
         ),

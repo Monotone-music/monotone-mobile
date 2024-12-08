@@ -1,3 +1,4 @@
+import 'package:auto_scroll_text/auto_scroll_text.dart';
 import 'package:flutter/material.dart';
 import 'package:http_interceptor/http_interceptor.dart';
 import 'package:monotone_flutter/common/themes/theme_provider.dart';
@@ -384,27 +385,63 @@ Widget buildTrackList(BuildContext context, ReleaseGroup releaseGroup,
           width: MediaQuery.of(context).size.width * 0.25,
           child: Row(
             children: [
-              Spacer(),
-              SizedBox(
-                width: MediaQuery.of(context).size.width * 0.14,
-                child: Text(
-                  '${track.view}',
-                  textAlign: TextAlign.right,
-                  style: TextStyle(
-                    color: isDarkMode
-                        ? Colors.white.withOpacity(0.7)
-                        : Colors.black.withOpacity(0.7),
-                    fontSize: 13, // Adjust the font size as needed
-                  ),
-                  overflow: TextOverflow.fade,
-                  maxLines: 1,
-                  softWrap: false,
+              Expanded(
+                child: LayoutBuilder(
+                  builder: (context, constraints) {
+                    final textSpan = TextSpan(
+                      text: '${track.view}',
+                      style: TextStyle(
+                        color: isDarkMode
+                            ? Colors.white.withOpacity(0.7)
+                            : Colors.black.withOpacity(0.7),
+                        fontSize: 13,
+                      ),
+                    );
+
+                    final textPainter = TextPainter(
+                      text: textSpan,
+                      maxLines: 1,
+                      textDirection: TextDirection.ltr,
+                    );
+
+                    textPainter.layout(
+                        minWidth: 0, maxWidth: constraints.maxWidth);
+
+                    if (textPainter.didExceedMaxLines) {
+                      return AutoScrollText(
+                        '${track.view}',
+                        textAlign: TextAlign.right,
+                        velocity:
+                            const Velocity(pixelsPerSecond: Offset(20, 0)),
+                        pauseBetween: const Duration(seconds: 1),
+                        mode: AutoScrollTextMode.bouncing,
+                        style: TextStyle(
+                          color: isDarkMode
+                              ? Colors.white.withOpacity(0.7)
+                              : Colors.black.withOpacity(0.7),
+                          fontSize: 13,
+                        ),
+                      );
+                    } else {
+                      return Text(
+                        '${track.view}',
+                        textAlign: TextAlign.right,
+                        style: TextStyle(
+                          color: isDarkMode
+                              ? Colors.white.withOpacity(0.7)
+                              : Colors.black.withOpacity(0.7),
+                          fontSize: 13,
+                        ),
+                      );
+                    }
+                  },
                 ),
               ),
 
               ///
+
               PopupMenuButton<int>(
-                icon: Icon(Icons.more_vert),
+                icon: const Icon(Icons.more_vert),
                 onSelected: (value) {
                   if (value == 0) {
                     // Handle add to favorite action
@@ -413,7 +450,7 @@ Widget buildTrackList(BuildContext context, ReleaseGroup releaseGroup,
                   }
                 },
                 itemBuilder: (context) => [
-                  PopupMenuItem<int>(
+                  const PopupMenuItem<int>(
                     value: 0,
                     child: ListTile(
                       leading: Icon(Icons.favorite),

@@ -1,7 +1,6 @@
 import 'dart:async';
 
 import 'package:app_links/app_links.dart';
-import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 
 import 'package:monotone_flutter/view/bottom_tab_navi.dart';
@@ -34,7 +33,7 @@ class AppRoutes {
         ),
         GoRoute(
           path: '/register',
-          builder: (context, state) => RegisterPage(),
+          builder: (context, state) {return RegisterPage();},
         ),
         GoRoute(
           path: '/home',

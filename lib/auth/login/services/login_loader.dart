@@ -21,20 +21,20 @@ class LoginLoader {
 
       if (response.statusCode == 200) {
         // Return the message
-        return 'Login successful';
+        return '200';
       } else {
         // Handle other status codes here if needed
-        return 'Unexpected status code: ${response.statusCode}';
+        return '${response.statusCode}';
       }
     } on DioException catch (e) {
       if (e.response != null) {
         // Handle specific status codes
         if (e.response!.statusCode == 400) {
-          return 'Bad Request';
+          return '400';
         } else if (e.response!.statusCode == 401) {
-          return 'Unauthorized';
+          return '401';
         } else if (e.response!.statusCode == 404) {
-          return 'Unauthorized';
+          return '404';
         } else {
           // Handle other status codes
           return 'Unexpected error: ${e.response!.statusCode}';
@@ -42,11 +42,11 @@ class LoginLoader {
       } else {
         // Handle other errors
         print('Error during login request: $e');
-        return 'Network error';
+        return '502';
       }
     } catch (e) {
       print('Error during login request: $e');
-      return 'Unexpected error';
+      return '500';
     }
   }
 }

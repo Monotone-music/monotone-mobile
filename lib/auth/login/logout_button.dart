@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 
 import 'package:flutter_secure_storage/flutter_secure_storage.dart';
+import 'package:go_router/go_router.dart';
 import 'package:monotone_flutter/common/themes/theme_provider.dart';
 import 'package:monotone_flutter/view/login.dart';
 import 'package:provider/provider.dart';
@@ -37,7 +38,7 @@ class LogoutButton extends StatelessWidget {
   }
 
   Future<void> logout(BuildContext context) async {
-    Navigator.pushReplacementNamed(context, '/login');
+    GoRouter.of(context).go('/login');
 
     ///
     await secureStorage
