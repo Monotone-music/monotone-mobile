@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:go_router/go_router.dart';
 import 'package:monotone_flutter/auth/login/logout_button.dart';
 import 'package:monotone_flutter/controller/payment/subscription_controller.dart';
 import 'package:monotone_flutter/view/payment/payment.dart';
@@ -34,7 +35,7 @@ class ProfileView extends StatelessWidget {
                 const EdgeInsets.only(top: 25, bottom: 25, left: 10, right: 10),
             decoration: BoxDecoration(
               image: DecorationImage(
-                image: NetworkImage(
+                image: const NetworkImage(
                   'https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcSbfe6jVBKeEynH9EtUr5gnN927eTZUJiuV8Q&s',
                 ), // Replace with your image path
                 fit: BoxFit.cover,
@@ -305,20 +306,13 @@ class ProfileView extends StatelessWidget {
                     children: [
                       GestureDetector(
                         onTap: () {
-                          Navigator.push(
-                            context,
-                            MaterialPageRoute(
-                                builder: (context) => TransactionStatusPage()),
-                          );
-                          _subscriptionController
-                              .createSubscription(500, 'usd', 'premium')
-                              .then(
-                            (secretKey) async {
-                              await _subscriptionController
-                                  .initPaymentSheet(secretKey);
-                              await _subscriptionController.processPayment();
-                            },
-                          );
+                          GoRouter.of(context)
+                              .go('/transaction-status', extra: {
+                            'subscriptionController': _subscriptionController,
+                            'amount': 500,
+                            'currency': 'usd',
+                            'membershipType': 'premium',
+                          });
                         },
                         child: const Column(
                           mainAxisAlignment: MainAxisAlignment.start,
@@ -381,20 +375,13 @@ class ProfileView extends StatelessWidget {
                       ),
                       GestureDetector(
                         onTap: () {
-                          Navigator.push(
-                            context,
-                            MaterialPageRoute(
-                                builder: (context) => TransactionStatusPage()),
-                          );
-                          _subscriptionController
-                              .createSubscription(1000, 'usd', 'premium')
-                              .then(
-                            (secretKey) async {
-                              await _subscriptionController
-                                  .initPaymentSheet(secretKey);
-                              await _subscriptionController.processPayment();
-                            },
-                          );
+                          GoRouter.of(context)
+                              .go('/transaction-status', extra: {
+                            'subscriptionController': _subscriptionController,
+                            'amount': 1000,
+                            'currency': 'usd',
+                            'membershipType': 'premium',
+                          });
                         },
                         child: Column(
                           mainAxisAlignment: MainAxisAlignment.start,

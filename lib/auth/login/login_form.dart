@@ -55,7 +55,6 @@ class _LoginFormState extends State<LoginForm> {
         _passwordController.text,
       );
 
-      ///
       if (result == '200') {
         // Use GoRouter for navigation
         GoRouter.of(context).go('/home');

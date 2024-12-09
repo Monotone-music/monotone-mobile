@@ -1,18 +1,16 @@
 import 'dart:async';
-
 import 'package:app_links/app_links.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_stripe/flutter_stripe.dart';
-import 'package:go_router/go_router.dart';
 import 'package:http_interceptor/http_interceptor.dart';
-import 'package:monotone_flutter/interceptor/jwt_interceptor.dart';
-import 'package:monotone_flutter/view/bottom_tab_navi.dart';
 import 'package:audio_service/audio_service.dart';
-import 'package:dio/dio.dart';
-// import 'package:audio_service_example/common.dart';
 import 'package:flutter/material.dart';
-import 'package:monotone_flutter/interceptor/jwt_interceptor.dart';
 import 'package:provider/provider.dart';
+
+import 'package:monotone_flutter/auth/login/services/maintain_session_service.dart';
+import 'package:monotone_flutter/view/bottom_tab_navi.dart';
+// import 'package:audio_service_example/common.dart';
+import 'package:monotone_flutter/interceptor/jwt_interceptor.dart';
 
 // import 'package:get/get.dart';
 import 'package:monotone_flutter/widgets/routes/routes.dart';
@@ -32,15 +30,12 @@ void main() async {
 
   await setupServiceLocator();
   //Run
-
-  // final httpClient = InterceptedClient.build(interceptors: [
-  //   JwtInterceptor(),
-  // ]);
-  // final alive = await httpClient.keepAlive();
-  // print('alive response: ${alive?.data}');
-  // if (alive?.data == 200) {
-  initialRoute = '/login';
-  // }
+  final session_service = MaintainSessionService();
+  await session_service.refreshToken(
+    onRefreshFailed: () {
+      AppRoutes().router.go('/login');
+    },
+  );
 
   ///
   runApp(MyApp(initialRoute: initialRoute));
@@ -55,12 +50,24 @@ class MyApp extends StatefulWidget {
 
 class _MyAppState extends State<MyApp> {
   late StreamSubscription<Uri> _sub;
+  late AppLinks _appLinks;
 
   @override
   void initState() {
     super.initState();
     getIt<MediaManager>().init();
-    AppRoutes();
+    _appLinks = AppLinks();
+    _initDeepLinkListener();
+  }
+
+  void _initDeepLinkListener() {
+    _sub = _appLinks.uriLinkStream.listen((Uri uri) {
+      if (uri != null) {
+        AppRoutes().router.go(uri.path);
+      }
+    }, onError: (err) {
+      print('Failed to handle deep link: $err');
+    });
   }
 
   @override

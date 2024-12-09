@@ -1,7 +1,20 @@
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
+import 'package:monotone_flutter/controller/payment/subscription_controller.dart';
 
 class TransactionStatusPage extends StatefulWidget {
+  final SubscriptionController subscriptionController;
+  final int amount;
+  final String currency;
+  final String membershipType;
+
+  TransactionStatusPage({
+    required this.subscriptionController,
+    required this.amount,
+    required this.currency,
+    required this.membershipType,
+  });
+
   @override
   _TransactionStatusPageState createState() => _TransactionStatusPageState();
 }
@@ -12,12 +25,26 @@ class _TransactionStatusPageState extends State<TransactionStatusPage> {
   @override
   void initState() {
     super.initState();
-    // Simulate a delay for status change
-    Future.delayed(Duration(seconds: 2), () {
-      setState(() {
-        _status =
-            'succeeded'; // Change to 'failed' to simulate a failed transaction
-      });
+    _startSubscriptionProcess();
+  }
+
+  void _startSubscriptionProcess() async {
+    final secretKey = await widget.subscriptionController.createSubscription(
+      widget.amount,
+      widget.currency,
+      widget.membershipType,
+    );
+    if (secretKey.isNotEmpty) {
+      await widget.subscriptionController.initPaymentSheet(secretKey);
+      widget.subscriptionController.processPayment(_updateStatus);
+    } else {
+      _updateStatus('failed');
+    }
+  }
+
+  void _updateStatus(String status) {
+    setState(() {
+      _status = status;
     });
   }
 
@@ -41,14 +68,16 @@ class _TransactionStatusPageState extends State<TransactionStatusPage> {
               style: TextStyle(fontSize: 18),
             ),
             SizedBox(height: 20),
-            ElevatedButton(
-              onPressed: () {
-                print('Go to Home Profile');
-                // Navigate back to home profile page
-                GoRouter.of(context).push('/profile');
-              },
-              child: Text('Go to Home Profile'),
-            ),
+            if (_status == 'succeeded' ||
+                _status == 'failed' ||
+                _status == 'canceled')
+              ElevatedButton(
+                onPressed: () {
+                  print('Go to Home Profile');
+                  GoRouter.of(context).go('/profile');
+                },
+                child: Text('Go to Home Profile'),
+              ),
           ],
         ),
       ),
@@ -66,6 +95,9 @@ class _TransactionStatusPageState extends State<TransactionStatusPage> {
       case 'failed':
         return Icon(Icons.error,
             key: ValueKey('failed'), size: 100, color: Colors.red);
+      case 'canceled':
+        return Icon(Icons.cancel,
+            key: ValueKey('canceled'), size: 100, color: Colors.grey);
       default:
         return Container();
     }
@@ -79,6 +111,8 @@ class _TransactionStatusPageState extends State<TransactionStatusPage> {
         return 'Payment Successful!';
       case 'failed':
         return 'Payment Failed!';
+      case 'canceled':
+        return 'Payment Canceled!';
       default:
         return '';
     }
