@@ -1,5 +1,6 @@
 import 'package:auto_scroll_text/auto_scroll_text.dart';
 import 'package:flutter/material.dart';
+import 'package:go_router/go_router.dart';
 import 'package:http_interceptor/http_interceptor.dart';
 import 'package:shimmer/shimmer.dart';
 
@@ -194,7 +195,7 @@ Widget buildAlbumImageWithBackButton(
           child: IconButton(
             icon: Icon(Icons.arrow_back, color: Colors.white),
             onPressed: () {
-              Navigator.of(context).pop();
+              GoRouter.of(context).pop();
             },
           ),
         ),

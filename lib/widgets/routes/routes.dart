@@ -10,6 +10,7 @@ import 'package:monotone_flutter/view/login.dart';
 import 'package:monotone_flutter/view/payment/transaction_status.dart';
 import 'package:monotone_flutter/view/profile/profile.dart';
 import 'package:monotone_flutter/view/register.dart';
+import 'package:monotone_flutter/view/release_group/release_group.dart';
 import 'package:monotone_flutter/view/search/search.dart';
 
 class AppRoutes {
@@ -89,6 +90,13 @@ class AppRoutes {
               currency: extra['currency'],
               membershipType: extra['membershipType'],
             );
+          },
+        ),
+        GoRoute(
+          path: '/release-group/:id', // Add this route
+          builder: (context, state) {
+            final id = state.params['id']!;
+            return ReleaseGroupPage(id: id);
           },
         ),
       ],

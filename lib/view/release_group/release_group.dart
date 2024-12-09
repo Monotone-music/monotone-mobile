@@ -116,7 +116,7 @@ class _ReleaseGroupPageState extends State<ReleaseGroupPage> {
           },
         ),
       ),
-      bottomNavigationBar: MediaToolbar(),
+      // bottomNavigationBar: MediaToolbar(),
     );
   }
 }

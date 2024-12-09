@@ -20,8 +20,10 @@ class BottomTabNavigator extends StatefulWidget {
   _BottomTabNavigatorState createState() => _BottomTabNavigatorState();
 }
 
-class _BottomTabNavigatorState extends State<BottomTabNavigator> {
+class _BottomTabNavigatorState extends State<BottomTabNavigator>
+    with SingleTickerProviderStateMixin {
   int _currentIndex = 0;
+  // late AnimationController _controller;
 
   /// Add your routes here
   final List<String> _routes = [
@@ -31,44 +33,46 @@ class _BottomTabNavigatorState extends State<BottomTabNavigator> {
     '/profile',
   ];
 
-  void _onTabTapped(int index) {
+  @override
+  void initState() {
+    super.initState();
+    // _controller = AnimationController(
+    //   duration: const Duration(seconds: 2),
+    //   vsync: this,
+    // );
+  }
+
+  @override
+  void dispose() {
+    // _controller.dispose();
+    super.dispose();
+  }
+
+  void onTabTapped(int index) {
     setState(() {
       _currentIndex = index;
     });
     GoRouter.of(context).go(_routes[index]);
   }
 
-  bool _isMediaPlayerVisible = true;
-
-  void _toggleMediaPlayer() {
-    setState(() {});
-
-    if (_isMediaPlayerVisible) {
-      showModalBottomSheet(
-        context: context,
-        isScrollControlled: true,
-        builder: (context) => MediaPlayer(),
-      ).then((_) {
-        setState(() {
-          // _isMediaPlayerVisible = !_isMediaPlayerVisible;
-        });
-      });
-    }
+  int _getCurrentIndex(String route) {
+    return _routes.indexOf(route);
   }
 
-  final List<Widget> _tabs = [
-    // Add your tab screens here
-    HomePage(),
-    // DiscoverPage(),
-    SearchPage(),
-    LibraryPage(),
-    ProfilePage(),
-  ];
+  bool _isMediaPlayerVisible = true;
 
   @override
   Widget build(BuildContext context) {
     final themeProvider = Provider.of<ThemeProvider>(context);
     final isDarkMode = themeProvider.isDarkMode;
+    final currentRoute = GoRouter.of(context).location;
+    _currentIndex = _getCurrentIndex(currentRoute);
+    // Ensure _currentIndex is within the valid range
+    if (_currentIndex < 0 || _currentIndex >= _routes.length) {
+      _currentIndex = 0; // Default to the first tab
+    }
+
+    ///
     return Scaffold(
       body: Column(
         children: [
@@ -79,7 +83,7 @@ class _BottomTabNavigatorState extends State<BottomTabNavigator> {
             // height: 65,
             child: BottomNavigationBar(
               currentIndex: _currentIndex,
-              onTap: _onTabTapped,
+              onTap: onTabTapped,
 
               // showSelectedLabels: false,
               // showUnselectedLabels: false,
@@ -111,23 +115,6 @@ class _BottomTabNavigatorState extends State<BottomTabNavigator> {
                   ),
                   label: 'Home',
                 ),
-                // BottomNavigationBarItem(
-                //   icon: ImageRenderer(
-                //     imageUrl: 'assets/image/discover_icon.svg',
-                //     height: MediaQuery.of(context).size.height *
-                //         0.04, // Adjust the height as needed
-                //     width: MediaQuery.of(context).size.width * 0.04,
-                //   ),
-                //   activeIcon: ImageRenderer(
-                //     imageUrl:
-                //         'assets/image/discover_active_icon.svg', ///// Discover has not received active icon yet
-                //     height: MediaQuery.of(context).size.height *
-                //         0.04, // Adjust the height as needed
-                //     width: MediaQuery.of(context).size.width *
-                //         0.04, // Adjust the width as needed
-                //   ),
-                //   label: 'Discover',
-                // ),
                 BottomNavigationBarItem(
                   icon: ImageRenderer(
                     imageUrl: 'assets/image/search_icon.svg',
