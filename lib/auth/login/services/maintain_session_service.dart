@@ -28,6 +28,7 @@ class MaintainSessionService {
       body: jsonEncode({'refreshToken': refreshToken}),
     );
 
+    print(jsonDecode(response.body)['data']);
     if (response.statusCode == 200) {
       final body = jsonDecode(response.body);
       final newAccessToken = body['data']['accessToken'];
@@ -42,5 +43,4 @@ class MaintainSessionService {
       // Handle refresh token failure (e.g., log out the user)
     }
   }
-
 }

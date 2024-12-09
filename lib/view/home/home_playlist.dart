@@ -10,7 +10,6 @@ import 'package:monotone_flutter/widgets/image_widgets/image_renderer.dart';
 import 'package:monotone_flutter/view/release_group/release_group.dart';
 import 'package:monotone_flutter/common/themes/theme_provider.dart';
 
-
 class PlaylistMini extends StatefulWidget {
   final Map<String, String> trackItem;
 
@@ -105,7 +104,6 @@ class _PlaylistMiniState extends State<PlaylistMini> {
                 },
               ),
             ),
-            // , height: 50, width: 50),
             const SizedBox(width: 8),
             Expanded(
               child: Column(

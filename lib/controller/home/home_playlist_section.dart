@@ -1,0 +1,65 @@
+import 'package:flutter/material.dart';
+import 'package:monotone_flutter/widgets/skeletons/skeleton_home.dart';
+import 'package:provider/provider.dart';
+import 'package:monotone_flutter/common/themes/theme_provider.dart';
+import 'package:monotone_flutter/view/home/home_playlist.dart';
+
+class HomePlaylistSection extends StatelessWidget {
+  final String title;
+  final Future<List<Map<String, String>>> loader;
+
+  const HomePlaylistSection(
+      {super.key, required this.title, required this.loader});
+
+  @override
+  Widget build(BuildContext context) {
+    final themeProvider = Provider.of<ThemeProvider>(context);
+    final isDarkMode = themeProvider.isDarkMode;
+    final screenWidth = MediaQuery.of(context).size.width;
+
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        Padding(
+          padding: const EdgeInsets.all(8.0),
+          child: Text(
+            title,
+            style: TextStyle(
+              color: isDarkMode ? Colors.white : Colors.black,
+              fontSize: 24,
+              fontWeight: FontWeight.bold,
+            ),
+          ),
+        ),
+        FutureBuilder<List<Map<String, String>>>(
+          future: loader,
+          builder: (context, snapshot) {
+            if (snapshot.connectionState == ConnectionState.waiting) {
+              return SkeletonHome(
+                  screenWidth: screenWidth, isDarkMode: isDarkMode);
+              ;
+            } else if (snapshot.hasError) {
+              return Center(child: Text('Failed to load $title'));
+            } else if (snapshot.hasData) {
+              final items = snapshot.data!;
+              return GridView.builder(
+                shrinkWrap: true,
+                physics: const NeverScrollableScrollPhysics(),
+                gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
+                  crossAxisCount: 2,
+                  childAspectRatio: 4 / 1.7,
+                ),
+                itemCount: items.length,
+                itemBuilder: (context, index) {
+                  return PlaylistMini(trackItem: items[index]);
+                },
+              );
+            } else {
+              return Center(child: Text('No $title found'));
+            }
+          },
+        ),
+      ],
+    );
+  }
+}
