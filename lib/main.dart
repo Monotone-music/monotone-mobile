@@ -31,13 +31,11 @@ void main() async {
   await setupServiceLocator();
   //Run
   final session_service = MaintainSessionService();
-  final alive = session_service.keepAlive();
-  // print('alive response: ${alive?.data}');
-  if (alive == true) {
-    initialRoute = AppRoutes.homePage;
-  } else {
-    initialRoute = AppRoutes.loginPage;
-  }
+  await session_service.refreshToken(
+    onRefreshFailed: () {
+      AppRoutes().router.go('/login');
+    },
+  );
 
   ///
   runApp(MyApp(initialRoute: initialRoute));

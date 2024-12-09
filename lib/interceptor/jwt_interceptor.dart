@@ -1,9 +1,9 @@
 import 'dart:convert';
-import 'package:http/http.dart' as http;
 
 import 'package:flutter_secure_storage/flutter_secure_storage.dart';
 import 'package:http_interceptor/http_interceptor.dart';
 import 'package:monotone_flutter/auth/login/services/maintain_session_service.dart';
+import 'package:monotone_flutter/widgets/routes/routes.dart';
 
 class JwtInterceptor implements InterceptorContract {
   final _storage = const FlutterSecureStorage();
@@ -103,7 +103,11 @@ class ExpiredTokenRetryPolicy extends RetryPolicy {
   Future<bool> shouldAttemptRetryOnResponse(BaseResponse response) async {
     if (response.statusCode == 401) {
       print('Retrying...');
-      final newToken = await _refreshTokenService.refreshToken();
+     final newToken = await _refreshTokenService.refreshToken(
+        onRefreshFailed: () {
+          AppRoutes().router.go('/login');
+        },
+      );;
       if (newToken != null) {
         // Add the new token to the request headers
         response.request?.headers['Authorization'] = 'Bearer $newToken';
