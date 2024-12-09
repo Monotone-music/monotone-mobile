@@ -3,6 +3,7 @@
 import 'dart:convert';
 
 import 'package:dio/dio.dart';
+import 'package:flutter_secure_storage/flutter_secure_storage.dart';
 import 'package:http_interceptor/http_interceptor.dart';
 import 'package:monotone_flutter/common/api_url.dart';
 import 'package:monotone_flutter/controller/payment/services/stripe_services.dart';
@@ -11,20 +12,7 @@ import 'package:monotone_flutter/interceptor/jwt_interceptor.dart';
 class SubscriptionController {
   final StripeServices _stripeServices = StripeServices.instance;
 
-  SubscriptionController() {
-    // Initialization is handled in StripeServices
-  }
-
-  // Future<void> handleSubcription() async {
-  //   try {
-  //     await createSubscription(amount, currency);
-
-  //     await initPaymentSheet();
-  //     await processPayment();
-  //   } catch (e) {
-  //     print('Error handling subscription: $e');
-  //   }
-  // }
+  SubscriptionController() {}
 
   Future<void> initPaymentSheet(String secretKey) async {
     try {
@@ -43,7 +31,11 @@ class SubscriptionController {
     }
   }
 
-  Future<String> createSubscription(int amount, String currency) async {
+  Future<String> createSubscription(
+      int amount, String currency, String membershipType) async {
+    final storage = FlutterSecureStorage();
+    final token = await storage.read(key: 'accessToken');
+    print('Token: $token');
     final httpClient = InterceptedClient.build(interceptors: [
       JwtInterceptor(),
     ], retryPolicy: ExpiredTokenRetryPolicy());
@@ -61,7 +53,8 @@ class SubscriptionController {
               'amount': amount.toString(),
               'currency': currency,
               'metadata': {
-                'ky': 's',
+                'token': token,
+                'type': membershipType,
               },
             },
           ));
@@ -69,7 +62,6 @@ class SubscriptionController {
         // Handle successful subscription creation
         print('Subscription created successfully');
         var body = jsonDecode(response.body);
-        print('Response body: ${body['data']['intent']['client_secret']}');
         final Map<String, dynamic> data = body;
         data['data']['intent']['client_secret'];
 

@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:go_router/go_router.dart';
 
 class TransactionStatusPage extends StatefulWidget {
   @override
@@ -42,12 +43,9 @@ class _TransactionStatusPageState extends State<TransactionStatusPage> {
             SizedBox(height: 20),
             ElevatedButton(
               onPressed: () {
+                print('Go to Home Profile');
                 // Navigate back to home profile page
-                Navigator.pushNamedAndRemoveUntil(
-                  context,
-                  '/',
-                  (Route<dynamic> route) => false,
-                );
+                GoRouter.of(context).push('/profile');
               },
               child: Text('Go to Home Profile'),
             ),

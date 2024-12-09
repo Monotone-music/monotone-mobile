@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:monotone_flutter/auth/login/logout_button.dart';
 import 'package:monotone_flutter/controller/payment/subscription_controller.dart';
 import 'package:monotone_flutter/view/payment/payment.dart';
+import 'package:monotone_flutter/view/payment/transaction_status.dart';
 import 'package:monotone_flutter/widgets/image_widgets/image_renderer.dart';
 import 'dart:math';
 import 'package:provider/provider.dart';
@@ -206,16 +207,17 @@ class ProfileView extends StatelessWidget {
                                     SizedBox(
                                       width: MediaQuery.of(context).size.width *
                                           0.6,
-                                      child: Text(
-                                        // profile.identifier,
-                                        'User ID: 123456',
-                                        style: TextStyle(
-                                            fontSize: 17,
-                                            color:
-                                                changePrimary.withOpacity(0.6)),
-                                        maxLines: 1,
-                                        overflow: TextOverflow.ellipsis,
-                                      ),
+                                      height: 20,
+                                      // child: Text(
+                                      //   // profile.identifier,
+                                      //   'User ID: 123456',
+                                      //   style: TextStyle(
+                                      //       fontSize: 17,
+                                      //       color:
+                                      //           changePrimary.withOpacity(0.6)),
+                                      //   maxLines: 1,
+                                      //   overflow: TextOverflow.ellipsis,
+                                      // ),
                                     )
                                   ],
                                 )
@@ -303,8 +305,13 @@ class ProfileView extends StatelessWidget {
                     children: [
                       GestureDetector(
                         onTap: () {
+                          Navigator.push(
+                            context,
+                            MaterialPageRoute(
+                                builder: (context) => TransactionStatusPage()),
+                          );
                           _subscriptionController
-                              .createSubscription(500, 'usd')
+                              .createSubscription(500, 'usd', 'premium')
                               .then(
                             (secretKey) async {
                               await _subscriptionController
@@ -374,8 +381,13 @@ class ProfileView extends StatelessWidget {
                       ),
                       GestureDetector(
                         onTap: () {
+                          Navigator.push(
+                            context,
+                            MaterialPageRoute(
+                                builder: (context) => TransactionStatusPage()),
+                          );
                           _subscriptionController
-                              .createSubscription(1000, 'usd')
+                              .createSubscription(1000, 'usd', 'premium')
                               .then(
                             (secretKey) async {
                               await _subscriptionController
