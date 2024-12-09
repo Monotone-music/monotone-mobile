@@ -24,8 +24,9 @@ class LoginLoader {
       if (response.statusCode == 200) {
         //SAVE THE BITRATE
         final responseBody = jsonDecode(response.body);
-        await storage.write(
-            key: 'bitrate', value: responseBody['data']['bitrate']);
+        var fullBitrate =
+            responseBody['data']['bitrate'].replaceAll('kbps', '').trim();
+        await storage.write(key: 'bitrate', value: fullBitrate);
         // Return the message
         return '200';
       } else {

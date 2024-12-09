@@ -78,7 +78,7 @@ class _RegisterFormState extends State<RegisterForm> {
           _errorMessage = 'The account is already exist';
         });
       } else {
-        // Navigate to home page
+        // Navigate to login page
         Navigator.pushReplacementNamed(context, AppRoutes.loginPage);
       }
     }

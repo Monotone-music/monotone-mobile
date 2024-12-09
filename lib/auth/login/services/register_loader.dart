@@ -22,12 +22,12 @@ class RegisterLoader {
 
       if (response.statusCode == 201) {
         // Parse the JSON response
-        print(response);
+        // print(response);
 
         // Print the message
 
         // Return the message
-        return 'Login successful';
+        return '201';
       } else {
         // Handle other status codes here if needed
         print('Unexpected status code: ${response.statusCode}');

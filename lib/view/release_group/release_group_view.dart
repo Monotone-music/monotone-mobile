@@ -373,14 +373,73 @@ Widget buildTrackList(BuildContext context, ReleaseGroup releaseGroup,
           track.title,
           style: Theme.of(context).textTheme.bodyLarge,
         ),
-        subtitle: Text(
-          '${formatDuration(track.duration)} •   ${track.artistNames.join(', ')}',
-          style: Theme.of(context).textTheme.bodyMedium?.copyWith(
-                color:
-                    isDarkMode ? Colors.white.withOpacity(0.7) : Colors.black,
-                fontWeight: FontWeight.w300,
+        subtitle: Row(
+          children: [
+            Text(
+              '${formatDuration(track.duration)} • ',
+              style: Theme.of(context).textTheme.bodyMedium?.copyWith(
+                    color: isDarkMode
+                        ? Colors.white.withOpacity(0.7)
+                        : Colors.black,
+                    fontWeight: FontWeight.w300,
+                  ),
+            ),
+            Expanded(
+              child: LayoutBuilder(
+                builder: (context, constraints) {
+                  final artistNames = track.artistNames.join(', ');
+                  final textSpan = TextSpan(
+                    text: artistNames,
+                    style: Theme.of(context).textTheme.bodyMedium?.copyWith(
+                          color: isDarkMode
+                              ? Colors.white.withOpacity(0.7)
+                              : Colors.black,
+                          fontWeight: FontWeight.w300,
+                        ),
+                  );
+
+                  final textPainter = TextPainter(
+                    text: textSpan,
+                    maxLines: 1,
+                    textDirection: TextDirection.ltr,
+                  );
+
+                  textPainter.layout(
+                      minWidth: 0, maxWidth: constraints.maxWidth);
+
+                  if (textPainter.didExceedMaxLines) {
+                    return AutoScrollText(
+                      artistNames,
+                      textAlign: TextAlign.left,
+                      velocity: const Velocity(pixelsPerSecond: Offset(20, 0)),
+                      intervalSpaces: 5,
+                      mode: AutoScrollTextMode.endless,
+                      delayBefore: const Duration(seconds: 2),
+                      style: Theme.of(context).textTheme.bodyMedium?.copyWith(
+                            color: isDarkMode
+                                ? Colors.white.withOpacity(0.7)
+                                : Colors.black,
+                            fontWeight: FontWeight.w300,
+                          ),
+                    );
+                  } else {
+                    return Text(
+                      artistNames,
+                      style: Theme.of(context).textTheme.bodyMedium?.copyWith(
+                            color: isDarkMode
+                                ? Colors.white.withOpacity(0.7)
+                                : Colors.black,
+                            fontWeight: FontWeight.w300,
+                          ),
+                    );
+                  }
+                },
               ),
+            ),
+          ],
         ),
+
+        ///
         trailing: SizedBox(
           width: MediaQuery.of(context).size.width * 0.25,
           child: Row(

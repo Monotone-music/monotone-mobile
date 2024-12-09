@@ -1,3 +1,4 @@
+import 'package:auto_scroll_text/auto_scroll_text.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 
@@ -63,8 +64,11 @@ class _ReleaseGroupPageState extends State<ReleaseGroupPage> {
                         context, releaseGroup, imageCache, themeProvider),
                     // const SizedBox(height: 16),
                     // Album name
-                    Text(
+                    AutoScrollText(
                       releaseGroup.name,
+                      textAlign: TextAlign.center,
+                      velocity: const Velocity(pixelsPerSecond: Offset(25, 0)),
+                      mode: AutoScrollTextMode.endless,
                       style: Theme.of(context).textTheme.displaySmall,
                     ),
                     const SizedBox(height: 8),

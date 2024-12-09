@@ -145,11 +145,19 @@ class MyAudioHandler extends BaseAudioHandler
   }
 
   UriAudioSource _createAudioSource(MediaItem mediaItem) {
-    return AudioSource.uri(
-      Uri.parse(mediaItem.extras!['url'] as String),
-      // headers: {'Range': 'bytes=0-'},
-      tag: mediaItem,
-    );
+    var result;
+    // print('Create Audio Source: ${mediaItem.extras!['url']}');
+    try {
+      result = AudioSource.uri(
+        Uri.parse(mediaItem.extras!['url'] as String),
+        // headers: {'Content-Type': 'audio/mpeg'},
+        tag: mediaItem,
+      );
+      return result;
+    } catch (e) {
+      print(e);
+      return result;
+    }
   }
 
   @override

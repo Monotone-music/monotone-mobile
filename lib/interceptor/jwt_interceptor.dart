@@ -21,6 +21,7 @@ class JwtInterceptor implements InterceptorContract {
     if (accessToken != null) {
       request.headers['Authorization'] = 'Bearer $accessToken';
     }
+    print(request.url);
     return request;
   }
 
@@ -28,7 +29,7 @@ class JwtInterceptor implements InterceptorContract {
   Future<BaseResponse> interceptResponse(
       {required BaseResponse response}) async {
     int statusCode = response.statusCode;
-
+    print('RESPONSE: ${response.request}');
     if (response.request?.url.path == '/auth/login' ||
         response.request?.url.path == '/auth/refresh') {
       ///
@@ -43,7 +44,6 @@ class JwtInterceptor implements InterceptorContract {
             print('Refresh failed');
             break;
         }
-
         ///
       }
     }

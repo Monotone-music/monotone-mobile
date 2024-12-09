@@ -103,6 +103,8 @@ class MediaManager {
   Future<MediaItem> _createMediaItem(Track track, String albumName) async {
     final accessToken = await _storage.read(key: 'accessToken');
     final bitrate = await _storage.read(key: 'bitrate');
+
+    // print('https://api2.ibarakoi.online/tracks/stream/${track.id}?bitrate=${bitrate}');
     return MediaItem(
       id: '${track.id}_${queueCounter++}',
       album: albumName,
@@ -112,7 +114,7 @@ class MediaManager {
       artHeaders: {'Authorization': 'Bearer $accessToken'},
       extras: {
         'url':
-            'https://api2.ibarakoi.online/tracks/stream/${track.id}?bitrate=${bitrate}',
+            'https://api2.ibarakoi.online/tracks/stream/${track.id}?bitrate=lossless',
       },
     );
   }
@@ -148,7 +150,7 @@ class MediaManager {
     print('track loading');
     final accessToken = await _storage.read(key: 'accessToken');
     final bitrate = await _storage.read(key: 'bitrate');
-
+    
     final fetchedTrack = track;
     final mediaItem = MediaItem(
       id: '${fetchedTrack.id}_${queueCounter++}',
@@ -157,7 +159,9 @@ class MediaManager {
       artist: fetchedTrack.artistNames.join(', '),
       artHeaders: {'Authorization': 'Bearer $accessToken'},
       artUri: Uri.parse('$BASE_URL/image/${fetchedTrack.imageUrl}'),
-      extras: {'url': '$BASE_URL/tracks/stream/${fetchedTrack.id}?bitrate=${bitrate}'},
+      extras: {
+        'url': '$BASE_URL/tracks/stream/${fetchedTrack.id}?bitrate=lossless'
+      },
     );
     // fetchAndPrintApiResponse(mediaItem.extras!['url'] as String);
 
