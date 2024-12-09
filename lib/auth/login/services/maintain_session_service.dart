@@ -3,7 +3,7 @@ import 'package:flutter_secure_storage/flutter_secure_storage.dart';
 import 'package:http_interceptor/http_interceptor.dart';
 import 'package:monotone_flutter/interceptor/jwt_interceptor.dart';
 
-class RefreshTokenService {
+class MaintainSessionService {
   final FlutterSecureStorage _storage = const FlutterSecureStorage();
   final String BASE_URL = 'https://api2.ibarakoi.online';
 
@@ -38,5 +38,26 @@ class RefreshTokenService {
       return null;
       // Handle refresh token failure (e.g., log out the user)
     }
+  }
+
+  Future<bool> keepAlive() async {
+     final httpClient = InterceptedClient.build(interceptors: [
+      JwtInterceptor(),
+    ],retryPolicy: ExpiredTokenRetryPolicy());
+    ///
+    final accessToken = await _storage.read(key: 'accessToken');
+    if (accessToken == null) {
+      return false;
+    }
+
+    final response = await httpClient.post(
+      Uri.parse('$BASE_URL/auth/keep-alive'),
+      headers: {
+        'Content-Type': 'application/json',
+        'Authorization': 'Bearer $accessToken',
+      },
+    );
+    print(response.statusCode == 200);
+    return response.statusCode == 200;
   }
 }

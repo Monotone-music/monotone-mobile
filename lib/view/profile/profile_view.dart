@@ -33,7 +33,7 @@ class ProfileView extends StatelessWidget {
                 const EdgeInsets.only(top: 25, bottom: 25, left: 10, right: 10),
             decoration: BoxDecoration(
               image: DecorationImage(
-                image: NetworkImage(
+                image: const NetworkImage(
                   'https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcSbfe6jVBKeEynH9EtUr5gnN927eTZUJiuV8Q&s',
                 ), // Replace with your image path
                 fit: BoxFit.cover,

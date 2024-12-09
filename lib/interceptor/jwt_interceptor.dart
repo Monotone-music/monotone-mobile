@@ -3,7 +3,7 @@ import 'package:http/http.dart' as http;
 
 import 'package:flutter_secure_storage/flutter_secure_storage.dart';
 import 'package:http_interceptor/http_interceptor.dart';
-import 'package:monotone_flutter/auth/login/services/refresh_token.dart';
+import 'package:monotone_flutter/auth/login/services/maintain_session_service.dart';
 
 class JwtInterceptor implements InterceptorContract {
   final _storage = const FlutterSecureStorage();
@@ -21,11 +21,6 @@ class JwtInterceptor implements InterceptorContract {
     if (accessToken != null) {
       request.headers['Authorization'] = 'Bearer $accessToken';
     }
-
-    // Log the request body
-    // if (request is Request) {
-    //   print('Request body: ${request.body}');
-    // }
     return request;
   }
 
@@ -93,11 +88,11 @@ class JwtInterceptor implements InterceptorContract {
         await _storage.write(key: tokenType, value: value);
         break;
     }
-  }
+  } 
 }
 
 class ExpiredTokenRetryPolicy extends RetryPolicy {
-  final RefreshTokenService _refreshTokenService = RefreshTokenService();
+  final MaintainSessionService _refreshTokenService = MaintainSessionService();
 
   @override
   bool shouldAttemptRetryOnException(Exception reason, BaseRequest request) {

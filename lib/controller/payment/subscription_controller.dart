@@ -3,6 +3,7 @@
 import 'dart:convert';
 
 import 'package:dio/dio.dart';
+import 'package:flutter_secure_storage/flutter_secure_storage.dart';
 import 'package:http_interceptor/http_interceptor.dart';
 import 'package:monotone_flutter/common/api_url.dart';
 import 'package:monotone_flutter/controller/payment/services/stripe_services.dart';
@@ -47,11 +48,17 @@ class SubscriptionController {
     final httpClient = InterceptedClient.build(interceptors: [
       JwtInterceptor(),
     ], retryPolicy: ExpiredTokenRetryPolicy());
+
+    ///
     const api = '$BASE_URL/payment/create-intent';
+    const storage = FlutterSecureStorage();
     print('Creating subscription...');
 
     String resData;
     try {
+      final accessToken = await storage.read(
+        key: 'accessToken',
+      );
       final response = await httpClient.post(Uri.parse(api),
           headers: {
             'Content-Type': 'application/json',
@@ -61,7 +68,8 @@ class SubscriptionController {
               'amount': amount.toString(),
               'currency': currency,
               'metadata': {
-                'ky': 's',
+                'token': accessToken,
+                'type': 's',
               },
             },
           ));

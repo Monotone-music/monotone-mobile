@@ -13,15 +13,20 @@ class AppRoutes {
   static const String registerPage = '/register';
   static const String homePage = '/home';
   static const String customerProfile = '/profile';
+  static final AppRoutes _instance = AppRoutes._internal();
+
   late StreamSubscription<Uri> _sub;
   late AppLinks _appLinks;
   late GoRouter router;
 
-  AppRoutes() {
+  factory AppRoutes() {
+    return _instance;
+  }
+
+  AppRoutes._internal() {
     _appLinks = AppLinks();
     _initDeepLinkListener();
     router = GoRouter(
-      initialLocation: '/login',
       routes: [
         GoRoute(
           path: '/',
@@ -33,7 +38,9 @@ class AppRoutes {
         ),
         GoRoute(
           path: '/register',
-          builder: (context, state) {return RegisterPage();},
+          builder: (context, state) {
+            return RegisterPage();
+          },
         ),
         GoRoute(
           path: '/home',
