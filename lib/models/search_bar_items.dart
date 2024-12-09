@@ -105,8 +105,8 @@ class mediaImage {
 
   factory mediaImage.fromJson(Map<String, dynamic> json) {
     return mediaImage(
-      width: json['dimensions']['width'],
-      height: json['dimensions']['height'],
+      width: json['width']?? 500,
+      height: json['height']?? 500,
       id: json['_id'],
       type: json['type'],
       filename: json['filename'],

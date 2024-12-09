@@ -1,13 +1,14 @@
 import 'dart:developer';
-
 import 'package:flutter/material.dart';
 import 'package:http_interceptor/http_interceptor.dart';
+import 'package:provider/provider.dart';
+import 'package:shimmer/shimmer.dart';
+
 import 'package:monotone_flutter/interceptor/jwt_interceptor.dart';
 import 'package:monotone_flutter/widgets/image_widgets/image_renderer.dart';
 import 'package:monotone_flutter/view/release_group/release_group.dart';
 import 'package:monotone_flutter/common/themes/theme_provider.dart';
-import 'package:provider/provider.dart';
-import 'package:shimmer/shimmer.dart';
+
 
 class PlaylistMini extends StatefulWidget {
   final Map<String, String> trackItem;

@@ -1,6 +1,8 @@
 import 'package:auto_scroll_text/auto_scroll_text.dart';
 import 'package:flutter/material.dart';
 import 'package:http_interceptor/http_interceptor.dart';
+import 'package:shimmer/shimmer.dart';
+
 import 'package:monotone_flutter/common/themes/theme_provider.dart';
 import 'package:monotone_flutter/controller/media/media_manager.dart';
 import 'package:monotone_flutter/controller/media/services/service_locator.dart';
@@ -8,7 +10,6 @@ import 'package:monotone_flutter/interceptor/jwt_interceptor.dart';
 import 'package:monotone_flutter/models/release_group_model.dart';
 import 'package:monotone_flutter/widgets/image_widgets/image_renderer.dart';
 
-import 'package:shimmer/shimmer.dart';
 
 String formatDuration(double duration) {
   final minutes = duration ~/ 60;

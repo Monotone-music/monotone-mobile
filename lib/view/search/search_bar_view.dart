@@ -1,5 +1,6 @@
 import 'dart:async';
 
+import 'package:auto_scroll_text/auto_scroll_text.dart';
 import 'package:flutter/material.dart';
 import 'package:monotone_flutter/common/api_url.dart';
 import 'package:http_interceptor/http_interceptor.dart';
@@ -315,8 +316,13 @@ class CustomSearchDelegate extends SearchDelegate {
                           width: 50,
                           height: 50,
                         ),
-                  title: Text(item.source.value ?? 'No title',
-                      style: TextStyle(fontSize: 20)),
+                  title: AutoScrollText(
+                    item.source.value ?? 'No title',
+                    textAlign: TextAlign.left,
+                    velocity: const Velocity(pixelsPerSecond: Offset(20, 0)),
+                    mode: AutoScrollTextMode.endless,
+                    style: TextStyle(fontSize: 20),
+                  ),
                   subtitle: Text(
                     item.source.type != null
                         ? '${item.source.type![0].toUpperCase()}${item.source.type!.substring(1)}'
