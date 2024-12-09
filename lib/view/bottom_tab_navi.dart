@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:go_router/go_router.dart';
 import 'package:monotone_flutter/widgets/image_widgets/image_renderer.dart';
 import 'package:provider/provider.dart';
 import 'package:monotone_flutter/view/media/player/media_player.dart';
@@ -12,9 +13,8 @@ import 'package:monotone_flutter/common/themes/theme_provider.dart';
 // import 'package:monotone_flutter/components/component_views/playlist_card.dart';
 
 class BottomTabNavigator extends StatefulWidget {
-  const BottomTabNavigator({
-    super.key,
-  });
+  final Widget child;
+  const BottomTabNavigator({Key? key, required this.child}) : super(key: key);
 
   @override
   _BottomTabNavigatorState createState() => _BottomTabNavigatorState();
@@ -22,7 +22,22 @@ class BottomTabNavigator extends StatefulWidget {
 
 class _BottomTabNavigatorState extends State<BottomTabNavigator> {
   int _currentIndex = 0;
-  // bool _isPlaying = false;
+
+  /// Add your routes here
+  final List<String> _routes = [
+    '/home',
+    '/search',
+    '/library',
+    '/profile',
+  ];
+
+  void _onTabTapped(int index) {
+    setState(() {
+      _currentIndex = index;
+    });
+    GoRouter.of(context).go(_routes[index]);
+  }
+
   bool _isMediaPlayerVisible = true;
 
   void _toggleMediaPlayer() {
@@ -57,11 +72,15 @@ class _BottomTabNavigatorState extends State<BottomTabNavigator> {
     return Scaffold(
       body: Column(
         children: [
-          Expanded(child: _tabs[_currentIndex]),
+          Expanded(
+            child: widget.child,
+          ),
           Container(
             // height: 65,
             child: BottomNavigationBar(
               currentIndex: _currentIndex,
+              onTap: _onTabTapped,
+
               // showSelectedLabels: false,
               // showUnselectedLabels: false,
               selectedItemColor: isDarkMode
@@ -70,11 +89,11 @@ class _BottomTabNavigatorState extends State<BottomTabNavigator> {
               unselectedItemColor: isDarkMode
                   ? const Color(0xFF898989)
                   : const Color(0xFF6E6E6E),
-              onTap: (index) {
-                setState(() {
-                  _currentIndex = index;
-                });
-              },
+              // onTap: (index) {
+              //   setState(() {
+              //     _currentIndex = index;
+              //   });
+              // },
               items: [
                 BottomNavigationBarItem(
                   icon: ImageRenderer(

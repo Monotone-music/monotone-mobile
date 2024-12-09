@@ -1,7 +1,9 @@
 import 'package:flutter/material.dart';
+import 'package:go_router/go_router.dart';
 import 'package:monotone_flutter/auth/login/logout_button.dart';
 import 'package:monotone_flutter/controller/payment/subscription_controller.dart';
 import 'package:monotone_flutter/view/payment/payment.dart';
+import 'package:monotone_flutter/view/payment/transaction_status.dart';
 import 'package:monotone_flutter/widgets/image_widgets/image_renderer.dart';
 import 'dart:math';
 import 'package:provider/provider.dart';
@@ -206,16 +208,17 @@ class ProfileView extends StatelessWidget {
                                     SizedBox(
                                       width: MediaQuery.of(context).size.width *
                                           0.6,
-                                      child: Text(
-                                        // profile.identifier,
-                                        'User ID: 123456',
-                                        style: TextStyle(
-                                            fontSize: 17,
-                                            color:
-                                                changePrimary.withOpacity(0.6)),
-                                        maxLines: 1,
-                                        overflow: TextOverflow.ellipsis,
-                                      ),
+                                      height: 20,
+                                      // child: Text(
+                                      //   // profile.identifier,
+                                      //   'User ID: 123456',
+                                      //   style: TextStyle(
+                                      //       fontSize: 17,
+                                      //       color:
+                                      //           changePrimary.withOpacity(0.6)),
+                                      //   maxLines: 1,
+                                      //   overflow: TextOverflow.ellipsis,
+                                      // ),
                                     )
                                   ],
                                 )
@@ -303,15 +306,13 @@ class ProfileView extends StatelessWidget {
                     children: [
                       GestureDetector(
                         onTap: () {
-                          _subscriptionController
-                              .createSubscription(500, 'usd')
-                              .then(
-                            (secretKey) async {
-                              await _subscriptionController
-                                  .initPaymentSheet(secretKey);
-                              await _subscriptionController.processPayment();
-                            },
-                          );
+                          GoRouter.of(context)
+                              .go('/transaction-status', extra: {
+                            'subscriptionController': _subscriptionController,
+                            'amount': 500,
+                            'currency': 'usd',
+                            'membershipType': 'premium',
+                          });
                         },
                         child: const Column(
                           mainAxisAlignment: MainAxisAlignment.start,
@@ -374,15 +375,13 @@ class ProfileView extends StatelessWidget {
                       ),
                       GestureDetector(
                         onTap: () {
-                          _subscriptionController
-                              .createSubscription(1000, 'usd')
-                              .then(
-                            (secretKey) async {
-                              await _subscriptionController
-                                  .initPaymentSheet(secretKey);
-                              await _subscriptionController.processPayment();
-                            },
-                          );
+                          GoRouter.of(context)
+                              .go('/transaction-status', extra: {
+                            'subscriptionController': _subscriptionController,
+                            'amount': 1000,
+                            'currency': 'usd',
+                            'membershipType': 'premium',
+                          });
                         },
                         child: Column(
                           mainAxisAlignment: MainAxisAlignment.start,

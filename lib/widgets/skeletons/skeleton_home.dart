@@ -21,7 +21,7 @@ class SkeletonHome extends StatelessWidget {
           GridView.builder(
             shrinkWrap: true,
             physics: const NeverScrollableScrollPhysics(),
-            itemCount: 4, // Number of skeleton items
+            itemCount: 10, // Number of skeleton items
             gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
               crossAxisCount: 2, // Number of columns
               crossAxisSpacing: 0.0, // Spacing between columns
