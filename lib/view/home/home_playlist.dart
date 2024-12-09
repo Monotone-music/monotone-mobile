@@ -1,6 +1,7 @@
 import 'dart:developer';
 
 import 'package:flutter/material.dart';
+import 'package:go_router/go_router.dart';
 import 'package:http_interceptor/http_interceptor.dart';
 import 'package:monotone_flutter/interceptor/jwt_interceptor.dart';
 import 'package:monotone_flutter/widgets/image_widgets/image_renderer.dart';
@@ -43,14 +44,7 @@ class _PlaylistMiniState extends State<PlaylistMini> {
       onTap: () async {
         // Handle tap
         // navigate push to the release group page with the id
-        Navigator.push(
-          context,
-          MaterialPageRoute(
-            builder: (context) => ReleaseGroupPage(
-              id: _id,
-            ),
-          ),
-        );
+        context.push('/release-group/$_id');
       },
       child: Container(
         width: screenWidth * 0.5,

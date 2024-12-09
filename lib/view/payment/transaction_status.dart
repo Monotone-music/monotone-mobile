@@ -73,10 +73,10 @@ class _TransactionStatusPageState extends State<TransactionStatusPage> {
                 _status == 'canceled')
               ElevatedButton(
                 onPressed: () {
-                  print('Go to Home Profile');
+                  print('Go to Profile');
                   GoRouter.of(context).go('/profile');
                 },
-                child: Text('Go to Home Profile'),
+                child: Text('Go to Profile'),
               ),
           ],
         ),
