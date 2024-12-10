@@ -47,7 +47,7 @@ class _ReleaseGroupPageState extends State<ReleaseGroupPage> {
             } else if (snapshot.hasError) {
               return Center(child: Text('Error: ${snapshot.error}'));
             } else if (!snapshot.hasData || snapshot.data == null) {
-              return Center(child: Text('No data available'));
+              return const Center(child: Text('No data available'));
             } else {
               final releaseGroup = snapshot.data!['releaseGroup'];
               final imageCache = snapshot.data!['imageCache'];
@@ -64,37 +64,50 @@ class _ReleaseGroupPageState extends State<ReleaseGroupPage> {
                         context, releaseGroup, imageCache, themeProvider),
                     // const SizedBox(height: 16),
                     // Album name
-                    AutoScrollText(
-                      releaseGroup.name,
-                      textAlign: TextAlign.center,
-                      velocity: const Velocity(pixelsPerSecond: Offset(25, 0)),
-                      mode: AutoScrollTextMode.endless,
-                      style: Theme.of(context).textTheme.displaySmall,
-                    ),
-                    const SizedBox(height: 8),
-                    // Artist name
-                    Text(
-                      releaseGroup.artistName,
-                      style: Theme.of(context).textTheme.bodyLarge?.copyWith(
-                            color: isDarkMode
-                                ? Colors.white.withOpacity(0.7)
-                                : Colors.black,
-                            fontWeight: FontWeight.w400,
+                    Container(
+                      padding: const EdgeInsets.symmetric(horizontal: 16.0),
+                      child: Column(
+                        children: [
+                          AutoScrollText(
+                            releaseGroup.name,
+                            textAlign: TextAlign.center,
+                            velocity:
+                                const Velocity(pixelsPerSecond: Offset(25, 0)),
+                            mode: AutoScrollTextMode.endless,
+                            style: Theme.of(context).textTheme.displaySmall,
                           ),
-                    ),
-                    const SizedBox(height: 8),
-                    //release year, total tracks, total duration
-                    Text(
-                      '${releaseGroup.releaseYear} • ${releaseGroup.tracks.length} tracks • ${formatDuration(totalDuration)}',
-                      //Add color to the text
+                          const SizedBox(height: 8),
+                          // Artist name
+                          Text(
+                            releaseGroup.artistName,
+                            style:
+                                Theme.of(context).textTheme.bodyLarge?.copyWith(
+                                      color: isDarkMode
+                                          ? Colors.white.withOpacity(0.7)
+                                          : Colors.black,
+                                      fontWeight: FontWeight.w400,
+                                    ),
+                          ),
+                          const SizedBox(height: 8),
+                          //release year, total tracks, total duration
+                          Text(
+                            '${releaseGroup.releaseYear} • ${releaseGroup.tracks.length} tracks • ${formatDuration(totalDuration)}',
+                            //Add color to the text
 
-                      style: Theme.of(context).textTheme.bodyMedium?.copyWith(
-                            color: isDarkMode
-                                ? Colors.white.withOpacity(0.7)
-                                : Colors.black,
-                            fontWeight: FontWeight.w300,
+                            style: Theme.of(context)
+                                .textTheme
+                                .bodyMedium
+                                ?.copyWith(
+                                  color: isDarkMode
+                                      ? Colors.white.withOpacity(0.7)
+                                      : Colors.black,
+                                  fontWeight: FontWeight.w300,
+                                ),
                           ),
+                        ],
+                      ),
                     ),
+
                     const SizedBox(height: 8),
                     // Tracks
                     Padding(

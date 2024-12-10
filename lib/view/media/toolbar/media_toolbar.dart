@@ -1,10 +1,4 @@
-import 'dart:typed_data';
-
 import 'package:flutter/material.dart';
-import 'package:provider/provider.dart';
-import 'package:http_interceptor/http_interceptor.dart';
-
-import 'package:monotone_flutter/interceptor/jwt_interceptor.dart';
 import 'package:monotone_flutter/view/media/player/media_player.dart';
 import 'package:monotone_flutter/controller/media/media_manager.dart';
 import 'package:monotone_flutter/controller/media/services/audio_handler.dart';
@@ -12,7 +6,7 @@ import 'package:monotone_flutter/controller/media/services/service_locator.dart'
 import 'package:monotone_flutter/common/themes/theme_provider.dart';
 import 'package:monotone_flutter/widgets/image_widgets/image_renderer.dart';
 import 'package:monotone_flutter/widgets/media_widgets/media_components.dart';
-import 'package:shimmer/shimmer.dart';
+import 'package:provider/provider.dart';
 
 class MediaToolbar extends StatefulWidget {
   // final VoidCallback onToggleMediaPlayer;
@@ -44,28 +38,12 @@ class _MediaToolbarState extends State<MediaToolbar> {
     }
   }
 
-  Future<Uint8List> fetchImage(Uri artUri) async {
-    final httpClient = InterceptedClient.build(interceptors: [
-      JwtInterceptor(),
-    ], retryPolicy: ExpiredTokenRetryPolicy());
-    final response = await httpClient.get(artUri);
-    print(response);
-
-    if (response.statusCode == 200) {
-      return response.bodyBytes;
-    } else {
-      throw Exception('Failed to load image');
-    }
-  }
-
   @override
   Widget build(BuildContext context) {
     final themeProvider = Provider.of<ThemeProvider>(context);
     final isDarkMode = themeProvider.isDarkMode;
     final screenWidth = MediaQuery.of(context).size.width;
     final pageManager = getIt<MediaManager>();
-
-    ////
     return Consumer<MyAudioHandler>(
       builder: (context, mediaPlayerProvider, child) {
         return GestureDetector(
@@ -82,6 +60,8 @@ class _MediaToolbarState extends State<MediaToolbar> {
               valueListenable: pageManager.currentSongTitleNotifier,
               builder: (context, currentSongTitle, child) {
                 final currentMediaItem = pageManager.currentMediaItem;
+                final imageUrl = currentMediaItem?.artUri?.toString() ??
+                    'assets/image/not_available.png';
                 final trackName = currentMediaItem?.title ?? 'No media loaded';
                 final artistName =
                     currentMediaItem?.artist ?? 'Xue hue piao piao';
@@ -92,55 +72,18 @@ class _MediaToolbarState extends State<MediaToolbar> {
                       mainAxisAlignment: MainAxisAlignment.center,
                       crossAxisAlignment: CrossAxisAlignment.center,
                       children: [
-                        SizedBox(
-                          width: 10,
-                        ),
                         // Media thumbnail
+                        SizedBox(
+                          width: 6.0,
+                        ),
                         ClipRRect(
-                          borderRadius: BorderRadius.circular(8.0),
-                          child: currentMediaItem?.artUri != null
-                              ? FutureBuilder<Uint8List>(
-                                  future: fetchImage(currentMediaItem!.artUri!),
-                                  builder: (context, snapshot) {
-                                    if (snapshot.connectionState ==
-                                        ConnectionState.waiting) {
-                                      return Shimmer.fromColors(
-                                        baseColor: Colors.grey[300]!,
-                                        highlightColor: Colors.grey[100]!,
-                                        child: Container(
-                                          width: 75,
-                                          height: 75,
-                                          color: Colors.white,
-                                        ),
-                                      );
-                                    } else if (snapshot.hasError) {
-                                      return ImageRenderer(
-                                        imageUrl:
-                                            'assets/image/not_available.png',
-                                        width: 75,
-                                        height: 75,
-                                      );
-                                    } else if (snapshot.hasData) {
-                                      return ImageRenderer(
-                                        imageUrl: snapshot.data!,
-                                        width: 75,
-                                        height: 75,
-                                      );
-                                    } else {
-                                      return ImageRenderer(
-                                        imageUrl:
-                                            'assets/image/not_available.png',
-                                        width: 75,
-                                        height: 75,
-                                      );
-                                    }
-                                  },
-                                )
-                              : ImageRenderer(
-                                  imageUrl: 'assets/image/not_available.png',
-                                  width: 75,
-                                  height: 75,
-                                ),
+                          borderRadius: BorderRadius.circular(8),
+                          child: ImageRenderer(
+                            imageUrl: imageUrl,
+                            width: 85,
+                            height: 85,
+                            // fit: BoxFit.cover,
+                          ),
                         ),
                         // const SizedBox(width: 8.0),
                         // Track Name and Artist Name
@@ -199,8 +142,6 @@ class _MediaToolbarState extends State<MediaToolbar> {
                                   ShuffleButton(
                                     size: 20,
                                   ),
-
-                                  ///
                                 ],
                               ),
                             ],
@@ -210,8 +151,6 @@ class _MediaToolbarState extends State<MediaToolbar> {
                     ),
                   ],
                 );
-
-                ///
               },
             ),
           ),

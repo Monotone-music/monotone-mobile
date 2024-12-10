@@ -15,6 +15,9 @@ class SearchBarLoader {
     ], retryPolicy: ExpiredTokenRetryPolicy());
     // Add a delay to simulate network latency
     await Future.delayed(Duration(seconds: 1));
+    if (query.isEmpty) {
+      return SearchResults(albums: [], recordings: [], artists: []);
+    }
     final response = await httpClient.get(Uri.parse('$baseUrl$query'));
 
     if (response.statusCode == 200) {

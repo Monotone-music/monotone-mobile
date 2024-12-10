@@ -2,6 +2,7 @@ import 'package:auto_scroll_text/auto_scroll_text.dart';
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 import 'package:http_interceptor/http_interceptor.dart';
+import 'package:monotone_flutter/common/api_url.dart';
 import 'package:shimmer/shimmer.dart';
 
 import 'package:monotone_flutter/common/themes/theme_provider.dart';
@@ -10,7 +11,6 @@ import 'package:monotone_flutter/controller/media/services/service_locator.dart'
 import 'package:monotone_flutter/interceptor/jwt_interceptor.dart';
 import 'package:monotone_flutter/models/release_group_model.dart';
 import 'package:monotone_flutter/widgets/image_widgets/image_renderer.dart';
-
 
 String formatDuration(double duration) {
   final minutes = duration ~/ 60;
@@ -121,66 +121,35 @@ Widget buildAlbumImageWithBackButton(
     ReleaseGroup releaseGroup,
     Map<String, String> imageCache,
     ThemeProvider themeProvider) {
-  final httpClient = InterceptedClient.build(interceptors: [
-    JwtInterceptor(),
-  ], retryPolicy: ExpiredTokenRetryPolicy());
   return Stack(
     children: [
       Container(
         height: 400,
         width: double.infinity,
-        child: FutureBuilder<Response>(
-          future: httpClient.get(
-            Uri.parse(
-              'https://api2.ibarakoi.online/image/${imageCache[releaseGroup.imageUrl]}',
+        child: Stack(
+          children: [
+            ImageRenderer(
+              imageUrl: '$BASE_URL/image/${imageCache[releaseGroup.imageUrl]}',
+              width: double.infinity,
+              height: 400,
+              // fit: BoxFit.cover,
             ),
-          ),
-          builder: (context, snapshot) {
-            if (snapshot.connectionState == ConnectionState.waiting) {
-              return Shimmer.fromColors(
-                baseColor: Colors.grey[300]!,
-                highlightColor: Colors.grey[100]!,
-                child: Container(
-                  width: 50,
-                  height: 50,
-                  color: Colors.white,
+            Container(
+              decoration: BoxDecoration(
+                gradient: LinearGradient(
+                  begin: Alignment.topCenter,
+                  end: Alignment.bottomCenter,
+                  colors: [
+                    Colors.transparent,
+                    themeProvider.getThemeColorSurface().withOpacity(0.1),
+                    themeProvider.getThemeColorSurface().withOpacity(0.3),
+                    themeProvider.getThemeColorSurface().withOpacity(0.5),
+                    themeProvider.getThemeColorSurface(),
+                  ],
                 ),
-              );
-            } else if (snapshot.hasError) {
-              return Center(child: Icon(Icons.error));
-            } else if (snapshot.hasData) {
-              final imageData = snapshot.data?.bodyBytes;
-              return Stack(
-                children: [
-                  ImageRenderer(
-                    imageUrl: imageData,
-                    width: double.infinity,
-                    height: 400,
-                    // fit: BoxFit.cover,
-                  ),
-                  Container(
-                    decoration: BoxDecoration(
-                      gradient: LinearGradient(
-                        begin: Alignment.topCenter,
-                        end: Alignment.bottomCenter,
-                        colors: [
-                          Colors.transparent,
-                          themeProvider.getThemeColorSurface().withOpacity(0.1),
-                          themeProvider.getThemeColorSurface().withOpacity(0.3),
-                          themeProvider.getThemeColorSurface().withOpacity(0.5),
-                          themeProvider.getThemeColorSurface(),
-                        ],
-                      ),
-                    ),
-                  ),
-                ],
-              );
-            } else {
-              return Center(
-                child: Image.asset('assets/image/not_available.png'),
-              );
-            }
-          },
+              ),
+            ),
+          ],
         ),
       ),
       Positioned(
@@ -195,7 +164,7 @@ Widget buildAlbumImageWithBackButton(
           child: IconButton(
             icon: Icon(Icons.arrow_back, color: Colors.white),
             onPressed: () {
-              GoRouter.of(context).pop();
+              Navigator.of(context).pop();
             },
           ),
         ),
@@ -304,10 +273,6 @@ Widget buildAlbumImageWithBackButton(
 
 Widget buildTrackList(BuildContext context, ReleaseGroup releaseGroup,
     bool isDarkMode, Map<String, String> imageCache) {
-  final httpClient = InterceptedClient.build(interceptors: [
-    JwtInterceptor(),
-  ], retryPolicy: ExpiredTokenRetryPolicy());
-
   ///
   return ListView.builder(
     shrinkWrap: true,
@@ -329,51 +294,46 @@ Widget buildTrackList(BuildContext context, ReleaseGroup releaseGroup,
             const SizedBox(width: 15),
             ClipRRect(
               borderRadius: BorderRadius.circular(8.0),
-              child: FutureBuilder<Response>(
-                future: httpClient.get(
-                  Uri.parse(
-                    'https://api2.ibarakoi.online/image/${imageCache[track.imageUrl]}',
-                  ),
-                ),
-                builder: (context, snapshot) {
-                  if (snapshot.connectionState == ConnectionState.waiting) {
-                    return Shimmer.fromColors(
-                      baseColor: Colors.grey[300]!,
-                      highlightColor: Colors.grey[100]!,
-                      child: Container(
-                        width: 60,
-                        height: 60,
-                        color: Colors.white,
-                      ),
-                    );
-                  } else if (snapshot.hasError) {
-                    return ImageRenderer(
-                      imageUrl: 'assets/image/not_available.png',
-                      width: 60,
-                      height: 60,
-                    );
-                  } else if (snapshot.hasData) {
-                    final imageData = snapshot.data?.bodyBytes;
-                    return ImageRenderer(
-                      imageUrl: imageData,
-                      width: 60,
-                      height: 60,
-                    );
-                  } else {
-                    return ImageRenderer(
-                      imageUrl: 'assets/image/not_available.png',
-                      width: 60,
-                      height: 60,
-                    );
-                  }
-                },
+              child: ImageRenderer(
+                imageUrl: '$BASE_URL/image/${imageCache[track.imageUrl]}',
+                width: 60,
+                height: 60,
               ),
             ),
           ],
         ),
-        title: Text(
-          track.title,
-          style: Theme.of(context).textTheme.bodyLarge,
+        title: LayoutBuilder(
+          builder: (context, constraints) {
+            final textSpan = TextSpan(
+              text: track.title,
+              style: Theme.of(context).textTheme.bodyLarge,
+            );
+
+            final textPainter = TextPainter(
+              text: textSpan,
+              maxLines: 1,
+              textDirection: TextDirection.ltr,
+            );
+
+            textPainter.layout(minWidth: 0, maxWidth: constraints.maxWidth);
+
+            if (textPainter.didExceedMaxLines) {
+              return AutoScrollText(
+                track.title,
+                textAlign: TextAlign.left,
+                velocity: const Velocity(pixelsPerSecond: Offset(20, 0)),
+                intervalSpaces: 5,
+                mode: AutoScrollTextMode.endless,
+                delayBefore: const Duration(seconds: 2),
+                style: Theme.of(context).textTheme.bodyLarge,
+              );
+            } else {
+              return Text(
+                track.title,
+                style: Theme.of(context).textTheme.bodyLarge,
+              );
+            }
+          },
         ),
         subtitle: Row(
           children: [
