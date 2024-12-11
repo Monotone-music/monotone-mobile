@@ -1,12 +1,11 @@
 import 'package:flutter/material.dart';
-
 import 'package:monotone_flutter/controller/library/playlist_section_loader.dart';
 import 'package:monotone_flutter/models/playlist_items.dart';
+import 'package:monotone_flutter/view/library/playlist_card_view.dart';
 
 class PlaylistSection extends StatefulWidget {
   final String title;
-  final Future<List<PlaylistItem>> Function()
-      fetchItems; // Function to fetch items
+  final Future<List<PlaylistItem>> Function() fetchItems;
 
   const PlaylistSection(
       {super.key, required this.title, required this.fetchItems});
@@ -32,10 +31,10 @@ class _PlaylistSectionState extends State<PlaylistSection> {
         Theme(
           data: Theme.of(context).copyWith(dividerColor: Colors.transparent),
           child: ExpansionTile(
+            initiallyExpanded: true,
             title: Text(
               widget.title,
-              style: const TextStyle(
-                  fontSize: 22), // Adjust the font size as needed
+              style: const TextStyle(fontSize: 22),
             ),
             trailing: Icon(
               _customTileExpanded
@@ -43,26 +42,30 @@ class _PlaylistSectionState extends State<PlaylistSection> {
                   : Icons.keyboard_arrow_right,
             ),
             children: <Widget>[
-              SingleChildScrollView(
-                scrollDirection: Axis.horizontal,
-                child: Row(
-                  children: [
-                    Padding(
-                      padding: const EdgeInsets.symmetric(
-                          horizontal: 8.0), // Add space between items
-                      child: SizedBox(
-                        height: MediaQuery.of(context).size.height *
-                            0.35, // Set a specific height
-                        child: Container(
-                          width: MediaQuery.of(context).size.width * 1,
-                          child: PlaylistSectionGenerator(
-                              fetchItems: widget
-                                  .fetchItems), // Use PlaylistSectionGenerator to display the items
-                        ),
+              FutureBuilder<List<PlaylistItem>>(
+                future: playlistItemsFuture,
+                builder: (context, snapshot) {
+                  if (snapshot.connectionState == ConnectionState.waiting) {
+                    return Center(child: CircularProgressIndicator());
+                  } else if (snapshot.hasError) {
+                    return Center(child: Text('Error: ${snapshot.error}'));
+                  } else if (!snapshot.hasData || snapshot.data!.isEmpty) {
+                    return Center(child: Text('No items found'));
+                  } else {
+                    return SingleChildScrollView(
+                      scrollDirection: Axis.horizontal,
+                      child: Row(
+                        children: snapshot.data!.map((item) {
+                          return Padding(
+                            padding:
+                                const EdgeInsets.symmetric(horizontal: 8.0),
+                            child: PlaylistCard(playlistItem: item),
+                          );
+                        }).toList(),
                       ),
-                    ),
-                  ],
-                ),
+                    );
+                  }
+                },
               ),
             ],
             onExpansionChanged: (bool expanded) {
@@ -73,9 +76,9 @@ class _PlaylistSectionState extends State<PlaylistSection> {
           ),
         ),
         Divider(
-          color: Colors.grey.withOpacity(0.3), // Faded line color
-          thickness: 1.0, // Line thickness
-          height: 25.0, // Space around the divider
+          color: Colors.grey.withOpacity(0.3),
+          thickness: 1.0,
+          height: 25.0,
         ),
       ],
     );

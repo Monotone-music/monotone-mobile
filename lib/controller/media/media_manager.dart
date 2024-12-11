@@ -1,5 +1,11 @@
+import 'dart:convert';
+
 import 'package:flutter/foundation.dart';
+import 'package:flutter_secure_storage/flutter_secure_storage.dart';
+import 'package:http_interceptor/http_interceptor.dart';
 import 'package:monotone_flutter/common/api_url.dart';
+import 'package:monotone_flutter/interceptor/jwt_interceptor.dart';
+import 'package:monotone_flutter/models/personal_playlist_items.dart';
 import 'package:monotone_flutter/models/release_group_model.dart';
 import 'notifiers/play_button_notifier.dart';
 import 'notifiers/progress_notifier.dart';
@@ -73,6 +79,8 @@ class MediaManager {
     play();
   }
 
+  ///========================For the release group page========================
+
   void clearLoadPlaylistAndSkipToIndex(
       List<Track> playlist, String albumName, int index) async {
     await _audioHandler.stop();
@@ -96,8 +104,7 @@ class MediaManager {
     await _audioHandler.addQueueItem(selectedMediaItem);
 
     // Add the rest of the playlist
-    final remainingTracks =
-        playlist.where((track) => track.id != selectedTrack.id).toList();
+    final remainingTracks = playlist.sublist(index + 1);
     loadPlaylist(remainingTracks, albumName);
 
     await _audioHandler.skipToQueueItem(0);
@@ -145,7 +152,7 @@ class MediaManager {
 
     final fetchedTrack = track;
     final mediaItem = MediaItem(
-      id: fetchedTrack.id,
+      id: '${fetchedTrack.id}_${queueCounter++}',
       album: albumName,
       title: fetchedTrack.title,
       artist: fetchedTrack.artistNames.join(', '),
@@ -160,6 +167,126 @@ class MediaManager {
     print('track loaded: ${mediaItem}');
     // auto play the track after finish loading
   }
+
+  ///========================================================================
+  ///
+  ///========================For the library - playlist page========================
+  ///
+  void addToUserPlaylist(String name, String? recordingId) async {
+    final httpClient = InterceptedClient.build(interceptors: [
+      JwtInterceptor(),
+    ], retryPolicy: ExpiredTokenRetryPolicy());
+
+    final addPlaylistResponse =
+        await httpClient.put(Uri.parse('$BASE_URL/playlist'),
+            body: jsonEncode({
+              'name': name,
+              if (recordingId != null) 'recordingId': recordingId,
+            }));
+    print('addPlaylistResponse: ${addPlaylistResponse.body}');
+
+    if (addPlaylistResponse.statusCode != 200) {
+      throw Exception('Failed to load release group');
+    }
+  }
+
+  void clearLoadPlaylistAndSkipToIndexForPlaylist(
+      List<RecordingDetails> playlist, String playlistName, int index) async {
+    await _audioHandler.stop();
+    await _audioHandler.seek(Duration.zero);
+    removeAll();
+
+    // Add the selected track first
+    final selectedTrack = playlist[index];
+    final selectedMediaItem = MediaItem(
+      id: '${selectedTrack.id}_${queueCounter++}',
+      album: playlistName,
+      title: selectedTrack.title,
+      artist: selectedTrack.artists.map((artist) => artist.name).join(', '),
+      artUri: Uri.parse('$BASE_URL/image/${selectedTrack.image.filename}'),
+      extras: {
+        'url': '$BASE_URL/tracks/stream/${selectedTrack.id}?bitrate=lossless'
+      },
+    );
+    await _audioHandler.addQueueItem(selectedMediaItem);
+
+    // Add the rest of the playlist
+    final remainingTracks = playlist.sublist(index + 1);
+    loadPlaylistForRecordings(remainingTracks, playlistName);
+
+    await _audioHandler.skipToQueueItem(0);
+    print('Skipped to index: $index');
+    play();
+  }
+
+  void loadPlaylistForRecordings(
+      List<RecordingDetails> playlist, String playlistName) async {
+    print('playlist loading');
+    final mediaItems = playlist.map((recording) {
+      return MediaItem(
+        id: '${recording.id}_${queueCounter++}',
+        album: playlistName,
+        title: recording.title,
+        artist: recording.artists.map((artist) => artist.name).join(', '),
+        artUri: Uri.parse('$BASE_URL/image/${recording.image.filename}'),
+        extras: {
+          'url': '$BASE_URL/tracks/stream/${recording.id}?bitrate=lossless'
+        },
+      );
+    }).toList();
+    await _audioHandler.addQueueItems(mediaItems);
+    print('playlist loaded: ${mediaItems}');
+    // auto play the track after finish loading
+  }
+
+  void loadTrackForPlaylist(
+      RecordingDetails recording, String playlistName) async {
+    print('track loading');
+
+    final mediaItem = MediaItem(
+      id: '${recording.id}_${queueCounter++}',
+      album: playlistName,
+      title: recording.title,
+      artist: recording.artists.map((artist) => artist.name).join(', '),
+      artUri: Uri.parse('$BASE_URL/image/${recording.image.filename}'),
+      extras: {
+        'url': '$BASE_URL/tracks/stream/${recording.id}?bitrate=lossless'
+      },
+    );
+
+    await _audioHandler.addQueueItem(mediaItem);
+    print('track loaded: ${mediaItem}');
+    // auto play the track after finish loading
+  }
+
+  void clearLoadPlaylistAndPlayForPlaylist(
+      List<RecordingDetails> playlist, String playlistName) async {
+    await _audioHandler.stop();
+    await _audioHandler.seek(Duration.zero);
+    removeAll();
+
+    // Load the entire playlist
+    final mediaItems = playlist.map((recording) {
+      return MediaItem(
+        id: '${recording.id}_${queueCounter++}',
+        album: playlistName,
+        title: recording.title,
+        artist: recording.artists.map((artist) => artist.name).join(', '),
+        artUri: Uri.parse('$BASE_URL/image/${recording.image.filename}'),
+        extras: {
+          'url': '$BASE_URL/tracks/stream/${recording.id}?bitrate=lossless'
+        },
+      );
+    }).toList();
+    await _audioHandler.addQueueItems(mediaItems);
+    print('playlist loaded: ${mediaItems}');
+
+    // Start playing from the beginning
+    await _audioHandler.skipToQueueItem(0);
+    play();
+  }
+
+  ///========================================================================
 
   void _listenToChangesInPlaylist() {
     _audioHandler.queue.listen((playlist) {

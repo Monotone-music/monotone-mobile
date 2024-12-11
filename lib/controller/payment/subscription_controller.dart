@@ -40,7 +40,7 @@ class SubscriptionController {
 
   Future<String> createSubscription(
       int amount, String currency, String membershipType) async {
-    final storage = FlutterSecureStorage();
+    const storage = FlutterSecureStorage();
     // final token = await storage.read(key: 'accessToken');
     // print('Token: $token');
     final httpClient = InterceptedClient.build(interceptors: [
