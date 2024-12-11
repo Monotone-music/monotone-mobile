@@ -33,29 +33,8 @@ class CurrentSongTitle extends StatelessWidget {
   }
 }
 
-class Playlist extends StatefulWidget {
+class Playlist extends StatelessWidget {
   const Playlist({Key? key}) : super(key: key);
-
-  @override
-  _PlaylistState createState() => _PlaylistState();
-}
-
-class _PlaylistState extends State<Playlist> {
-  late Future<Uint8List> imageFuture;
-  final httpClient = InterceptedClient.build(interceptors: [
-    JwtInterceptor(),
-  ], retryPolicy: ExpiredTokenRetryPolicy());
-
-  Future<Uint8List> fetchImage(Uri artUri) async {
-    final response = await httpClient.get(artUri);
-
-    if (response.statusCode == 200) {
-      return response.bodyBytes;
-    } else {
-      throw Exception('Failed to load image');
-    }
-  }
-
   @override
   Widget build(BuildContext context) {
     final themeProvider = Provider.of<ThemeProvider>(context);
@@ -69,79 +48,36 @@ class _PlaylistState extends State<Playlist> {
             itemCount: playlist.length,
             itemBuilder: (context, index) {
               final mediaItem = playlist[index];
-              final isPlaying =
-                  mediaItem.id == pageManager.currentMediaItem?.id;
               return ListTile(
-                tileColor: isPlaying
-                    ? isDarkMode
-                        ? Colors.white.withOpacity(0.2)
-                        : Colors.black.withOpacity(0.1)
-                    : null,
-                leading: ClipRRect(
-                  borderRadius: BorderRadius.circular(8.0),
-                  child: mediaItem.artUri != null
-                      ? FutureBuilder<Uint8List>(
-                          future: fetchImage(mediaItem.artUri!),
-                          builder: (context, snapshot) {
-                            if (snapshot.connectionState ==
-                                ConnectionState.waiting) {
-                              return Shimmer.fromColors(
-                                baseColor: Colors.grey[300]!,
-                                highlightColor: Colors.grey[100]!,
-                                child: Container(
-                                  width: 50,
-                                  height: 50,
-                                  color: Colors.white,
-                                ),
-                              );
-                            } else if (snapshot.hasError) {
-                              return ImageRenderer(
-                                imageUrl: 'assets/image/not_available.png',
-                                width: 50,
-                                height: 50,
-                              );
-                            } else if (snapshot.hasData) {
-                              return ImageRenderer(
-                                imageUrl: snapshot.data!,
-                                width: 50,
-                                height: 50,
-                              );
-                            } else {
-                              return ImageRenderer(
-                                imageUrl: 'assets/image/not_available.png',
-                                width: 50,
-                                height: 50,
-                              );
-                            }
-                          },
-                        )
-                      : ImageRenderer(
-                          imageUrl: 'assets/image/not_available.png',
-                          width: 50,
-                          height: 50,
-                        ),
-                ),
-                title: Text(mediaItem.title),
-                subtitle: Text(
-                  mediaItem.artist ?? 'Unknown Artist',
-                  style: Theme.of(context).textTheme.bodyMedium?.copyWith(
-                      color: isDarkMode
-                          ? Colors.white.withOpacity(0.7)
-                          : Colors.black,
-                      fontWeight: FontWeight.w300),
-                ),
-                onTap: () {
-                  getIt<AudioHandler>().skipToQueueItem(index);
-                },
-                trailing: IconButton(
-                  alignment: Alignment.center,
-                  icon: const Icon(Icons.remove_rounded),
-                  onPressed: () {
-                    getIt<AudioHandler>().removeQueueItemAt(index);
-                    // print('delete song at index: $index');
+                  leading: ClipRRect(
+                    borderRadius: BorderRadius.circular(8.0),
+                    child: ImageRenderer(
+                      imageUrl: mediaItem.artUri?.toString() ??
+                          'assets/image/album_1.png',
+                      width: 50,
+                      height: 50,
+                    ),
+                  ),
+                  title: Text(mediaItem.title),
+                  subtitle: Text(
+                    mediaItem.artist ?? 'Unknown Artist',
+                    style: Theme.of(context).textTheme.bodyMedium?.copyWith(
+                        color: isDarkMode
+                            ? Colors.white.withOpacity(0.7)
+                            : Colors.black,
+                        fontWeight: FontWeight.w300),
+                  ),
+                  onTap: () {
+                    getIt<AudioHandler>().skipToQueueItem(index);
                   },
-                ),
-              );
+                  trailing: IconButton(
+                    alignment: Alignment.centerRight,
+                    icon: const Icon(Icons.remove),
+                    onPressed: () {
+                      getIt<AudioHandler>().removeQueueItemAt(index);
+                      // print('delete song at index: $index');
+                    },
+                  ));
             },
           );
         },

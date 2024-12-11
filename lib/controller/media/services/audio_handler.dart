@@ -16,7 +16,7 @@ Future<AudioHandler> initAudioService() async {
 
 class MyAudioHandler extends BaseAudioHandler
     with ChangeNotifier, QueueHandler, SeekHandler {
-  final _player = AudioPlayer();
+  final _player = AudioPlayer(useProxyForRequestHeaders: false);
   final _playlist = ConcatenatingAudioSource(children: []);
   // MyCustomSource? customSource;
 
@@ -145,19 +145,11 @@ class MyAudioHandler extends BaseAudioHandler
   }
 
   UriAudioSource _createAudioSource(MediaItem mediaItem) {
-    var result;
-    // print('Create Audio Source: ${mediaItem.extras!['url']}');
-    try {
-      result = AudioSource.uri(
-        Uri.parse(mediaItem.extras!['url'] as String),
-        // headers: {'Content-Type': 'audio/mpeg'},
-        tag: mediaItem,
-      );
-      return result;
-    } catch (e) {
-      print(e);
-      return result;
-    }
+    return AudioSource.uri(
+      Uri.parse(mediaItem.extras!['url'] as String),
+      // headers: {'Range': 'bytes=0-'},
+      tag: mediaItem,
+    );
   }
 
   @override

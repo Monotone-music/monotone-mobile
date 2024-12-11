@@ -1,14 +1,14 @@
 import 'dart:developer';
-import 'package:flutter/material.dart';
-import 'package:go_router/go_router.dart';
-import 'package:http_interceptor/http_interceptor.dart';
-import 'package:provider/provider.dart';
-import 'package:shimmer/shimmer.dart';
 
+import 'package:flutter/material.dart';
+import 'package:http_interceptor/http_interceptor.dart';
+import 'package:monotone_flutter/common/api_url.dart';
 import 'package:monotone_flutter/interceptor/jwt_interceptor.dart';
 import 'package:monotone_flutter/widgets/image_widgets/image_renderer.dart';
 import 'package:monotone_flutter/view/release_group/release_group.dart';
 import 'package:monotone_flutter/common/themes/theme_provider.dart';
+import 'package:provider/provider.dart';
+import 'package:shimmer/shimmer.dart';
 
 class PlaylistMini extends StatefulWidget {
   final Map<String, String> trackItem;
@@ -36,15 +36,22 @@ class _PlaylistMiniState extends State<PlaylistMini> {
     final isDarkMode = themeProvider.isDarkMode;
     final screenWidth = MediaQuery.of(context).size.width;
     final imageUrl = widget.trackItem['imageUrl'];
-    final httpClient = InterceptedClient.build(interceptors: [
-      JwtInterceptor(),
-    ], retryPolicy: ExpiredTokenRetryPolicy());
+    // final httpClient = InterceptedClient.build(interceptors: [
+    //   JwtInterceptor(),
+    // ], retryPolicy: ExpiredTokenRetryPolicy());
 
     return GestureDetector(
       onTap: () async {
         // Handle tap
         // navigate push to the release group page with the id
-        context.push('/release-group/$_id');
+        Navigator.push(
+          context,
+          MaterialPageRoute(
+            builder: (context) => ReleaseGroupPage(
+              id: _id,
+            ),
+          ),
+        );
       },
       child: Container(
         width: screenWidth * 0.5,
@@ -58,52 +65,13 @@ class _PlaylistMiniState extends State<PlaylistMini> {
           children: [
             ClipRRect(
               borderRadius: BorderRadius.circular(8.0),
-              child: FutureBuilder<Response>(
-                future: httpClient.get(
-                  Uri.parse('https://api2.ibarakoi.online/image/$imageUrl'),
-                ),
-                builder: (context, snapshot) {
-                  if (snapshot.connectionState == ConnectionState.waiting) {
-                    return Shimmer.fromColors(
-                      baseColor: Colors.grey[300]!,
-                      highlightColor: Colors.grey[100]!,
-                      child: Container(
-                        width: 50,
-                        height: 50,
-                        color: Colors.white,
-                      ),
-                    );
-                  } else if (snapshot.hasError) {
-                    return SizedBox(
-                      width: 60,
-                      height: 60,
-                      child: Icon(Icons.error),
-                    );
-                  } else if (snapshot.hasData) {
-                    final imageData = snapshot.data?.bodyBytes;
-                    if (imageData != null) {
-                      return ImageRenderer(
-                        imageUrl: imageData,
-                        width: 60,
-                        height: 60,
-                      );
-                    } else {
-                      return SizedBox(
-                        width: 60,
-                        height: 60,
-                        child: Image.asset('assets/image/not_available.png'),
-                      );
-                    }
-                  } else {
-                    return SizedBox(
-                      width: 60,
-                      height: 60,
-                      child: Image.asset('assets/image/not_available.png'),
-                    );
-                  }
-                },
+              child: ImageRenderer(
+                imageUrl: '$BASE_URL/image/$imageUrl',
+                width: 60,
+                height: 60,
               ),
             ),
+            // , height: 50, width: 50),
             const SizedBox(width: 8),
             Expanded(
               child: Column(

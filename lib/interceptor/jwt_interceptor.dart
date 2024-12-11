@@ -45,6 +45,7 @@ class JwtInterceptor implements InterceptorContract {
             print('Refresh failed');
             break;
         }
+
         ///
       }
     }
@@ -89,7 +90,7 @@ class JwtInterceptor implements InterceptorContract {
         await _storage.write(key: tokenType, value: value);
         break;
     }
-  } 
+  }
 }
 
 class ExpiredTokenRetryPolicy extends RetryPolicy {
@@ -104,11 +105,12 @@ class ExpiredTokenRetryPolicy extends RetryPolicy {
   Future<bool> shouldAttemptRetryOnResponse(BaseResponse response) async {
     if (response.statusCode == 401) {
       print('Retrying...');
-     final newToken = await _refreshTokenService.refreshToken(
+      final newToken = await _refreshTokenService.refreshToken(
         onRefreshFailed: () {
           AppRoutes().router.go('/login');
         },
-      );;
+      );
+      ;
       if (newToken != null) {
         // Add the new token to the request headers
         response.request?.headers['Authorization'] = 'Bearer $newToken';

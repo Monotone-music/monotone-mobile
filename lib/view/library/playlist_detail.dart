@@ -1,29 +1,35 @@
 import 'package:auto_scroll_text/auto_scroll_text.dart';
 import 'package:flutter/material.dart';
+import 'package:monotone_flutter/view/library/playlist_detail_view.dart';
 import 'package:provider/provider.dart';
 
-import 'package:monotone_flutter/controller/release_group/release_group_data.dart';
+import 'package:monotone_flutter/controller/playlist/playlist_data.dart';
 import 'package:monotone_flutter/view/media/toolbar/media_toolbar.dart';
-import 'package:monotone_flutter/models/release_group_model.dart';
+import 'package:monotone_flutter/models/personal_playlist_items.dart';
 import 'package:monotone_flutter/common/themes/theme_provider.dart';
-import 'package:monotone_flutter/view/release_group/release_group_view.dart';
 
-class ReleaseGroupPage extends StatefulWidget {
+class PlaylistPage extends StatefulWidget {
   final String id;
 
-  ReleaseGroupPage({required this.id});
+  PlaylistPage({required this.id});
 
   @override
-  _ReleaseGroupPageState createState() => _ReleaseGroupPageState();
+  _PlaylistPageState createState() => _PlaylistPageState();
 }
 
-class _ReleaseGroupPageState extends State<ReleaseGroupPage> {
-  late Future<Map<String, dynamic>> releaseGroupData;
+class _PlaylistPageState extends State<PlaylistPage> {
+  late Future<Map<String, dynamic>> playlistData;
 
   @override
   void initState() {
     super.initState();
-    releaseGroupData = fetchReleaseGroupData(widget.id);
+    playlistData = fetchPlaylistData(widget.id);
+  }
+
+  void _reloadPlaylist() {
+    setState(() {
+      playlistData = fetchPlaylistData(widget.id);
+    });
   }
 
   String formatDuration(double duration) {
@@ -40,29 +46,31 @@ class _ReleaseGroupPageState extends State<ReleaseGroupPage> {
     return Scaffold(
       body: SafeArea(
         child: FutureBuilder<Map<String, dynamic>>(
-          future: releaseGroupData,
+          future: playlistData,
           builder: (context, snapshot) {
             if (snapshot.connectionState == ConnectionState.waiting) {
-              return buildShimmerLoading(context);
+              return Center(child: CircularProgressIndicator());
             } else if (snapshot.hasError) {
               return Center(child: Text('Error: ${snapshot.error}'));
             } else if (!snapshot.hasData || snapshot.data == null) {
               return const Center(child: Text('No data available'));
             } else {
-              final releaseGroup = snapshot.data!['releaseGroup'];
+              final playlist = snapshot.data!['playlist'];
               final imageCache = snapshot.data!['imageCache'];
               print('imageCache: ${imageCache}');
 
               // Calculate total duration
-              final totalDuration = releaseGroup.tracks.fold<double>(
-                  0.0, (double sum, Track track) => sum + track.duration);
+              final totalDuration = playlist.recordings.fold<double>(
+                  0.0,
+                  (double sum, Recording recording) =>
+                      sum + recording.recording.duration);
 
               return SingleChildScrollView(
                 child: Column(
                   children: [
                     // Album image with back button
                     buildAlbumImageWithBackButton(
-                        context, releaseGroup, imageCache, themeProvider),
+                        context, playlist, imageCache, themeProvider),
                     // const SizedBox(height: 16),
                     // Album name
                     Container(
@@ -70,7 +78,7 @@ class _ReleaseGroupPageState extends State<ReleaseGroupPage> {
                       child: Column(
                         children: [
                           AutoScrollText(
-                            releaseGroup.name,
+                            playlist.name,
                             textAlign: TextAlign.center,
                             velocity:
                                 const Velocity(pixelsPerSecond: Offset(25, 0)),
@@ -79,22 +87,23 @@ class _ReleaseGroupPageState extends State<ReleaseGroupPage> {
                           ),
                           const SizedBox(height: 8),
                           // Artist name
-                          Text(
-                            releaseGroup.artistName,
-                            style:
-                                Theme.of(context).textTheme.bodyLarge?.copyWith(
-                                      color: isDarkMode
-                                          ? Colors.white.withOpacity(0.7)
-                                          : Colors.black,
-                                      fontWeight: FontWeight.w400,
-                                    ),
-                          ),
+                          if (playlist.recordings.isNotEmpty)
+                            Text(
+                              playlist.recordings[0].recording.displayedArtist,
+                              style: Theme.of(context)
+                                  .textTheme
+                                  .bodyLarge
+                                  ?.copyWith(
+                                    color: isDarkMode
+                                        ? Colors.white.withOpacity(0.7)
+                                        : Colors.black,
+                                    fontWeight: FontWeight.w400,
+                                  ),
+                            ),
                           const SizedBox(height: 8),
-                          //release year, total tracks, total duration
+                          // Release year, total tracks, total duration
                           Text(
-                            '${releaseGroup.releaseYear} • ${releaseGroup.tracks.length} tracks • ${formatDuration(totalDuration)}',
-                            //Add color to the text
-
+                            '${playlist.createdAt.year} • ${playlist.recordings.length} tracks • ${formatDuration(totalDuration)}',
                             style: Theme.of(context)
                                 .textTheme
                                 .bodyMedium
@@ -108,7 +117,6 @@ class _ReleaseGroupPageState extends State<ReleaseGroupPage> {
                         ],
                       ),
                     ),
-
                     const SizedBox(height: 8),
                     // Tracks
                     Padding(
@@ -117,8 +125,23 @@ class _ReleaseGroupPageState extends State<ReleaseGroupPage> {
                         crossAxisAlignment: CrossAxisAlignment.start,
                         children: [
                           const SizedBox(height: 8),
-                          buildTrackList(
-                              context, releaseGroup, isDarkMode, imageCache),
+                          if (playlist.recordings.isNotEmpty)
+                            buildTrackList(context, playlist, isDarkMode,
+                                imageCache, _reloadPlaylist)
+                          else
+                            Center(
+                              child: Text(
+                                'No tracks available in this playlist.',
+                                style: Theme.of(context)
+                                    .textTheme
+                                    .bodyMedium
+                                    ?.copyWith(
+                                      color: isDarkMode
+                                          ? Colors.white.withOpacity(0.7)
+                                          : Colors.black,
+                                    ),
+                              ),
+                            ),
                           const SizedBox(height: 16),
                         ],
                       ),
@@ -130,7 +153,6 @@ class _ReleaseGroupPageState extends State<ReleaseGroupPage> {
           },
         ),
       ),
-      // bottomNavigationBar: MediaToolbar(),
     );
   }
 }
