@@ -37,22 +37,40 @@ class HomePlaylistSection extends StatelessWidget {
             if (snapshot.connectionState == ConnectionState.waiting) {
               return SkeletonHome(
                   screenWidth: screenWidth, isDarkMode: isDarkMode);
-              ;
             } else if (snapshot.hasError) {
               return Center(child: Text('Failed to load $title'));
             } else if (snapshot.hasData) {
               final items = snapshot.data!;
-              return GridView.builder(
-                shrinkWrap: true,
-                physics: const NeverScrollableScrollPhysics(),
-                gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
-                  crossAxisCount: 2,
-                  childAspectRatio: 4 / 1.7,
+              final int itemCount = items.length;
+              final int gridCount =
+                  (itemCount / 4).ceil(); // Number of grids needed
+
+              return SingleChildScrollView(
+                scrollDirection: Axis.horizontal,
+                child: Row(
+                  children: List.generate(gridCount, (gridIndex) {
+                    final int startIndex = gridIndex * 4;
+                    final int endIndex = (startIndex + 4).clamp(0, itemCount);
+
+                    return Container(
+                      width: screenWidth,
+                      child: GridView.builder(
+                        shrinkWrap: true,
+                        physics: const NeverScrollableScrollPhysics(),
+                        gridDelegate:
+                            const SliverGridDelegateWithFixedCrossAxisCount(
+                          crossAxisCount: 2,
+                          childAspectRatio: 4 / 1.7,
+                        ),
+                        itemCount: endIndex - startIndex,
+                        itemBuilder: (context, index) {
+                          return PlaylistMini(
+                              trackItem: items[startIndex + index]);
+                        },
+                      ),
+                    );
+                  }),
                 ),
-                itemCount: items.length,
-                itemBuilder: (context, index) {
-                  return PlaylistMini(trackItem: items[index]);
-                },
               );
             } else {
               return Center(child: Text('No $title found'));

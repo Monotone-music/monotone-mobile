@@ -2,12 +2,10 @@ import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 import 'package:monotone_flutter/auth/login/logout_button.dart';
 import 'package:monotone_flutter/controller/payment/subscription_controller.dart';
-import 'package:monotone_flutter/view/payment/payment.dart';
 import 'package:monotone_flutter/view/payment/transaction_status.dart';
 import 'package:monotone_flutter/widgets/image_widgets/image_renderer.dart';
 import 'dart:math';
 import 'package:provider/provider.dart';
-
 import 'package:monotone_flutter/auth/login/logout_button.dart';
 import 'package:monotone_flutter/widgets/image_widgets/image_renderer.dart';
 import 'package:monotone_flutter/models/profile_items.dart';
