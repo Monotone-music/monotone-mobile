@@ -31,7 +31,7 @@ class PlaylistList extends StatelessWidget {
         crossAxisCount: 2, // Number of columns
         crossAxisSpacing: 0.0, // Spacing between columns
         mainAxisSpacing: 0.0, // Spacing between rows
-        childAspectRatio: 2.3, // Aspect ratio of each item
+        childAspectRatio: 2.1, // Aspect ratio of each item
       ),
       itemBuilder: (context, index) {
         return PlaylistMini(trackItem: trackItems[index]);

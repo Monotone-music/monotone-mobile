@@ -6,6 +6,7 @@ class Artist {
   final String name;
   final List<FeaturedRelease> featuredIn;
   final List<ReleaseGroup> releaseGroup;
+  final ImageData image;
 
   // Constructor for Artist
   Artist({
@@ -13,6 +14,7 @@ class Artist {
     required this.name,
     required this.featuredIn,
     required this.releaseGroup,
+    required this.image,
   });
 
   // Factory constructor to create an Artist instance from JSON
@@ -34,6 +36,7 @@ class Artist {
       name: json['name'],
       featuredIn: featuredIn,
       releaseGroup: releaseGroup,
+      image: ImageData.fromJson(json['image']),
     );
   }
 
@@ -41,6 +44,56 @@ class Artist {
   factory Artist.fromJsonString(String jsonString) {
     final Map<String, dynamic> json = jsonDecode(jsonString);
     return Artist.fromJson(json);
+  }
+}
+
+// Model class for ImageData
+class ImageData {
+  final Dimensions dimensions;
+  final String id;
+  final String type;
+  final String filename;
+  final String mimetype;
+  final int size;
+  final String hash;
+
+  ImageData({
+    required this.dimensions,
+    required this.id,
+    required this.type,
+    required this.filename,
+    required this.mimetype,
+    required this.size,
+    required this.hash,
+  });
+
+  factory ImageData.fromJson(Map<String, dynamic> json) {
+    return ImageData(
+      dimensions: Dimensions.fromJson(json['dimensions'] ?? {}),
+      id: json['_id'] ?? '',
+      type: json['type'] ?? '',
+      filename: json['filename'] ?? '',
+      mimetype: json['mimetype'] ?? '',
+      size: json['size'] ?? 0,
+      hash: json['hash'] ?? '',
+    );
+  }
+}
+
+class Dimensions {
+  final int width;
+  final int height;
+
+  Dimensions({
+    required this.width,
+    required this.height,
+  });
+
+  factory Dimensions.fromJson(Map<String, dynamic> json) {
+    return Dimensions(
+      width: json['width'] ?? 0,
+      height: json['height'] ?? 0,
+    );
   }
 }
 
@@ -73,7 +126,7 @@ class FeaturedRelease {
       mbid: json['mbid'],
       releaseType: json['releaseType'] ?? '',
       title: json['title'] ?? '',
-      image: json['image'] ?? '', // Handle null image field
+      image: json['image']['filename'] ?? '', // Handle null image field
     );
   }
 }
@@ -107,7 +160,7 @@ class ReleaseGroup {
       mbid: json['mbid'],
       releaseType: json['releaseType'] ?? '',
       title: json['title'] ?? '',
-      image: json['image'] ?? '', // Handle null image field
+      image: json['image']['filename'] ?? '', // Handle null image field
     );
   }
 }

@@ -20,7 +20,7 @@ class _ArtistDetailLoaderState extends State<ArtistDetailLoader> {
   late Future<Artist> artistFuture;
   final httpClient = InterceptedClient.build(interceptors: [
     JwtInterceptor(),
-  ],retryPolicy: ExpiredTokenRetryPolicy());
+  ], retryPolicy: ExpiredTokenRetryPolicy());
 
   @override
   void initState() {
@@ -36,6 +36,7 @@ class _ArtistDetailLoaderState extends State<ArtistDetailLoader> {
     }
 
     final Map<String, dynamic> jsonResponse = json.decode(response.body);
+    print('fetchArtistData artist: ${jsonResponse}');
     if (!jsonResponse.containsKey('data') ||
         !jsonResponse['data'].containsKey('artist')) {
       throw Exception('Artist data not found');
