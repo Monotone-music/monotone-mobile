@@ -360,10 +360,20 @@ class CustomSearchDelegate extends SearchDelegate {
 
   Iterable<Widget> _buildArtistList(
       BuildContext context, String title, Iterable<SearchItem> items) {
+    final themeProvider = Provider.of<ThemeProvider>(context);
+    final changePrimary = themeProvider.getThemeColorPrimary();
+
     List<Widget> list = [];
     if (items.isNotEmpty) {
       list.add(_buildSectionTitle(title));
       list.addAll(items.map((item) {
+        String imageUrl = 'assets/image/not_available.png'; // Placeholder image
+
+        if (item.source.artistInfo?.image != null) {
+          imageUrl =
+              'https://api2.ibarakoi.online/image/${item.source.artistInfo!.image}';
+        }
+
         return InkWell(
           onTap: () {
             if (item.source.artistInfo != null) {
@@ -379,13 +389,18 @@ class CustomSearchDelegate extends SearchDelegate {
           },
           child: ListTile(
             leading: CircleAvatar(
-              backgroundImage: AssetImage('assets/image/rajang.jpg'),
+              backgroundImage: NetworkImage(imageUrl),
               radius: 25,
             ),
             title: Text(item.source.value ?? 'No title',
                 style: TextStyle(fontSize: 18)),
-            subtitle: Text(item.source.type ?? 'No type',
-                style: TextStyle(fontSize: 16)),
+            subtitle: Text(
+              item.source.type != null
+                  ? '${item.source.type![0].toUpperCase()}${item.source.type!.substring(1)}'
+                  : 'No type',
+              style: TextStyle(
+                  fontSize: 16, color: changePrimary.withOpacity(0.5)),
+            ),
           ),
         );
       }));

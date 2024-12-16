@@ -28,7 +28,7 @@ class _HomePageState extends State<HomePage> {
     super.initState();
     releaseGroups = fetchReleaseGroups('https://api2.ibarakoi.online/album/');
     topReleaseGroup =
-        fetchReleaseGroups('https://api2.ibarakoi.online/album/top?limit=30');
+        fetchReleaseGroups('https://api2.ibarakoi.online/album/top');
   }
 
   Future<List<Map<String, String>>> fetchReleaseGroups(String url) async {
@@ -90,7 +90,9 @@ class _HomePageState extends State<HomePage> {
                         title: 'Most Popular Albums',
                         loader: topReleaseGroup,
                       ),
-                      SizedBox(height: 20,),
+                      SizedBox(
+                        height: 20,
+                      ),
                       // Normal Album Section
                       HomePlaylistSection(
                         title: 'Normal Albums',

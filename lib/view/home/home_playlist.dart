@@ -1,5 +1,6 @@
 import 'dart:developer';
 
+import 'package:auto_scroll_text/auto_scroll_text.dart';
 import 'package:flutter/material.dart';
 import 'package:http_interceptor/http_interceptor.dart';
 import 'package:monotone_flutter/common/api_url.dart';
@@ -78,24 +79,101 @@ class _PlaylistMiniState extends State<PlaylistMini> {
                 crossAxisAlignment: CrossAxisAlignment.start,
                 mainAxisAlignment: MainAxisAlignment.center,
                 children: [
-                  Text(
-                    widget.trackItem['title']!,
-                    style: TextStyle(
-                      color: isDarkMode ? Colors.white : Colors.black,
-                      fontWeight: FontWeight.bold,
-                    ),
-                    overflow: TextOverflow.ellipsis,
+                  LayoutBuilder(
+                    builder: (context, constraints) {
+                      final textSpan = TextSpan(
+                        text: widget.trackItem['title']!,
+                        style: TextStyle(
+                          color: isDarkMode ? Colors.white : Colors.black,
+                          fontWeight: FontWeight.bold,
+                        ),
+                      );
+
+                      final textPainter = TextPainter(
+                        text: textSpan,
+                        maxLines: 1,
+                        textDirection: TextDirection.ltr,
+                      );
+
+                      textPainter.layout(
+                          minWidth: 0, maxWidth: constraints.maxWidth);
+
+                      if (textPainter.didExceedMaxLines) {
+                        return AutoScrollText(
+                          widget.trackItem['title']!,
+                          textAlign: TextAlign.left,
+                          velocity:
+                              const Velocity(pixelsPerSecond: Offset(20, 0)),
+                          intervalSpaces: 5,
+                          mode: AutoScrollTextMode.endless,
+                          delayBefore: const Duration(seconds: 2),
+                          style: TextStyle(
+                            color: isDarkMode ? Colors.white : Colors.black,
+                            fontWeight: FontWeight.bold,
+                          ),
+                        );
+                      } else {
+                        return Text(
+                          widget.trackItem['title']!,
+                          style: TextStyle(
+                            color: isDarkMode ? Colors.white : Colors.black,
+                            fontWeight: FontWeight.bold,
+                          ),
+                          overflow: TextOverflow.ellipsis,
+                        );
+                      }
+                    },
                   ),
-                  const SizedBox(height: 4),
-                  Text(
-                    widget.trackItem['artistName']!,
-                    style: TextStyle(
-                      color: isDarkMode ? Colors.white70 : Colors.black87,
-                      fontSize: Theme.of(context).textTheme.bodySmall?.fontSize,
-                    ),
-                    overflow: TextOverflow.ellipsis,
+                  const SizedBox(height: 2),
+                  LayoutBuilder(
+                    builder: (context, constraints) {
+                      final textSpan = TextSpan(
+                        text: widget.trackItem['artistName']!,
+                        style: TextStyle(
+                          color: isDarkMode ? Colors.white70 : Colors.black87,
+                          fontSize:
+                              Theme.of(context).textTheme.bodySmall?.fontSize,
+                        ),
+                      );
+
+                      final textPainter = TextPainter(
+                        text: textSpan,
+                        maxLines: 1,
+                        textDirection: TextDirection.ltr,
+                      );
+
+                      textPainter.layout(
+                          minWidth: 0, maxWidth: constraints.maxWidth);
+
+                      if (textPainter.didExceedMaxLines) {
+                        return AutoScrollText(
+                          widget.trackItem['artistName']!,
+                          textAlign: TextAlign.left,
+                          velocity:
+                              const Velocity(pixelsPerSecond: Offset(20, 0)),
+                          intervalSpaces: 5,
+                          mode: AutoScrollTextMode.endless,
+                          delayBefore: const Duration(seconds: 2),
+                          style: TextStyle(
+                            color: isDarkMode ? Colors.white70 : Colors.black87,
+                            fontSize:
+                                Theme.of(context).textTheme.bodySmall?.fontSize,
+                          ),
+                        );
+                      } else {
+                        return Text(
+                          widget.trackItem['artistName']!,
+                          style: TextStyle(
+                            color: isDarkMode ? Colors.white70 : Colors.black87,
+                            fontSize:
+                                Theme.of(context).textTheme.bodySmall?.fontSize,
+                          ),
+                          overflow: TextOverflow.ellipsis,
+                        );
+                      }
+                    },
                   ),
-                  const SizedBox(height: 4),
+                  const SizedBox(height: 2),
                   Text(
                     widget.trackItem['releaseYear']!,
                     style: TextStyle(

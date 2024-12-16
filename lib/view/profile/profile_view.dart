@@ -2,12 +2,10 @@ import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 import 'package:monotone_flutter/auth/login/logout_button.dart';
 import 'package:monotone_flutter/controller/payment/subscription_controller.dart';
-import 'package:monotone_flutter/view/payment/payment.dart';
 import 'package:monotone_flutter/view/payment/transaction_status.dart';
 import 'package:monotone_flutter/widgets/image_widgets/image_renderer.dart';
 import 'dart:math';
 import 'package:provider/provider.dart';
-
 import 'package:monotone_flutter/auth/login/logout_button.dart';
 import 'package:monotone_flutter/widgets/image_widgets/image_renderer.dart';
 import 'package:monotone_flutter/models/profile_items.dart';
@@ -25,7 +23,8 @@ class ProfileView extends StatelessWidget {
     final SubscriptionController _subscriptionController =
         SubscriptionController();
 
-    return SingleChildScrollView(
+    return SafeArea(
+        child: SingleChildScrollView(
       padding: const EdgeInsets.all(0),
       child: Column(
         // crossAxisAlignment: CrossAxisAlignment.start,
@@ -101,14 +100,14 @@ class ProfileView extends StatelessWidget {
                                 child: Text(
                                   profile['displayName'] ?? 'User Name',
                                   style: const TextStyle(
-                                    fontSize: 25,
+                                    fontSize: 28,
                                     fontWeight: FontWeight.bold,
                                   ),
                                   overflow: TextOverflow.ellipsis,
                                   maxLines: 1,
                                 ),
                               ),
-                              SizedBox(
+                              const SizedBox(
                                 width: 25,
                               ),
                               IconButton(
@@ -148,54 +147,54 @@ class ProfileView extends StatelessWidget {
                             ]),
 
                         ///
-                        Row(
-                            mainAxisAlignment: MainAxisAlignment.start,
-                            children: [
-                              SizedBox(
-                                  width:
-                                      MediaQuery.of(context).size.width * 0.30,
-                                  child: Text.rich(TextSpan(children: [
-                                    TextSpan(
-                                      // text: '${profile.follower}',
-                                      text: '100',
-                                      style: TextStyle(
-                                          fontSize: 18,
-                                          fontWeight: FontWeight.bold,
-                                          color: changePrimary),
-                                    ),
-                                    TextSpan(
-                                      text: '  followers',
-                                      style: TextStyle(
-                                          fontSize: 18,
-                                          fontWeight: FontWeight.bold,
-                                          color:
-                                              changePrimary.withOpacity(0.6)),
-                                    ),
-                                  ]))),
-                              SizedBox(
-                                  width:
-                                      MediaQuery.of(context).size.width * 0.30,
-                                  child: Text.rich(TextSpan(children: [
-                                    TextSpan(
-                                      // text: '${profile.following}',
-                                      text: '100',
-                                      style: TextStyle(
-                                          fontSize: 18,
-                                          fontWeight: FontWeight.bold,
-                                          color: changePrimary),
-                                    ),
-                                    TextSpan(
-                                      text: '  following',
-                                      style: TextStyle(
-                                          fontSize: 18,
-                                          fontWeight: FontWeight.bold,
-                                          color:
-                                              changePrimary.withOpacity(0.6)),
-                                    ),
-                                  ])))
-                            ]),
+                        // Row(
+                        //     mainAxisAlignment: MainAxisAlignment.start,
+                        //     children: [
+                        //       SizedBox(
+                        //           width:
+                        //               MediaQuery.of(context).size.width * 0.30,
+                        //           child: Text.rich(TextSpan(children: [
+                        //             TextSpan(
+                        //               // text: '${profile.follower}',
+                        //               text: '100',
+                        //               style: TextStyle(
+                        //                   fontSize: 18,
+                        //                   fontWeight: FontWeight.bold,
+                        //                   color: changePrimary),
+                        //             ),
+                        //             TextSpan(
+                        //               text: '  followers',
+                        //               style: TextStyle(
+                        //                   fontSize: 18,
+                        //                   fontWeight: FontWeight.bold,
+                        //                   color:
+                        //                       changePrimary.withOpacity(0.6)),
+                        //             ),
+                        //           ]))),
+                        //       SizedBox(
+                        //           width:
+                        //               MediaQuery.of(context).size.width * 0.30,
+                        //           child: Text.rich(TextSpan(children: [
+                        //             TextSpan(
+                        //               // text: '${profile.following}',
+                        //               text: '100',
+                        //               style: TextStyle(
+                        //                   fontSize: 18,
+                        //                   fontWeight: FontWeight.bold,
+                        //                   color: changePrimary),
+                        //             ),
+                        //             TextSpan(
+                        //               text: '  following',
+                        //               style: TextStyle(
+                        //                   fontSize: 18,
+                        //                   fontWeight: FontWeight.bold,
+                        //                   color:
+                        //                       changePrimary.withOpacity(0.6)),
+                        //             ),
+                        //           ])))
+                        //     ]),
                         //
-                        SizedBox(
+                        const SizedBox(
                           height: 10,
                         ),
                         //
@@ -383,7 +382,7 @@ class ProfileView extends StatelessWidget {
                             'membershipType': 'premium',
                           });
                         },
-                        child: Column(
+                        child: const Column(
                           mainAxisAlignment: MainAxisAlignment.start,
                           crossAxisAlignment: CrossAxisAlignment.start,
                           children: [
@@ -593,6 +592,6 @@ class ProfileView extends StatelessWidget {
       ),
 
       ///
-    );
+    ));
   }
 }

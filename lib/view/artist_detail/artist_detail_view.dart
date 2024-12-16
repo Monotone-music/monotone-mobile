@@ -29,18 +29,17 @@ class ArtistDetailView extends StatelessWidget {
     height = MediaQuery.of(context).size.height;
 
     return SingleChildScrollView(
-        child: Container(
       child: Column(
         children: [
           _avatarPanel(context),
           _popularPanel(context),
           _albumPanel(context),
           _singleAndExtendedPanel(context),
-          _otherArtistPanel(context),
+          // _otherArtistPanel(context),
           _featuredInPanel(context),
         ],
       ),
-    ));
+    );
   }
 
   Widget _avatarPanel(BuildContext context) {
@@ -55,11 +54,11 @@ class ArtistDetailView extends StatelessWidget {
       children: [
         Container(
             width: double.infinity,
-            height: height * 0.4,
+            height: 370,
             decoration: BoxDecoration(
               image: DecorationImage(
-                image: const AssetImage(
-                    'assets/image/rajang.jpg'), // Replace with your image path
+                image: NetworkImage(
+                    'https://api2.ibarakoi.online/image/${artist.image.filename}'), // Use the actual image URL
                 fit: BoxFit.cover,
                 colorFilter: ColorFilter.mode(
                   changePrimary.withOpacity(0.8),
@@ -69,8 +68,8 @@ class ArtistDetailView extends StatelessWidget {
             ),
             child: Column(
               children: [
-                SizedBox(
-                  height: 100,
+                const SizedBox(
+                  height: 20,
                 ),
                 Container(
                   decoration: BoxDecoration(
@@ -80,22 +79,21 @@ class ArtistDetailView extends StatelessWidget {
                       width: 1.0, // Border width
                     ),
                   ),
-                  child: ClipOval(
-                    child: ImageRenderer(
-                      imageUrl: 'assets/image/rajang.jpg',
-                      height: (height * 0.17),
-                      width: (width * 0.4),
+                  child: CircleAvatar(
+                    radius: (width * 0.3),
+                    backgroundImage: NetworkImage(
+                      'https://api2.ibarakoi.online/image/${artist.image.filename}', // Use the actual image URL
                     ),
                   ),
                 ),
-                SizedBox(
-                  height: 20,
-                ),
+                // SizedBox(
+                //   height: 20,
+                // ),
                 Row(
                   mainAxisAlignment: MainAxisAlignment.start,
                   children: [
                     Padding(
-                      padding: EdgeInsets.all(16),
+                      padding: const EdgeInsets.all(16),
                       child: Text(artist.name,
                           style: TextStyle(
                             color: changePrimary,
@@ -103,7 +101,7 @@ class ArtistDetailView extends StatelessWidget {
                             fontSize: 30,
                           )),
                     ),
-                    Spacer(),
+                    const Spacer(),
                     IconButton(
                         onPressed: () {
                           print('Artist Detail Play Button Pressed');
@@ -116,7 +114,7 @@ class ArtistDetailView extends StatelessWidget {
                 ),
               ],
             )),
-        SizedBox(
+        const SizedBox(
           height: 30,
         ),
       ],
@@ -134,21 +132,21 @@ class ArtistDetailView extends StatelessWidget {
     allReleases.addAll(artist.releaseGroup);
 
     return Container(
-      padding: EdgeInsets.all(16.0),
+      padding: const EdgeInsets.all(16.0),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          Text(
+          const Text(
             'Popular',
             style: TextStyle(
               fontSize: 24,
               fontWeight: FontWeight.bold,
             ),
           ),
-          SizedBox(height: 16),
+          const SizedBox(height: 16),
           if (allReleases.isEmpty)
             Container(
-              padding: EdgeInsets.all(16.0),
+              padding: const EdgeInsets.all(16.0),
               child: Center(
                 child: Text(
                   'This artist has not released anything yet!',
@@ -187,8 +185,8 @@ class ArtistDetailView extends StatelessWidget {
                             color: Colors.white,
                           ),
                         ),
-                        title:
-                            Text(release.title, style: TextStyle(fontSize: 24)),
+                        title: Text(release.title,
+                            style: const TextStyle(fontSize: 24)),
                         subtitle: Text(
                           releaseType,
                           style: TextStyle(
@@ -198,9 +196,9 @@ class ArtistDetailView extends StatelessWidget {
                       );
                     } else if (snapshot.hasError) {
                       return ListTile(
-                        leading: Icon(Icons.error),
-                        title:
-                            Text(release.title, style: TextStyle(fontSize: 24)),
+                        leading: const Icon(Icons.error),
+                        title: Text(release.title,
+                            style: const TextStyle(fontSize: 24)),
                         subtitle: Text(
                           releaseType,
                           style: TextStyle(
@@ -233,19 +231,19 @@ class ArtistDetailView extends StatelessWidget {
                                 imageUrl: imageData,
                               ),
                             ),
-                            SizedBox(width: 16),
+                            const SizedBox(width: 16),
                             Expanded(
                               child: Column(
                                 crossAxisAlignment: CrossAxisAlignment.start,
                                 children: [
                                   Text(
                                     release.title,
-                                    style: TextStyle(
+                                    style: const TextStyle(
                                       fontSize: 18,
                                       fontWeight: FontWeight.bold,
                                     ),
                                   ),
-                                  SizedBox(height: 8),
+                                  const SizedBox(height: 8),
                                   Row(
                                     children: [
                                       Text(
@@ -296,8 +294,8 @@ class ArtistDetailView extends StatelessWidget {
                       return ListTile(
                         leading: Image.asset('assets/image/not_available.png',
                             width: 50, height: 50),
-                        title:
-                            Text(release.title, style: TextStyle(fontSize: 24)),
+                        title: Text(release.title,
+                            style: const TextStyle(fontSize: 24)),
                         subtitle: Text(
                           releaseType,
                           style: TextStyle(
@@ -326,22 +324,22 @@ class ArtistDetailView extends StatelessWidget {
         .toList();
 
     return Container(
-      padding: EdgeInsets.all(16.0),
+      padding: const EdgeInsets.all(16.0),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          Text(
+          const Text(
             'Albums',
             style: TextStyle(
               fontSize: 24,
               fontWeight: FontWeight.bold,
             ),
           ),
-          SizedBox(height: 16),
+          const SizedBox(height: 16),
           if (albums.isEmpty)
             Container(
               height: height * 0.25,
-              padding: EdgeInsets.all(16.0),
+              padding: const EdgeInsets.all(16.0),
               child: Center(
                 child: Text(
                   'This artist has not released their own album yet!',
@@ -354,7 +352,7 @@ class ArtistDetailView extends StatelessWidget {
               ),
             )
           else
-            Container(
+            SizedBox(
               height: height * 0.30,
               child: ListView.builder(
                 scrollDirection: Axis.horizontal,
@@ -389,7 +387,7 @@ class ArtistDetailView extends StatelessWidget {
                             color: changePrimary.withOpacity(0.6),
                             borderRadius: BorderRadius.circular(8.0),
                           ),
-                          child: Center(child: Icon(Icons.error)),
+                          child: const Center(child: Icon(Icons.error)),
                         );
                       } else if (snapshot.hasData) {
                         final imageData = snapshot.data?.bodyBytes;
@@ -416,15 +414,19 @@ class ArtistDetailView extends StatelessWidget {
                                   imageUrl: imageData,
                                 ),
                               ),
-                              SizedBox(height: 8),
-                              Text(
-                                album.title,
-                                style: TextStyle(
-                                  fontSize: 18,
-                                  fontWeight: FontWeight.bold,
+                              SizedBox(
+                                width: width * 0.4,
+                                child: Text(
+                                  album.title,
+                                  style: const TextStyle(
+                                    overflow: TextOverflow.ellipsis,
+                                    fontSize: 16,
+                                    fontWeight: FontWeight.bold,
+                                  ),
                                 ),
                               ),
-                              SizedBox(height: 4),
+
+                              // SizedBox(height: 4),
                               Text(
                                 '$releaseType • $year',
                                 style: TextStyle(
@@ -470,21 +472,21 @@ class ArtistDetailView extends StatelessWidget {
     }).toList();
 
     return Container(
-      padding: EdgeInsets.all(16.0),
+      padding: const EdgeInsets.all(16.0),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          Text(
+          const Text(
             'Singles & EPs',
             style: TextStyle(
               fontSize: 24,
               fontWeight: FontWeight.bold,
             ),
           ),
-          SizedBox(height: 16),
+          const SizedBox(height: 16),
           if (singlesAndCompilations.isEmpty)
             Container(
-              padding: EdgeInsets.all(16.0),
+              padding: const EdgeInsets.all(16.0),
               child: Center(
                 child: Text(
                   'This artist has not released any singles or compilations yet!',
@@ -497,7 +499,7 @@ class ArtistDetailView extends StatelessWidget {
               ),
             )
           else
-            Container(
+            SizedBox(
               height: height * 0.27,
               child: ListView.builder(
                 scrollDirection: Axis.horizontal,
@@ -523,7 +525,8 @@ class ArtistDetailView extends StatelessWidget {
                             color: changePrimary.withOpacity(0.6),
                             borderRadius: BorderRadius.circular(8.0),
                           ),
-                          child: Center(child: CircularProgressIndicator()),
+                          child:
+                              const Center(child: CircularProgressIndicator()),
                         );
                       } else if (snapshot.hasError) {
                         return Container(
@@ -533,7 +536,7 @@ class ArtistDetailView extends StatelessWidget {
                             color: changePrimary.withOpacity(0.6),
                             borderRadius: BorderRadius.circular(8.0),
                           ),
-                          child: Center(child: Icon(Icons.error)),
+                          child: const Center(child: Icon(Icons.error)),
                         );
                       } else if (snapshot.hasData) {
                         final imageData = snapshot.data?.bodyBytes;
@@ -555,15 +558,15 @@ class ArtistDetailView extends StatelessWidget {
                                   imageUrl: imageData,
                                 ),
                               ),
-                              SizedBox(height: 8),
+                              const SizedBox(height: 8),
                               Text(
                                 release.title,
-                                style: TextStyle(
+                                style: const TextStyle(
                                   fontSize: 18,
                                   fontWeight: FontWeight.bold,
                                 ),
                               ),
-                              SizedBox(height: 4),
+                              const SizedBox(height: 4),
                               Text(
                                 '$releaseType • $year',
                                 style: TextStyle(
@@ -611,19 +614,19 @@ class ArtistDetailView extends StatelessWidget {
     ];
 
     return Container(
-      padding: EdgeInsets.all(16.0),
+      padding: const EdgeInsets.all(16.0),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          Text(
+          const Text(
             'Others you may like',
             style: TextStyle(
               fontSize: 24,
               fontWeight: FontWeight.bold,
             ),
           ),
-          SizedBox(height: 16),
-          Container(
+          const SizedBox(height: 16),
+          SizedBox(
             height: height * 0.24,
             child: ListView.builder(
               scrollDirection: Axis.horizontal,
@@ -649,10 +652,10 @@ class ArtistDetailView extends StatelessWidget {
                           ),
                         ),
                       ),
-                      SizedBox(height: 8),
+                      const SizedBox(height: 8),
                       Text(
                         artistName,
-                        style: TextStyle(
+                        style: const TextStyle(
                           fontSize: 16,
                           fontWeight: FontWeight.bold,
                         ),
@@ -678,22 +681,22 @@ class ArtistDetailView extends StatelessWidget {
         .where((features) => features.title.isNotEmpty)
         .toList();
     return Container(
-      padding: EdgeInsets.all(16.0),
+      padding: const EdgeInsets.all(16.0),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          Text(
+          const Text(
             'Appears in',
             style: TextStyle(
               fontSize: 24,
               fontWeight: FontWeight.bold,
             ),
           ),
-          SizedBox(height: 16),
+          const SizedBox(height: 16),
           if (appearsIn.isEmpty)
             Container(
-              height: height * 0.2,
-              padding: EdgeInsets.all(16.0),
+              height: height * 0.28,
+              padding: const EdgeInsets.all(16.0),
               child: Center(
                 child: Text(
                   'This artist does not appear in any releases yet!',
@@ -706,8 +709,8 @@ class ArtistDetailView extends StatelessWidget {
               ),
             )
           else
-            Container(
-              height: height * 0.33,
+            SizedBox(
+              height: 450,
               child: ListView.builder(
                 scrollDirection: Axis.horizontal,
                 itemCount: appearsIn.length,
@@ -745,7 +748,7 @@ class ArtistDetailView extends StatelessWidget {
                               color: changePrimary.withOpacity(0.6),
                               borderRadius: BorderRadius.circular(8.0),
                             ),
-                            child: Center(child: Icon(Icons.error)),
+                            child: const Center(child: Icon(Icons.error)),
                           );
                         } else if (snapshot.hasData) {
                           final imageData = snapshot.data?.bodyBytes;
@@ -773,15 +776,15 @@ class ArtistDetailView extends StatelessWidget {
                                     imageUrl: imageData,
                                   ),
                                 ),
-                                SizedBox(height: 8),
+                                const SizedBox(height: 8),
                                 Text(
                                   release.title,
-                                  style: TextStyle(
+                                  style: const TextStyle(
                                     fontSize: 18,
                                     fontWeight: FontWeight.bold,
                                   ),
                                 ),
-                                SizedBox(height: 4),
+                                const SizedBox(height: 4),
                                 Text(
                                   '$releaseType • $year',
                                   style: TextStyle(

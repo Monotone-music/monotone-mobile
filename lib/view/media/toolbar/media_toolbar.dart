@@ -63,8 +63,7 @@ class _MediaToolbarState extends State<MediaToolbar> {
                 final imageUrl = currentMediaItem?.artUri?.toString() ??
                     'assets/image/not_available.png';
                 final trackName = currentMediaItem?.title ?? 'No media loaded';
-                final artistName =
-                    currentMediaItem?.artist ?? 'Xue hue piao piao';
+                final artistName = currentMediaItem?.artist ?? '';
 
                 return Column(
                   children: [
