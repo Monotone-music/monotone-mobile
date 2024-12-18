@@ -18,10 +18,10 @@ class PlaylistItem {
   factory PlaylistItem.fromJson(Map<String, dynamic> json) {
     return PlaylistItem(
       id: json['_id'],
-      name: json['name'],
-      imageUrl: json['image']['filename'],
-      createdAt: DateTime.parse(json['createdAt']),
-      updatedAt: DateTime.parse(json['updatedAt']),
+      name: json['name']?? '',
+      imageUrl: json['image']?['filename']?? '',
+      createdAt: DateTime.parse(json['createdAt'] ?? ''),
+      updatedAt: DateTime.parse(json['updatedAt']?? ''),
       trackCount: json['recording'].length,
     );
   }
