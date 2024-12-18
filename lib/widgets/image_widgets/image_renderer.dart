@@ -1,7 +1,8 @@
 import 'dart:typed_data';
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/flutter_svg.dart';
-import 'package:monotone_flutter/interceptor/jwt_interceptor.dart';
+
+import 'package:monotone_flutter/common/api_url.dart';
 
 class ImageRenderer extends StatelessWidget {
   final dynamic imageUrl;
@@ -27,7 +28,7 @@ class ImageRenderer extends StatelessWidget {
   Widget _buildImage(
     dynamic imageUrl,
   ) {
-    String IMAGE_URL = 'https://api2.ibarakoi.online/image/';
+    String IMAGE_URL = '$BASE_URL/image/';
     if (imageUrl == null) {
       print('Run into error image');
       return _buildAltImage();

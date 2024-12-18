@@ -19,7 +19,7 @@ class SearchBarLoader {
       return SearchResults(albums: [], recordings: [], artists: []);
     }
     final response = await httpClient.get(Uri.parse('$baseUrl$query'));
-    print('response data: ${response.body}');
+    // print('response data: ${response.body}');
     if (response.statusCode == 200) {
       final responseBody = jsonDecode(response.body);
       if (responseBody['status'] == 'ok') {

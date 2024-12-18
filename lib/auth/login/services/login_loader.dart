@@ -2,12 +2,13 @@ import 'dart:convert';
 
 import 'package:dio/dio.dart';
 import 'package:flutter_secure_storage/flutter_secure_storage.dart';
+import 'package:monotone_flutter/common/api_url.dart';
 import 'package:http_interceptor/http_interceptor.dart';
 import 'package:monotone_flutter/interceptor/jwt_interceptor.dart';
 
 class LoginLoader {
   final Uri apiUrl =
-      Uri.parse('https://api2.ibarakoi.online/auth/login?label=listener');
+      Uri.parse('$BASE_URL/auth/login?label=listener');
   final storage = const FlutterSecureStorage();
   Future<String> login(String username, String password) async {
     final httpClient = InterceptedClient.build(interceptors: [

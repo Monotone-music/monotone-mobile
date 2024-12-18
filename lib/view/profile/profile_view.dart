@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_secure_storage/flutter_secure_storage.dart';
 import 'package:go_router/go_router.dart';
 import 'package:monotone_flutter/auth/login/logout_button.dart';
 import 'package:monotone_flutter/controller/payment/subscription_controller.dart';
@@ -13,8 +14,9 @@ import 'package:monotone_flutter/common/themes/theme_provider.dart';
 
 class ProfileView extends StatelessWidget {
   final Map<String, String> profile;
+  final String? bitrate;
 
-  ProfileView({required this.profile});
+  ProfileView({required this.profile, required this.bitrate});
 
   @override
   Widget build(BuildContext context) {
@@ -234,28 +236,29 @@ class ProfileView extends StatelessWidget {
           ),
 
           ///
+          if(bitrate == '192')
           SizedBox(
             height: MediaQuery.of(context).size.height * 0.06,
           ),
 
           ///
+          if(bitrate == '192')
           Container(
               padding:
                   const EdgeInsets.only(top: 20, bottom: 50, left: 5, right: 5),
-              decoration: BoxDecoration(
+              decoration: 
+               BoxDecoration(
                 gradient: LinearGradient(
                   begin: Alignment.bottomCenter,
                   end: Alignment.topCenter,
                   colors: [
-                    const Color.fromARGB(255, 101, 98, 98)
-                        .withOpacity(0.3), // Faded color at the top
-                    const Color.fromARGB(255, 101, 98, 98)
-                        .withOpacity(0.0), // Fully transparent at the bottom
-                  ],
+                        const Color.fromARGB(255, 101, 98, 98).withOpacity(0.3), // Faded color at the top
+                        const Color.fromARGB(255, 101, 98, 98).withOpacity(0.0), // Fully transparent at the bottom
+                      ]
                 ),
                 border: Border.all(
                   color: const Color.fromARGB(255, 70, 69, 69),
-                  width: 1.0,
+                  width: 0.3,
                 ),
                 borderRadius: BorderRadius.circular(10.0),
               ),
@@ -266,16 +269,16 @@ class ProfileView extends StatelessWidget {
                 children: [
                   ///
                   Row(
-                    mainAxisAlignment: MainAxisAlignment.start,
+                    // mainAxisAlignment: MainAxisAlignment.start,
                     children: [
                       const Padding(
                           padding: EdgeInsets.only(bottom: 10.0, left: 10.0)),
 
                       ///
-                      ImageRenderer(
-                        imageUrl: 'assets/image/term_and_service_icon.svg',
-                        height: MediaQuery.of(context).size.height * 0.04,
-                      ),
+                        ImageRenderer(
+                          imageUrl: 'assets/image/term_and_service_icon.svg',
+                          height: MediaQuery.of(context).size.height * 0.04,
+                        ),
 
                       ///
                       const SizedBox(
@@ -283,14 +286,14 @@ class ProfileView extends StatelessWidget {
                       ),
 
                       ///
-                      SizedBox(
-                        child: Text(
-                          'Current plan: ${profile['membershipType']}',
-                          style: const TextStyle(
-                              fontSize: 18, fontWeight: FontWeight.bold),
-                        ),
-                      )
-
+                        SizedBox(
+                          child: Text(
+                            'Current plan: ${profile['membershipType']}',
+                            style: const TextStyle(
+                                fontSize: 20, fontWeight: FontWeight.bold),
+                          ),
+                        )
+                      
                       ///
                     ],
                   ),
@@ -299,142 +302,142 @@ class ProfileView extends StatelessWidget {
                   ),
 
                   ///
+                  if (bitrate == '192')
+                    Row(
+                      mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                      children: [
+                        GestureDetector(
+                          onTap: () {
+                            GoRouter.of(context)
+                                .go('/transaction-status', extra: {
+                              'subscriptionController': _subscriptionController,
+                              'amount': 500,
+                              'currency': 'usd',
+                              'membershipType': 'premium',
+                            });
+                          },
+                          child: const Column(
+                            mainAxisAlignment: MainAxisAlignment.start,
+                            crossAxisAlignment: CrossAxisAlignment.start,
+                            children: [
+                              Row(
+                                children: [
+                                  Padding(
+                                      padding: EdgeInsets.only(
+                                          bottom: 10.0, left: 15.0)),
 
-                  Row(
-                    mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-                    children: [
-                      GestureDetector(
-                        onTap: () {
-                          GoRouter.of(context)
-                              .go('/transaction-status', extra: {
-                            'subscriptionController': _subscriptionController,
-                            'amount': 500,
-                            'currency': 'usd',
-                            'membershipType': 'premium',
-                          });
-                        },
-                        child: const Column(
-                          mainAxisAlignment: MainAxisAlignment.start,
-                          crossAxisAlignment: CrossAxisAlignment.start,
-                          children: [
-                            Row(
-                              children: [
-                                Padding(
-                                    padding: EdgeInsets.only(
-                                        bottom: 10.0, left: 15.0)),
-
-                                ///
-                                SizedBox(
-                                  height: 20,
-                                ),
-
-                                ///
-                                Text(
-                                  'Premium',
-                                  style: TextStyle(
-                                    fontSize: 20,
-                                    fontWeight: FontWeight.normal,
+                                  ///
+                                  SizedBox(
+                                    height: 20,
                                   ),
-                                ),
 
-                                ///
-                              ],
-                            ),
-
-                            ///
-                            SizedBox(
-                              height: 10,
-                            ),
-
-                            ///
-                            Row(
-                              children: [
-                                Padding(
-                                    padding: EdgeInsets.only(
-                                        bottom: 10.0, left: 15.0)),
-                                Text(
-                                  '5\$ /month',
-                                  style: TextStyle(
-                                    fontSize: 15,
-                                    fontWeight: FontWeight.normal,
+                                  ///
+                                  Text(
+                                    'Premium',
+                                    style: TextStyle(
+                                      fontSize: 20,
+                                      fontWeight: FontWeight.normal,
+                                    ),
                                   ),
-                                ),
-                              ],
-                            ),
-                          ],
+
+                                  ///
+                                ],
+                              ),
+
+                              ///
+                              SizedBox(
+                                height: 10,
+                              ),
+
+                              ///
+                              Row(
+                                children: [
+                                  Padding(
+                                      padding: EdgeInsets.only(
+                                          bottom: 10.0, left: 15.0)),
+                                  Text(
+                                    '5\$ /month',
+                                    style: TextStyle(
+                                      fontSize: 15,
+                                      fontWeight: FontWeight.normal,
+                                    ),
+                                  ),
+                                ],
+                              ),
+                            ],
+                          ),
                         ),
-                      ),
-                      Padding(
-                        padding: const EdgeInsets.symmetric(horizontal: 5.0),
-                        child: Container(
-                          width: 1.0, // Line thickness
-                          height: 50.0, // Line height
-                          color: Colors.grey.withOpacity(0.3), // Line color
+                        Padding(
+                          padding: const EdgeInsets.symmetric(horizontal: 5.0),
+                          child: Container(
+                            width: 1.0, // Line thickness
+                            height: 50.0, // Line height
+                            color: Colors.grey.withOpacity(0.3), // Line color
+                          ),
                         ),
-                      ),
-                      GestureDetector(
-                        onTap: () {
-                          GoRouter.of(context)
-                              .go('/transaction-status', extra: {
-                            'subscriptionController': _subscriptionController,
-                            'amount': 1000,
-                            'currency': 'usd',
-                            'membershipType': 'premium',
-                          });
-                        },
-                        child: const Column(
-                          mainAxisAlignment: MainAxisAlignment.start,
-                          crossAxisAlignment: CrossAxisAlignment.start,
-                          children: [
-                            Row(
-                              children: [
-                                Padding(
-                                    padding: EdgeInsets.only(
-                                        bottom: 10.0, left: 15.0)),
+                        GestureDetector(
+                          onTap: () {
+                            GoRouter.of(context)
+                                .go('/transaction-status', extra: {
+                              'subscriptionController': _subscriptionController,
+                              'amount': 1000,
+                              'currency': 'usd',
+                              'membershipType': 'premium',
+                            });
+                          },
+                          child: const Column(
+                            mainAxisAlignment: MainAxisAlignment.start,
+                            crossAxisAlignment: CrossAxisAlignment.start,
+                            children: [
+                              Row(
+                                children: [
+                                  Padding(
+                                      padding: EdgeInsets.only(
+                                          bottom: 10.0, left: 15.0)),
 
-                                ///
-                                SizedBox(
-                                  height: 20,
-                                ),
-
-                                ///
-                                Text(
-                                  'Pro',
-                                  style: TextStyle(
-                                    fontSize: 20,
-                                    fontWeight: FontWeight.normal,
+                                  ///
+                                  SizedBox(
+                                    height: 20,
                                   ),
-                                ),
 
-                                ///
-                              ],
-                            ),
-
-                            ///
-                            SizedBox(
-                              height: 10,
-                            ),
-
-                            ///
-                            Row(
-                              children: [
-                                Padding(
-                                    padding: EdgeInsets.only(
-                                        bottom: 10.0, left: 15.0)),
-                                Text(
-                                  '10\$ /month',
-                                  style: TextStyle(
-                                    fontSize: 15,
-                                    fontWeight: FontWeight.normal,
+                                  ///
+                                  Text(
+                                    'Pro',
+                                    style: TextStyle(
+                                      fontSize: 20,
+                                      fontWeight: FontWeight.normal,
+                                    ),
                                   ),
-                                ),
-                              ],
-                            ),
-                          ],
+
+                                  ///
+                                ],
+                              ),
+
+                              ///
+                              SizedBox(
+                                height: 10,
+                              ),
+
+                              ///
+                              Row(
+                                children: [
+                                  Padding(
+                                      padding: EdgeInsets.only(
+                                          bottom: 10.0, left: 15.0)),
+                                  Text(
+                                    '10\$ /month',
+                                    style: TextStyle(
+                                      fontSize: 15,
+                                      fontWeight: FontWeight.normal,
+                                    ),
+                                  ),
+                                ],
+                              ),
+                            ],
+                          ),
                         ),
-                      ),
-                    ],
-                  ),
+                      ],
+                    ),
 
                   ///
                 ],

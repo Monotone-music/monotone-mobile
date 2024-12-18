@@ -40,6 +40,7 @@ class Playlist extends StatelessWidget {
     final themeProvider = Provider.of<ThemeProvider>(context);
     final isDarkMode = themeProvider.isDarkMode;
     final pageManager = getIt<MediaManager>();
+
     return Expanded(
       child: ValueListenableBuilder<List<MediaItem>>(
         valueListenable: pageManager.playlistNotifier,
@@ -48,36 +49,43 @@ class Playlist extends StatelessWidget {
             itemCount: playlist.length,
             itemBuilder: (context, index) {
               final mediaItem = playlist[index];
+              final isAdvertisement = mediaItem.artist == 'Advertisement';
+
               return ListTile(
-                  leading: ClipRRect(
-                    borderRadius: BorderRadius.circular(8.0),
-                    child: ImageRenderer(
-                      imageUrl: mediaItem.artUri?.toString() ??
-                          'assets/image/album_1.png',
-                      width: 50,
-                      height: 50,
-                    ),
+                leading: ClipRRect(
+                  borderRadius: BorderRadius.circular(8.0),
+                  child: ImageRenderer(
+                    imageUrl: mediaItem.artUri?.toString() ??
+                        'assets/image/album_1.png',
+                    width: 50,
+                    height: 50,
                   ),
-                  title: Text(mediaItem.title),
-                  subtitle: Text(
-                    mediaItem.artist ?? 'Unknown Artist',
-                    style: Theme.of(context).textTheme.bodyMedium?.copyWith(
-                        color: isDarkMode
-                            ? Colors.white.withOpacity(0.7)
-                            : Colors.black,
-                        fontWeight: FontWeight.w300),
-                  ),
-                  onTap: () {
-                    getIt<AudioHandler>().skipToQueueItem(index);
-                  },
-                  trailing: IconButton(
-                    alignment: Alignment.centerRight,
-                    icon: const Icon(Icons.remove),
-                    onPressed: () {
-                      getIt<AudioHandler>().removeQueueItemAt(index);
-                      // print('delete song at index: $index');
-                    },
-                  ));
+                ),
+                title: Text(mediaItem.title),
+                subtitle: Text(
+                  mediaItem.artist ?? 'Unknown Artist',
+                  style: Theme.of(context).textTheme.bodyMedium?.copyWith(
+                      color: isDarkMode
+                          ? Colors.white.withOpacity(0.7)
+                          : Colors.black,
+                      fontWeight: FontWeight.w300),
+                ),
+                onTap: () {
+                  getIt<AudioHandler>().skipToQueueItem(index);
+                },
+                trailing: !isAdvertisement
+                    ? IconButton(
+                        alignment: Alignment.centerRight,
+                        icon: const Icon(Icons.remove),
+                        onPressed: () {
+                          getIt<AudioHandler>().removeQueueItemAt(index);
+                          // print('delete song at index: $index');
+                        },
+                      )
+                    : null,
+
+                ///
+              );
             },
           );
         },

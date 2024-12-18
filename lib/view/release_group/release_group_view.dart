@@ -243,7 +243,7 @@ Widget buildAlbumImageWithBackButton(
                     onPressed: () {
                       // Handle add to queue action
                       getIt<MediaManager>()
-                          .loadPlaylist(releaseGroup.tracks, releaseGroup.name);
+                          .sequentialLoadTracks(releaseGroup.tracks, releaseGroup.name);
                     },
                   ),
                 ),

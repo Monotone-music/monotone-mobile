@@ -29,8 +29,12 @@ class JwtInterceptor implements InterceptorContract {
   Future<BaseResponse> interceptResponse(
       {required BaseResponse response}) async {
     int statusCode = response.statusCode;
-    if (response is Response) {
-    print('RESPONSE: ${jsonDecode(response.body)}');}
+
+    ///
+    // if (response is Response) {
+    // print('RESPONSE: ${jsonDecode(response.body)}');}
+    ///
+
     if (response.request?.url.path == '/auth/login' ||
         response.request?.url.path == '/auth/refresh') {
       ///

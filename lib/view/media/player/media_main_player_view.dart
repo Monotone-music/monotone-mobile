@@ -4,6 +4,8 @@ import 'package:monotone_flutter/widgets/image_widgets/image_renderer.dart';
 
 Widget buildMainPlayer(BuildContext context, MyAudioHandler mediaPlayerProvider,
     imageUrl, title, artistName) {
+  final isAdvertisement = artistName == 'Advertisement';
+
   return Container(
     height: MediaQuery.of(context).size.height,
     padding: const EdgeInsets.all(1.0),
@@ -48,19 +50,22 @@ Widget buildMainPlayer(BuildContext context, MyAudioHandler mediaPlayerProvider,
                   ],
                 ),
               ),
-              IconButton(
-                icon:
-                    const Icon(Icons.favorite_border, color: Color(0xFF898989)),
-                onPressed: () {
-                  // Implement favorite functionality
-                },
-              ),
-              IconButton(
-                icon: const Icon(Icons.playlist_add, color: Color(0xFF898989)),
-                onPressed: () {
-                  // Implement add to playlist functionality
-                },
-              ),
+              if (!isAdvertisement)
+                IconButton(
+                  icon: const Icon(Icons.favorite_border,
+                      color: Color(0xFF898989)),
+                  onPressed: () {
+                    // Implement favorite functionality
+                  },
+                ),
+              if (!isAdvertisement)
+                IconButton(
+                  icon:
+                      const Icon(Icons.playlist_add, color: Color(0xFF898989)),
+                  onPressed: () {
+                    // Implement add to playlist functionality
+                  },
+                ),
             ],
           ),
         ),

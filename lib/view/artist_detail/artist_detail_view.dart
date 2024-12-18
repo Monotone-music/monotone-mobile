@@ -12,9 +12,9 @@ import 'package:shimmer/shimmer.dart';
 // Define the ArtistDetailView widget
 class ArtistDetailView extends StatelessWidget {
   final Artist artist;
-  final Map<String, String> albumImageUrls;
+  final Map<String, String> featuredListImageUrls;
 
-  ArtistDetailView({required this.artist, required this.albumImageUrls});
+  ArtistDetailView({required this.artist, required this.featuredListImageUrls});
 
   final httpClient = InterceptedClient.build(interceptors: [
     JwtInterceptor(),
@@ -167,7 +167,7 @@ class ArtistDetailView extends StatelessWidget {
                     DateTime.parse(release.releaseEvent.date).year.toString();
                 final releaseType = release.releaseType[0].toUpperCase() +
                     release.releaseType.substring(1);
-                final imageUrl = albumImageUrls[release.id] ?? '';
+                final imageUrl = featuredListImageUrls[release.id] ?? '';
 
                 return FutureBuilder<Response>(
                   future: httpClient.get(
@@ -338,7 +338,7 @@ class ArtistDetailView extends StatelessWidget {
           const SizedBox(height: 16),
           if (albums.isEmpty)
             Container(
-              height: height * 0.25,
+              height: 200,
               padding: const EdgeInsets.all(16.0),
               child: Center(
                 child: Text(
@@ -353,7 +353,7 @@ class ArtistDetailView extends StatelessWidget {
             )
           else
             SizedBox(
-              height: height * 0.30,
+              height: 240,
               child: ListView.builder(
                 scrollDirection: Axis.horizontal,
                 itemCount: albums.length,
@@ -363,7 +363,7 @@ class ArtistDetailView extends StatelessWidget {
                       DateTime.parse(album.releaseEvent.date).year.toString();
                   final releaseType = album.releaseType[0].toUpperCase() +
                       album.releaseType.substring(1);
-                  final imageUrl = albumImageUrls[album.id] ?? '';
+                  final imageUrl = featuredListImageUrls[album.id] ?? '';
                   return FutureBuilder<Response>(
                     future: httpClient.get(
                       Uri.parse(imageUrl),
@@ -510,7 +510,7 @@ class ArtistDetailView extends StatelessWidget {
                       DateTime.parse(release.releaseEvent.date).year.toString();
                   final releaseType = release.releaseType[0].toUpperCase() +
                       release.releaseType.substring(1);
-                  final imageUrl = albumImageUrls[release.id] ?? '';
+                  final imageUrl = featuredListImageUrls[release.id] ?? '';
 
                   return FutureBuilder<Response>(
                     future: httpClient.get(
@@ -686,7 +686,7 @@ class ArtistDetailView extends StatelessWidget {
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
           const Text(
-            'Appears in',
+            'Appears In',
             style: TextStyle(
               fontSize: 24,
               fontWeight: FontWeight.bold,
@@ -695,16 +695,14 @@ class ArtistDetailView extends StatelessWidget {
           const SizedBox(height: 16),
           if (appearsIn.isEmpty)
             Container(
-              height: height * 0.28,
+              height: 300,
               padding: const EdgeInsets.all(16.0),
-              child: Center(
-                child: Text(
-                  'This artist does not appear in any releases yet!',
-                  textAlign: TextAlign.center,
-                  style: TextStyle(
-                    fontSize: 18,
-                    color: changePrimary.withOpacity(0.5),
-                  ),
+              child: Text(
+                'This artist has not appeared in other albums yet!',
+                textAlign: TextAlign.center,
+                style: TextStyle(
+                  fontSize: 18,
+                  color: changePrimary.withOpacity(0.5),
                 ),
               ),
             )
@@ -715,100 +713,100 @@ class ArtistDetailView extends StatelessWidget {
                 scrollDirection: Axis.horizontal,
                 itemCount: appearsIn.length,
                 itemBuilder: (context, index) {
-                  final release = appearsIn[index];
-                  final year =
-                      DateTime.parse(release.releaseEvent.date).year.toString();
-                  final releaseType = release.releaseType[0].toUpperCase() +
-                      release.releaseType.substring(1);
-                  final imageUrl = albumImageUrls[release.id] ?? '';
-
-                  return Padding(
-                    padding: const EdgeInsets.only(right: 16.0),
-                    child: FutureBuilder<Response>(
-                      future: httpClient.get(
-                        Uri.parse(imageUrl),
-                      ),
-                      builder: (context, snapshot) {
-                        if (snapshot.connectionState ==
-                            ConnectionState.waiting) {
-                          return Shimmer.fromColors(
-                            baseColor: Colors.grey[300]!,
-                            highlightColor: Colors.grey[100]!,
-                            child: Container(
-                              width: 50,
-                              height: 50,
-                              color: Colors.white,
-                            ),
-                          );
-                        } else if (snapshot.hasError) {
-                          return Container(
+                  final featuredList = appearsIn[index];
+                  final year = DateTime.parse(featuredList.releaseEvent.date)
+                      .year
+                      .toString();
+                  final releaseType =
+                      featuredList.releaseType[0].toUpperCase() +
+                          featuredList.releaseType.substring(1);
+                  final imageUrl = featuredListImageUrls[featuredList.id] ?? '';
+                  return FutureBuilder<Response>(
+                    future: httpClient.get(
+                      Uri.parse(imageUrl),
+                    ),
+                    builder: (context, snapshot) {
+                      if (snapshot.connectionState == ConnectionState.waiting) {
+                        return Shimmer.fromColors(
+                          baseColor: Colors.grey[300]!,
+                          highlightColor: Colors.grey[100]!,
+                          child: Container(
                             width: width * 0.4,
                             height: width * 0.4,
-                            decoration: BoxDecoration(
-                              color: changePrimary.withOpacity(0.6),
-                              borderRadius: BorderRadius.circular(8.0),
-                            ),
-                            child: const Center(child: Icon(Icons.error)),
-                          );
-                        } else if (snapshot.hasData) {
-                          final imageData = snapshot.data?.bodyBytes;
-                          return InkWell(
-                            onTap: () {
-                              Navigator.push(
-                                context,
-                                MaterialPageRoute(
-                                    builder: (context) => ReleaseGroupPage(
-                                          id: release.id,
-                                        )),
-                              );
-                            },
-                            child: Column(
-                              crossAxisAlignment: CrossAxisAlignment.start,
-                              children: [
-                                Container(
-                                  width: width * 0.4,
-                                  height: width * 0.4,
-                                  decoration: BoxDecoration(
-                                    color: changePrimary.withOpacity(0.6),
-                                    borderRadius: BorderRadius.circular(8.0),
-                                  ),
-                                  child: ImageRenderer(
-                                    imageUrl: imageData,
-                                  ),
+                            color: Colors.white,
+                          ),
+                        );
+                      } else if (snapshot.hasError) {
+                        return Container(
+                          width: width * 0.4,
+                          height: width * 0.4,
+                          decoration: BoxDecoration(
+                            color: changePrimary.withOpacity(0.6),
+                            borderRadius: BorderRadius.circular(8.0),
+                          ),
+                          child: const Center(child: Icon(Icons.error)),
+                        );
+                      } else if (snapshot.hasData) {
+                        final imageData = snapshot.data?.bodyBytes;
+                        return InkWell(
+                          onTap: () {
+                            Navigator.push(
+                              context,
+                              MaterialPageRoute(
+                                  builder: (context) =>
+                                      ReleaseGroupPage(id: featuredList.id)),
+                            );
+                          },
+                          child: Column(
+                            crossAxisAlignment: CrossAxisAlignment.start,
+                            children: [
+                              Container(
+                                width: width * 0.4,
+                                height: width * 0.4,
+                                decoration: BoxDecoration(
+                                  color: changePrimary.withOpacity(0.6),
+                                  borderRadius: BorderRadius.circular(8.0),
                                 ),
-                                const SizedBox(height: 8),
-                                Text(
-                                  release.title,
+                                child: ImageRenderer(
+                                  imageUrl: imageData,
+                                ),
+                              ),
+                              SizedBox(
+                                width: width * 0.4,
+                                child: Text(
+                                  featuredList.title,
                                   style: const TextStyle(
-                                    fontSize: 18,
+                                    overflow: TextOverflow.ellipsis,
+                                    fontSize: 16,
                                     fontWeight: FontWeight.bold,
                                   ),
                                 ),
-                                const SizedBox(height: 4),
-                                Text(
-                                  '$releaseType • $year',
-                                  style: TextStyle(
-                                    fontSize: 16,
-                                    color: changePrimary.withOpacity(0.5),
-                                  ),
+                              ),
+
+                              // SizedBox(height: 4),
+                              Text(
+                                '$releaseType • $year',
+                                style: TextStyle(
+                                  fontSize: 14,
+                                  color: changePrimary.withOpacity(0.5),
                                 ),
-                              ],
-                            ),
-                          );
-                        } else {
-                          return Container(
-                            width: width * 0.4,
-                            height: width * 0.4,
-                            decoration: BoxDecoration(
-                              color: changePrimary.withOpacity(0.6),
-                              borderRadius: BorderRadius.circular(8.0),
-                            ),
-                            child: Image.asset('assets/image/not_available.png',
-                                fit: BoxFit.cover),
-                          );
-                        }
-                      },
-                    ),
+                              ),
+                            ],
+                          ),
+                        );
+                      } else {
+                        return Container(
+                          width: width * 0.4,
+                          height: width * 0.4,
+                          decoration: BoxDecoration(
+                            color: changePrimary.withOpacity(0.6),
+                            borderRadius: BorderRadius.circular(8.0),
+                          ),
+                          child: Image.asset('assets/image/not_available.png',
+                              fit: BoxFit.cover),
+                        );
+                      }
+                    },
                   );
                 },
               ),

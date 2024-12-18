@@ -116,8 +116,8 @@ class CustomSearchDelegate extends SearchDelegate {
             baseColor: Colors.grey[300]!,
             highlightColor: Colors.grey[100]!,
             child: Container(
-              width: 40,
-              height: 40,
+              width: 50,
+              height: 50,
               color: Colors.white,
             ),
           );
@@ -234,11 +234,11 @@ class CustomSearchDelegate extends SearchDelegate {
         if (item.source.type == 'album' &&
             item.source.albumInfo?.image != null) {
           imageUrl =
-              'https://api2.ibarakoi.online/image/${item.source.albumInfo!.image.filename}';
+              '$BASE_URL/image/${item.source.albumInfo!.image.filename}';
         } else if (item.source.type == 'recording' &&
             item.source.recordingInfo?.image != null) {
           imageUrl =
-              'https://api2.ibarakoi.online/image/${item.source.recordingInfo!.image.filename}';
+              '$BASE_URL/image/${item.source.recordingInfo!.image.filename}';
         }
 
         return FutureBuilder<Response>(

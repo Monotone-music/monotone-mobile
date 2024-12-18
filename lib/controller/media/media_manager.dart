@@ -1,12 +1,7 @@
 import 'dart:convert';
-
 import 'package:flutter/foundation.dart';
 import 'package:flutter_secure_storage/flutter_secure_storage.dart';
 import 'package:http_interceptor/http_interceptor.dart';
-import 'package:monotone_flutter/common/api_url.dart';
-import 'package:monotone_flutter/interceptor/jwt_interceptor.dart';
-import 'package:monotone_flutter/models/personal_playlist_items.dart';
-import 'package:monotone_flutter/models/release_group_model.dart';
 import 'notifiers/play_button_notifier.dart';
 import 'notifiers/progress_notifier.dart';
 import 'notifiers/repeat_button_notifier.dart';
@@ -14,6 +9,12 @@ import 'package:audio_service/audio_service.dart';
 import 'services/playlist_repository.dart';
 import 'services/service_locator.dart';
 import 'package:http/http.dart' as http;
+
+import 'package:monotone_flutter/common/api_url.dart';
+import 'package:monotone_flutter/controller/media/advertisment/advertisement_loader.dart';
+import 'package:monotone_flutter/interceptor/jwt_interceptor.dart';
+import 'package:monotone_flutter/models/personal_playlist_items.dart';
+import 'package:monotone_flutter/models/release_group_model.dart';
 
 class MediaManager {
   // Listeners: Updates going to the UI
@@ -28,6 +29,7 @@ class MediaManager {
 
   // Extra
   MediaItem? get currentMediaItem => _audioHandler.mediaItem.value;
+  int listenAgain = 0;
 
   final _audioHandler = getIt<AudioHandler>();
   var queueCounter = 0;
@@ -42,6 +44,37 @@ class MediaManager {
     _listenToBufferedPosition();
     _listenToTotalDuration();
     _listenToChangesInSong();
+  }
+
+  Future<void> addAdvertisement() async {
+    final advertisementLoader = AdvertisementLoader();
+    final advertisement = await advertisementLoader.fetchRandomAdvertisement('player');
+    final advertisementItem = MediaItem(
+      id: '${advertisement.data.id}_advertisement',
+      title: advertisement.data.title,
+      artist: 'Advertisement',
+      artUri: Uri.parse('$BASE_URL/image/${advertisement.data.image.filename}'),
+      extras: {
+        'url': '$BASE_URL/advertisement/stream/${advertisement.data.id}'
+      },
+    );
+    _audioHandler.addQueueItem(advertisementItem);
+  }
+
+  Future<void> _handleAdvertisements(
+      String? oldPlaylist, String? newPlaylist) async {
+    // WHEN THE LISTENER RE-LISTENS TO THE ALBUM FOR THE FIRST TIME, DON'T RUN ADS
+    if (oldPlaylist == null || newPlaylist == null) {
+      await addAdvertisement();
+      listenAgain = 0;
+    } else {
+      if (newPlaylist != oldPlaylist || listenAgain == 1) {
+        await addAdvertisement();
+        listenAgain = 0;
+      } else {
+        listenAgain = 1;
+      }
+    }
   }
 
   Future<void> fetchAndPrintApiResponse(String url) async {
@@ -71,10 +104,16 @@ class MediaManager {
   }
 
   void clearLoadPlaylistAndPlay(List<Track> playlist, String albumName) async {
+    String? _currentPlaylist = _audioHandler.queue.value.isNotEmpty
+        ? _audioHandler.queue.value.last.album
+        : null;
+
     await _audioHandler.stop();
     await _audioHandler.seek(Duration.zero);
     await _audioHandler.skipToQueueItem(0);
     removeAll();
+
+    await _handleAdvertisements(_currentPlaylist, albumName);
     loadPlaylist(playlist, albumName);
     play();
   }
@@ -83,13 +122,17 @@ class MediaManager {
 
   void clearLoadPlaylistAndSkipToIndex(
       List<Track> playlist, String albumName, int index) async {
+    String? _currentPlaylist = _audioHandler.queue.value.isNotEmpty
+        ? _audioHandler.queue.value.last.album
+        : null;
+
     await _audioHandler.stop();
     await _audioHandler.seek(Duration.zero);
     removeAll();
     // loadPlaylist(playlist, albumName);
     // stop();
-
-    // Add the selected track first
+    await _handleAdvertisements(_currentPlaylist, albumName);
+//// Add the selected track first
     final selectedTrack = playlist[index];
     final selectedMediaItem = MediaItem(
       id: '${selectedTrack.id}_${queueCounter++}',
@@ -126,7 +169,7 @@ class MediaManager {
       );
     }).toList();
     await _audioHandler.addQueueItems(mediaItems);
-    print('playlist loaded: ${mediaItems}');
+    print('playlist loaded');
     // auto play the track after finish loading
   }
 
@@ -147,8 +190,6 @@ class MediaManager {
       Track track,
       String albumName) async {
     // final songRepository = getIt<PlaylistRepository>();
-
-    print('track loading');
 
     final fetchedTrack = track;
     final mediaItem = MediaItem(

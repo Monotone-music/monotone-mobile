@@ -298,7 +298,7 @@ class ReleaseGroup {
       release: releases,
       releaseType: json['releaseType'],
       title: json['title'],
-      image: json['image'],
+      image: json['image']['filename'],
     );
   }
 }
