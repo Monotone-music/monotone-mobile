@@ -1,3 +1,4 @@
+import 'package:auto_scroll_text/auto_scroll_text.dart';
 import 'package:flutter/material.dart';
 import 'package:monotone_flutter/common/api_url.dart';
 import 'package:monotone_flutter/models/playlist_items.dart';
@@ -91,14 +92,19 @@ class _PlaylistCardState extends State<PlaylistCard> {
                         Row(
                           mainAxisAlignment: MainAxisAlignment.spaceBetween,
                           children: [
-                            Container(
-                              padding: const EdgeInsets.only(left: 8.0),
-                              child: Text(
-                                widget.playlistItem.name,
-                                overflow: TextOverflow.ellipsis,
-                                maxLines: 1,
-                                style: const TextStyle(
-                                  color: Colors.white,
+                            SizedBox(
+                              width: 110,
+                              child: Container(
+                                padding: const EdgeInsets.only(left: 8.0),
+                                child: AutoScrollText(
+                                  widget.playlistItem.name,
+                                  mode: AutoScrollTextMode.bouncing,
+                                  velocity: const Velocity(pixelsPerSecond: Offset(30, 0)),
+                                  pauseBetween: const Duration(seconds: 1),
+                                  padding: const EdgeInsets.only(left: 2, right: 2),
+                                  style: const TextStyle(
+                                    color: Colors.white,
+                                  ),
                                 ),
                               ),
                             ),
