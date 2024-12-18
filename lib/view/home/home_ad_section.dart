@@ -39,7 +39,6 @@ class _HomeAdSectionState extends State<HomeAdSection> {
           return Center(child: Text('Error: ${snapshot.error}'));
         } else if (snapshot.hasData) {
           final ad = snapshot.data!;
-          print("HOME AD: ${ad.data.image.filename}");
           return Container(
             width: 500,
             height: 200,

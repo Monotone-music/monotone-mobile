@@ -23,6 +23,7 @@ class _HomePageState extends State<HomePage> {
   int _selectedIndex = 0;
   late Future<List<Map<String, String>>> topReleaseGroup;
   late Future<List<Map<String, String>>> releaseGroups;
+  final _storage = const FlutterSecureStorage();
 
   @override
   void initState() {
@@ -30,6 +31,10 @@ class _HomePageState extends State<HomePage> {
     releaseGroups = fetchReleaseGroups('https://api2.ibarakoi.online/album/');
     topReleaseGroup =
         fetchReleaseGroups('https://api2.ibarakoi.online/album/top');
+  }
+
+  Future<String?> _getBitrate() async {
+    return await _storage.read(key: 'bitrate');
   }
 
   Future<List<Map<String, String>>> fetchReleaseGroups(String url) async {
@@ -81,35 +86,35 @@ class _HomePageState extends State<HomePage> {
             ],
           ),
         ),
-        body: Container(
-          child: _selectedIndex == 0
-              ? SingleChildScrollView(
-                  child: Column(
-                    children: [
-                      // Advertisement Section
-                      HomeAdSection(),
-                      // Top Album Section
-                      HomePlaylistSection(
-                        title: 'Most Popular Albums',
-                        loader: topReleaseGroup,
-                      ),
-                      SizedBox(
-                        height: 20,
-                      ),
-                      // Normal Album Section
-                      HomePlaylistSection(
-                        title: 'Normal Albums',
-                        loader: releaseGroups,
-                      ),
-                    ],
-                  ),
-                )
-              : Center(
-                  child: Text(
-                    _selectedIndex == 1 ? 'Podcasts' : 'Audiobooks',
-                    style: TextStyle(fontSize: 24),
-                  ),
+        body: FutureBuilder<String?>(
+          future: _getBitrate(),
+          builder: (context, snapshot) {
+            if (snapshot.connectionState == ConnectionState.waiting) {
+              return const Center(child: CircularProgressIndicator());
+            } else if (snapshot.hasError) {
+              return Center(child: Text('Error: ${snapshot.error}'));
+            } else {
+              final bitrate = snapshot.data;
+              return SingleChildScrollView(
+                child: Column(
+                  children: [
+                    if (bitrate == '192') 
+                    HomeAdSection(),
+                    // Top Album Section
+                    HomePlaylistSection(
+                      title: 'Most Popular Albums',
+                      loader: topReleaseGroup,
+                    ),
+                    // Another Playlist Section
+                    HomePlaylistSection(
+                      title: 'New Releases',
+                      loader: releaseGroups,
+                    ),
+                  ],
                 ),
+              );
+            }
+          },
         ),
       ),
     );

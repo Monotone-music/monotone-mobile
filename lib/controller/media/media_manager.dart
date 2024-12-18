@@ -33,6 +33,7 @@ class MediaManager {
 
   final _audioHandler = getIt<AudioHandler>();
   var queueCounter = 0;
+  final storage = const FlutterSecureStorage();
 
   // Events: Calls coming from the UI
   void init() async {
@@ -48,7 +49,8 @@ class MediaManager {
 
   Future<void> addAdvertisement() async {
     final advertisementLoader = AdvertisementLoader();
-    final advertisement = await advertisementLoader.fetchRandomAdvertisement('player');
+    final advertisement =
+        await advertisementLoader.fetchRandomAdvertisement('player');
     final advertisementItem = MediaItem(
       id: '${advertisement.data.id}_advertisement',
       title: advertisement.data.title,
@@ -63,7 +65,13 @@ class MediaManager {
 
   Future<void> _handleAdvertisements(
       String? oldPlaylist, String? newPlaylist) async {
-    // WHEN THE LISTENER RE-LISTENS TO THE ALBUM FOR THE FIRST TIME, DON'T RUN ADS
+    var bitrate = await storage.read(key: 'bitrate');
+    if (bitrate != '192') {
+      return;
+    }
+    // WHEN THE LISTENER RE-LISTENS 
+    //TO THE ALBUM FOR THE FIRST TIME,
+    //DON'T RUN ADS
     if (oldPlaylist == null || newPlaylist == null) {
       await addAdvertisement();
       listenAgain = 0;
