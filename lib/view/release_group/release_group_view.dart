@@ -171,23 +171,23 @@ Widget buildAlbumImageWithBackButton(
         ),
       ),
       //More actions button
-      Positioned(
-        top: 16,
-        right: 16,
-        child: Container(
-          decoration: BoxDecoration(
-            color:
-                Colors.black.withOpacity(0.2), // Background color with opacity
-            shape: BoxShape.circle,
-          ),
-          child: IconButton(
-            icon: Icon(Icons.more_vert, color: Colors.white),
-            onPressed: () {
-              // Add more actions here
-            },
-          ),
-        ),
-      ),
+      // Positioned(
+      //   top: 16,
+      //   right: 16,
+      //   child: Container(
+      //     decoration: BoxDecoration(
+      //       color:
+      //           Colors.black.withOpacity(0.2), // Background color with opacity
+      //       shape: BoxShape.circle,
+      //     ),
+      //     child: IconButton(
+      //       icon: Icon(Icons.more_vert, color: Colors.white),
+      //       onPressed: () {
+      //         // Add more actions here
+      //       },
+      //     ),
+      //   ),
+      // ),
       // Play shuffle button
       Positioned(
         left: 0,
@@ -215,21 +215,21 @@ Widget buildAlbumImageWithBackButton(
             Row(
               mainAxisAlignment: MainAxisAlignment.center,
               children: [
-                Container(
-                  width: 40,
-                  height: 40,
-                  decoration: BoxDecoration(
-                    color: Colors.black.withOpacity(0.2),
-                    shape: BoxShape.circle,
-                  ),
-                  child: IconButton(
-                    icon:
-                        const Icon(Icons.favorite, color: Colors.red, size: 20),
-                    onPressed: () {
-                      // Handle add to favorite action
-                    },
-                  ),
-                ),
+                // Container(
+                //   width: 40,
+                //   height: 40,
+                //   decoration: BoxDecoration(
+                //     color: Colors.black.withOpacity(0.2),
+                //     shape: BoxShape.circle,
+                //   ),
+                //   child: IconButton(
+                //     icon:
+                //         const Icon(Icons.favorite, color: Colors.red, size: 20),
+                //     onPressed: () {
+                //       // Handle add to favorite action
+                //     },
+                //   ),
+                // ),
                 const SizedBox(width: 16),
                 Container(
                   width: 40,
@@ -248,21 +248,21 @@ Widget buildAlbumImageWithBackButton(
                   ),
                 ),
                 const SizedBox(width: 16),
-                Container(
-                  width: 40,
-                  height: 40,
-                  decoration: BoxDecoration(
-                    color: Colors.black.withOpacity(0.2),
-                    shape: BoxShape.circle,
-                  ),
-                  child: IconButton(
-                    icon:
-                        const Icon(Icons.share, color: Colors.yellow, size: 20),
-                    onPressed: () {
-                      // Handle share action
-                    },
-                  ),
-                ),
+                // Container(
+                //   width: 40,
+                //   height: 40,
+                //   decoration: BoxDecoration(
+                //     color: Colors.black.withOpacity(0.2),
+                //     shape: BoxShape.circle,
+                //   ),
+                //   child: IconButton(
+                //     icon:
+                //         const Icon(Icons.share, color: Colors.yellow, size: 20),
+                //     onPressed: () {
+                //       // Handle share action
+                //     },
+                //   ),
+                // ),
               ],
             ),
           ],

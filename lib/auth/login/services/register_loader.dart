@@ -1,11 +1,12 @@
 import 'dart:convert';
-
 import 'package:dio/dio.dart';
+
 import 'package:http_interceptor/http_interceptor.dart';
+import 'package:monotone_flutter/common/api_url.dart';
 import 'package:monotone_flutter/interceptor/jwt_interceptor.dart';
 
 class RegisterLoader {
-  final Uri apiUrl = Uri.parse('https://api2.ibarakoi.online/account/register');
+  final Uri apiUrl = Uri.parse('$BASE_URL/account/register?type=listener');
 
   Future<String> register(String username, String password, String email,
       String displayName) async {

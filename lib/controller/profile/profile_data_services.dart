@@ -1,9 +1,13 @@
 import 'dart:convert';
 
+import 'package:flutter/material.dart';
+import 'package:flutter_secure_storage/flutter_secure_storage.dart';
 import 'package:http_interceptor/http/intercepted_client.dart';
 import 'package:monotone_flutter/common/api_url.dart';
+import 'package:monotone_flutter/controller/media/notifiers/bitrate_notifier.dart';
 import 'package:monotone_flutter/interceptor/jwt_interceptor.dart';
 import 'package:monotone_flutter/models/profile_items.dart';
+import 'package:provider/provider.dart';
 
 class ProfileDataService {
   String? name;
@@ -32,8 +36,7 @@ class ProfileDataService {
     return ProfileItems(
       name: '123as1d54sdlkfopdfpodopf',
       identifier: '1029830280380',
-      avatar:
-          'https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcSbfe6jVBKeEynH9EtUr5gnN927eTZUJiuV8Q&s',
+      avatar: 'assets/image/blank_avatar.png',
       follower: 3,
       following: 5,
       member: true,
@@ -43,7 +46,8 @@ class ProfileDataService {
     );
   }
 
-  Future<Map<String, String>> fetchProfileApi() async {
+  Future<Map<String, String>> fetchProfileApi(BuildContext context) async {
+    const _storage = FlutterSecureStorage();
     final httpClient = InterceptedClient.build(interceptors: [
       JwtInterceptor(),
     ]);
@@ -59,7 +63,13 @@ class ProfileDataService {
 
         final String displayName = data['displayName'];
         final String membershipType = data['membership']['type'];
+        final String bitrate =
+            data['membership']['quality'].replaceAll('kbps', '').trim();
+        await _storage.write(key: 'bitrate', value: bitrate);
         print('Profile data: $displayName, $membershipType');
+
+        // Notify the BitrateProvider to update its state
+        Provider.of<BitrateProvider>(context, listen: false).setBitrate(bitrate);
 
         return {
           'displayName': displayName,

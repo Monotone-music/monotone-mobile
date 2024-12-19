@@ -2,17 +2,13 @@ import 'dart:async';
 import 'package:app_links/app_links.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_stripe/flutter_stripe.dart';
-import 'package:http_interceptor/http_interceptor.dart';
-import 'package:audio_service/audio_service.dart';
-import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 
 import 'package:monotone_flutter/auth/login/services/maintain_session_service.dart';
-import 'package:monotone_flutter/view/bottom_tab_navi.dart';
 // import 'package:audio_service_example/common.dart';
-import 'package:monotone_flutter/interceptor/jwt_interceptor.dart';
 
 // import 'package:get/get.dart';
+import 'package:monotone_flutter/controller/media/notifiers/bitrate_notifier.dart';
 import 'package:monotone_flutter/widgets/routes/routes.dart';
 import 'package:monotone_flutter/controller/media/media_manager.dart';
 import 'package:monotone_flutter/controller/media/services/audio_handler.dart';
@@ -81,6 +77,7 @@ class _MyAppState extends State<MyApp> {
   Widget build(BuildContext context) {
     return MultiProvider(
       providers: [
+        ChangeNotifierProvider(create: (_) => BitrateProvider()),
         ChangeNotifierProvider(
           create: (context) => MyAudioHandler(),
         ),

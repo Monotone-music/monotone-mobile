@@ -33,7 +33,12 @@ class PlaylistController {
     );
 
     if (response.statusCode != 200) {
-      throw Exception('Failed to create playlist');
+      switch (response.statusCode) {
+        case '400':
+        throw Exception('There can only be 3 playlists in a free account, upgrade here');
+        default:
+        throw Exception('Failed to create playlist');
+      }
     }
   }
 

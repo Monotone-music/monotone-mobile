@@ -1,11 +1,11 @@
 import 'dart:math';
+import 'package:go_router/go_router.dart';
 import 'package:provider/provider.dart';
 import 'package:flutter/material.dart';
 
 import 'package:monotone_flutter/auth/login/register_button.dart';
 import 'package:monotone_flutter/auth/login/services/register_loader.dart';
 import 'package:monotone_flutter/common/themes/theme_provider.dart';
-import 'package:monotone_flutter/widgets/routes/routes.dart';
 
 class RegisterForm extends StatefulWidget {
   @override
@@ -81,7 +81,7 @@ class _RegisterFormState extends State<RegisterForm> {
         });
       } else {
         // Navigate to login page
-        Navigator.pushReplacementNamed(context, AppRoutes.loginPage);
+        GoRouter.of(context).push('/login');
       }
     }
   }

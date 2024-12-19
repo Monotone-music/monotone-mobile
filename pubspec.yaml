@@ -113,6 +113,10 @@ flutter:
     - assets/image/history_icon.svg
     - assets/image/play_button_icon.svg
     - assets/image/vertical_more_icon.svg
+    - assets/image/blank_avatar.png
+    - assets/image/dark_theme_music_background.jpg
+    - assets/image/dark_theme_membership_background.jpg
+    - assets/image/green_theme_membership_background.jpg
     - assets/image/backgrounds/log_page_background.jpg
     - assets/image/backgrounds/log_page_background2.jpg
     - assets/image/backgrounds/log_page_background3.jpg
