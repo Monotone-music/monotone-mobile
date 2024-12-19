@@ -7,7 +7,6 @@ import 'package:monotone_flutter/widgets/routes/routes.dart';
 
 class JwtInterceptor implements InterceptorContract {
   final _storage = const FlutterSecureStorage();
-  final BASE_URL = 'https://api2.ibarakoi.online';
 
   ///REQUIRED FUNCTION
   @override

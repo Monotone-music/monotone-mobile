@@ -51,15 +51,29 @@ class MediaManager {
     final advertisementLoader = AdvertisementLoader();
     final advertisement =
         await advertisementLoader.fetchRandomAdvertisement('player');
-    final advertisementItem = MediaItem(
-      id: '${advertisement.data.id}_advertisement',
-      title: advertisement.data.title,
-      artist: 'Advertisement',
-      artUri: Uri.parse('$BASE_URL/image/${advertisement.data.image.filename}'),
-      extras: {
-        'url': '$BASE_URL/advertisement/stream/${advertisement.data.id}'
-      },
-    );
+    dynamic advertisementItem;
+    if (advertisement != null) {
+      advertisementItem = MediaItem(
+        id: '${advertisement.data.id}_advertisement',
+        title: advertisement.data.title,
+        artist: 'Advertisement',
+        artUri:
+            Uri.parse('$BASE_URL/image/${advertisement.data.image.filename}'),
+        extras: {
+          'url': '$BASE_URL/advertisement/stream/${advertisement.data.id}'
+        },
+      );
+    }else{
+      advertisementItem = MediaItem(
+        id: '_advertisement',
+        title: "Ads not supported",
+        artist: 'Advertisement',
+        artUri:
+            Uri.parse('assets/image/not_available.png'),
+        duration: const Duration(seconds: 10),
+      );
+    }
+
     _audioHandler.addQueueItem(advertisementItem);
   }
 
@@ -69,7 +83,7 @@ class MediaManager {
     if (bitrate != '192') {
       return;
     }
-    // WHEN THE LISTENER RE-LISTENS 
+    // WHEN THE LISTENER RE-LISTENS
     //TO THE ALBUM FOR THE FIRST TIME,
     //DON'T RUN ADS
     if (oldPlaylist == null || newPlaylist == null) {

@@ -12,7 +12,7 @@ class HomeAdSection extends StatefulWidget {
 }
 
 class _HomeAdSectionState extends State<HomeAdSection> {
-  late Future<Advertisement> _adFuture;
+  late Future<Advertisement?> _adFuture;
 
   @override
   void initState() {
@@ -22,7 +22,7 @@ class _HomeAdSectionState extends State<HomeAdSection> {
 
   @override
   Widget build(BuildContext context) {
-    return FutureBuilder<Advertisement>(
+    return FutureBuilder<Advertisement?>(
       future: _adFuture,
       builder: (context, snapshot) {
         if (snapshot.connectionState == ConnectionState.waiting) {
@@ -30,8 +30,8 @@ class _HomeAdSectionState extends State<HomeAdSection> {
             baseColor: Colors.grey[300]!,
             highlightColor: Colors.grey[100]!,
             child: Container(
-              width: 500,
-              height: 200,
+              width: 350,
+              height: 100,
               color: Colors.white,
             ),
           );
@@ -39,15 +39,21 @@ class _HomeAdSectionState extends State<HomeAdSection> {
           return Center(child: Text('Error: ${snapshot.error}'));
         } else if (snapshot.hasData) {
           final ad = snapshot.data!;
-          return Container(
-            width: 500,
-            height: 200,
+          return SizedBox(
+            width: 350,
+            height: 100,
             child: ImageRenderer(
               imageUrl: '$BASE_URL/image/${ad.data.image.filename}',
             ),
           );
         } else {
-          return Center(child: Text('No ad available'));
+          return SizedBox(
+            width: 350,
+            height: 100,
+            child: ImageRenderer(
+              imageUrl: 'assets/image/fatalis_icon.png',
+            ),
+          );
         }
       },
     );

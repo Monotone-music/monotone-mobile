@@ -8,7 +8,7 @@ import 'package:monotone_flutter/models/advertisement_items.dart';
 class AdvertisementLoader {
   static const String baseUrl = '$BASE_URL/advertisement/random';
 
-  Future<Advertisement> fetchRandomAdvertisement(String type) async {
+  Future<Advertisement?> fetchRandomAdvertisement(String type) async {
     final httpClient = InterceptedClient.build(interceptors: [
       JwtInterceptor(),
     ], retryPolicy: ExpiredTokenRetryPolicy());
@@ -33,7 +33,8 @@ class AdvertisementLoader {
       // print('Gimme the $response');
       return advertisement;
     } else {
-      throw Exception('Failed to load advertisement');
+      print("There are problems when loading ads");
+      return null;
     }
   }
 }

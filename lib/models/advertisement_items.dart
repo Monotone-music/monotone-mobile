@@ -7,8 +7,8 @@ class Advertisement {
   });
 
   factory Advertisement.fromJson(Map<String, dynamic> json) {
-    final dataJson = json['data'];
-    switch (dataJson['type']) {
+    final dataJson = json['data']?? '';
+    switch (dataJson['type'] ?? '') {
       case 'banner_ad':
         return Advertisement(
           data: AdvertisementBannerData.fromJson(dataJson),
@@ -50,15 +50,15 @@ class Media {
 
   factory Media.fromJson(Map<String, dynamic> json) {
     return Media(
-      id: json['_id'],
-      filename: json['filename'],
-      originalName: json['originalName'],
-      extension: json['extension'],
-      size: json['size'],
-      mimetype: json['mimetype'],
-      hash: json['hash'],
-      createdAt: DateTime.parse(json['createdAt']),
-      updatedAt: DateTime.parse(json['updatedAt']),
+      id: json['_id']?? '',
+      filename: json['filename']?? '',
+      originalName: json['originalName']?? '',
+      extension: json['extension']?? '',
+      size: json['size']?? '',
+      mimetype: json['mimetype']?? '',
+      hash: json['hash']?? '',
+      createdAt: DateTime.parse(json['createdAt']?? '',),
+      updatedAt: DateTime.parse(json['updatedAt']?? '',),
     );
   }
 }
@@ -89,14 +89,14 @@ class ImageData {
   factory ImageData.fromJson(Map<String, dynamic> json) {
     return ImageData(
       dimensions: Dimensions.fromJson(json['dimensions']),
-      id: json['_id'],
-      type: json['type'],
-      filename: json['filename'],
-      mimetype: json['mimetype'],
-      size: json['size'],
-      hash: json['hash'],
-      createdAt: DateTime.parse(json['createdAt']),
-      updatedAt: DateTime.parse(json['updatedAt']),
+      id: json['_id']?? '',
+      type: json['type']?? '',
+      filename: json['filename']?? '',
+      mimetype: json['mimetype']?? '',
+      size: json['size']?? '',
+      hash: json['hash']?? '',
+      createdAt: DateTime.parse(json['createdAt']?? '',),
+      updatedAt: DateTime.parse(json['updatedAt']?? '',),
     );
   }
 }
@@ -112,8 +112,8 @@ class Dimensions {
 
   factory Dimensions.fromJson(Map<String, dynamic> json) {
     return Dimensions(
-      width: json['width'],
-      height: json['height'],
+      width: json['width']?? '',
+      height: json['height']?? '',
     );
   }
 }
@@ -144,15 +144,15 @@ class AdvertisementMediaData {
 
   factory AdvertisementMediaData.fromJson(Map<String, dynamic> json) {
     return AdvertisementMediaData(
-      status: json['status'],
-      id: json['_id'],
-      title: json['title'],
-      media: Media.fromJson(json['media']),
-      image: ImageData.fromJson(json['image']),
-      type: json['type'],
-      view: json['view'],
-      createdAt: DateTime.parse(json['createdAt']),
-      updatedAt: DateTime.parse(json['updatedAt']),
+      status: json['status']?? '',
+      id: json['_id']?? '',
+      title: json['title']?? '',
+      media: Media.fromJson(json['media']?? '',),
+      image: ImageData.fromJson(json['image']?? '',),
+      type: json['type']?? '',
+      view: json['view']?? '',
+      createdAt: DateTime.parse(json['createdAt']?? '',),
+      updatedAt: DateTime.parse(json['updatedAt']?? '',),
     );
   }
 }
@@ -181,14 +181,14 @@ class AdvertisementBannerData {
 
   factory AdvertisementBannerData.fromJson(Map<String, dynamic> json) {
     return AdvertisementBannerData(
-      id: json['_id'],
-      title: json['title'],
-      image: ImageData.fromJson(json['image']),
-      type: json['type'],
-      status: json['status'],
-      view: json['view'],
-      createdAt: DateTime.parse(json['createdAt']),
-      updatedAt: DateTime.parse(json['updatedAt']),
+      id: json['_id']?? '',
+      title: json['title']?? '',
+      image: ImageData.fromJson(json['image']?? '',),
+      type: json['type']?? '',
+      status: json['status']?? '',
+      view: json['view']?? '',
+      createdAt: DateTime.parse(json['createdAt']?? '',),
+      updatedAt: DateTime.parse(json['updatedAt']?? '',),
     );
   }
 }
