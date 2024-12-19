@@ -1,13 +1,12 @@
 import 'dart:convert';
-import 'package:http/http.dart' as http;
 
 import 'package:flutter_secure_storage/flutter_secure_storage.dart';
 import 'package:http_interceptor/http_interceptor.dart';
-import 'package:monotone_flutter/auth/login/services/refresh_token.dart';
+import 'package:monotone_flutter/auth/login/services/maintain_session_service.dart';
+import 'package:monotone_flutter/widgets/routes/routes.dart';
 
 class JwtInterceptor implements InterceptorContract {
   final _storage = const FlutterSecureStorage();
-  final BASE_URL = 'https://api2.ibarakoi.online';
 
   ///REQUIRED FUNCTION
   @override
@@ -21,11 +20,7 @@ class JwtInterceptor implements InterceptorContract {
     if (accessToken != null) {
       request.headers['Authorization'] = 'Bearer $accessToken';
     }
-
-    // Log the request body
-    // if (request is Request) {
-    //   print('Request body: ${request.body}');
-    // }
+    // print(request.url);
     return request;
   }
 
@@ -33,6 +28,11 @@ class JwtInterceptor implements InterceptorContract {
   Future<BaseResponse> interceptResponse(
       {required BaseResponse response}) async {
     int statusCode = response.statusCode;
+
+    ///
+    if (response is Response) {
+    print('RESPONSE: ${jsonDecode(response.body)}');}
+    ///
 
     if (response.request?.url.path == '/auth/login' ||
         response.request?.url.path == '/auth/refresh') {
@@ -97,7 +97,7 @@ class JwtInterceptor implements InterceptorContract {
 }
 
 class ExpiredTokenRetryPolicy extends RetryPolicy {
-  final RefreshTokenService _refreshTokenService = RefreshTokenService();
+  final MaintainSessionService _refreshTokenService = MaintainSessionService();
 
   @override
   bool shouldAttemptRetryOnException(Exception reason, BaseRequest request) {
@@ -108,7 +108,12 @@ class ExpiredTokenRetryPolicy extends RetryPolicy {
   Future<bool> shouldAttemptRetryOnResponse(BaseResponse response) async {
     if (response.statusCode == 401) {
       print('Retrying...');
-      final newToken = await _refreshTokenService.refreshToken();
+      final newToken = await _refreshTokenService.refreshToken(
+        onRefreshFailed: () {
+          AppRoutes().router.go('/login');
+        },
+      );
+      ;
       if (newToken != null) {
         // Add the new token to the request headers
         response.request?.headers['Authorization'] = 'Bearer $newToken';

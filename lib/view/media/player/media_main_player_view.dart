@@ -1,19 +1,11 @@
-import 'dart:typed_data';
-
 import 'package:flutter/material.dart';
-import 'package:http/http.dart';
-import 'package:http_interceptor/http/intercepted_client.dart';
 import 'package:monotone_flutter/controller/media/services/audio_handler.dart';
-import 'package:monotone_flutter/interceptor/jwt_interceptor.dart';
 import 'package:monotone_flutter/widgets/image_widgets/image_renderer.dart';
-import 'package:shimmer/shimmer.dart';
 
 Widget buildMainPlayer(BuildContext context, MyAudioHandler mediaPlayerProvider,
     imageUrl, title, artistName) {
-  print('main Player: ${imageUrl}');
-  final httpClient = InterceptedClient.build(interceptors: [
-    JwtInterceptor(),
-  ], retryPolicy: ExpiredTokenRetryPolicy());
+  final isAdvertisement = artistName == 'Advertisement';
+
   return Container(
     height: MediaQuery.of(context).size.height,
     padding: const EdgeInsets.all(1.0),
@@ -23,46 +15,11 @@ Widget buildMainPlayer(BuildContext context, MyAudioHandler mediaPlayerProvider,
       children: [
         // Album Cover
         SizedBox(
-          width: 350,
-          height: 350,
-          child: FutureBuilder<Response>(
-            future: httpClient.get(
-              Uri.parse(
-                'https://api2.ibarakoi.online/image/$imageUrl',
-              ),
-            ),
-            builder: (context, snapshot) {
-              if (snapshot.connectionState == ConnectionState.waiting) {
-                return Shimmer.fromColors(
-                  baseColor: Colors.grey[300]!,
-                  highlightColor: Colors.grey[100]!,
-                  child: Container(
-                    width: 350,
-                    height: 350,
-                    color: Colors.white,
-                  ),
-                );
-              } else if (snapshot.hasError) {
-                return Icon(Icons.error);
-              } else if (snapshot.hasData) {
-                final imageData = snapshot.data?.bodyBytes;
-                if (imageData is Uint8List) {
-                  return ImageRenderer(
-                    imageUrl: imageData,
-                    width: 350,
-                    height: 350,
-                  );
-                }else{
-                   return Image.asset('assets/image/not_available.png',
-                    width: 350, height: 350);
-                }
-              } else {
-                return Image.asset('assets/image/not_available.png',
-                    width: 350, height: 350);
-              }
-            },
-          ),
-        ),
+            width: 350,
+            height: 350,
+            child: ImageRenderer(
+              imageUrl: imageUrl,
+            )),
         const SizedBox(height: 20),
         // Song Title and Artist
         Padding(
@@ -93,19 +50,22 @@ Widget buildMainPlayer(BuildContext context, MyAudioHandler mediaPlayerProvider,
                   ],
                 ),
               ),
-              IconButton(
-                icon:
-                    const Icon(Icons.favorite_border, color: Color(0xFF898989)),
-                onPressed: () {
-                  // Implement favorite functionality
-                },
-              ),
-              IconButton(
-                icon: const Icon(Icons.playlist_add, color: Color(0xFF898989)),
-                onPressed: () {
-                  // Implement add to playlist functionality
-                },
-              ),
+              if (!isAdvertisement)
+                IconButton(
+                  icon: const Icon(Icons.favorite_border,
+                      color: Color(0xFF898989)),
+                  onPressed: () {
+                    // Implement favorite functionality
+                  },
+                ),
+              if (!isAdvertisement)
+                IconButton(
+                  icon:
+                      const Icon(Icons.playlist_add, color: Color(0xFF898989)),
+                  onPressed: () {
+                    // Implement add to playlist functionality
+                  },
+                ),
             ],
           ),
         ),

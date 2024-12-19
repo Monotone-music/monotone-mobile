@@ -5,6 +5,7 @@ class Track {
   final double duration;
   final List<String> artistNames;
   final String imageUrl;
+  final int view;
 
   Track({
     required this.id,
@@ -13,6 +14,7 @@ class Track {
     required this.duration,
     required this.artistNames,
     required this.imageUrl,
+    required this.view,
   });
 
   factory Track.fromJson(Map<String, dynamic> json) {
@@ -22,7 +24,6 @@ class Track {
         artistNames.add(artist['name']);
       }
     }
-
     return Track(
       id: json['_id'] ?? 'unknown', // Ensure the id is correctly parsed
       position: json['position']['no'] ?? 0,
@@ -30,6 +31,7 @@ class Track {
       duration: (json['duration'] as num?)?.toDouble() ?? 0.0,
       artistNames: artistNames,
       imageUrl: json['image']['filename'] ?? '',
+      view: json['view'] ?? 0,
     );
   }
 }
@@ -68,7 +70,6 @@ class ReleaseGroup {
     String artistName = json['releaseType'] == 'compilation'
         ? 'Various Artists'
         : json['release'][0]['recording'][0]['artist'][0]['name'];
-
     return ReleaseGroup(
       name: json['title'],
       artistName: artistName,

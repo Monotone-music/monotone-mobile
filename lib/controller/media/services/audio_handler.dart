@@ -16,7 +16,7 @@ Future<AudioHandler> initAudioService() async {
 
 class MyAudioHandler extends BaseAudioHandler
     with ChangeNotifier, QueueHandler, SeekHandler {
-  final _player = AudioPlayer();
+  final _player = AudioPlayer(useProxyForRequestHeaders: false);
   final _playlist = ConcatenatingAudioSource(children: []);
   // MyCustomSource? customSource;
 

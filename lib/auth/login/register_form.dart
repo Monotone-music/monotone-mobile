@@ -1,11 +1,11 @@
 import 'dart:math';
-import 'package:monotone_flutter/auth/login/services/register_loader.dart';
+import 'package:go_router/go_router.dart';
 import 'package:provider/provider.dart';
 import 'package:flutter/material.dart';
 
 import 'package:monotone_flutter/auth/login/register_button.dart';
+import 'package:monotone_flutter/auth/login/services/register_loader.dart';
 import 'package:monotone_flutter/common/themes/theme_provider.dart';
-import 'package:monotone_flutter/widgets/routes/routes.dart';
 
 class RegisterForm extends StatefulWidget {
   @override
@@ -15,6 +15,7 @@ class RegisterForm extends StatefulWidget {
 class _RegisterFormState extends State<RegisterForm> {
   final _formKey = GlobalKey<FormState>();
   final _usernameController = TextEditingController();
+  final _displayNameController = TextEditingController();
   final _emailController = TextEditingController();
   final _passwordController = TextEditingController();
   final _confirmPasswordController = TextEditingController();
@@ -56,6 +57,7 @@ class _RegisterFormState extends State<RegisterForm> {
       // Perform registration action
       final result = await _registerLoader.register(
         _usernameController.text,
+        _displayNameController.text,
         _emailController.text,
         _passwordController.text,
       );
@@ -78,8 +80,8 @@ class _RegisterFormState extends State<RegisterForm> {
           _errorMessage = 'The account is already exist';
         });
       } else {
-        // Navigate to home page
-        Navigator.pushReplacementNamed(context, AppRoutes.loginPage);
+        // Navigate to login page
+        GoRouter.of(context).push('/login');
       }
     }
   }
@@ -91,8 +93,10 @@ class _RegisterFormState extends State<RegisterForm> {
     final themeProvider = Provider.of<ThemeProvider>(context);
     final changePrimary = themeProvider.getThemeColorPrimary();
     final changeSurface = themeProvider.getThemeColorSurface();
+    var subTextSize = 16.0;
 
     return Scaffold(
+      resizeToAvoidBottomInset: false,
       body: Stack(
         children: [
           Container(
@@ -106,150 +110,192 @@ class _RegisterFormState extends State<RegisterForm> {
               ),
             ),
           ),
+          Positioned(
+            top: 0,
+            left: 0,
+            child: IconButton(
+              icon: Icon(Icons.arrow_back, color: Colors.white),
+              onPressed: () {
+                Navigator.of(context).pop();
+              },
+            ),
+          ),
           Center(
-            child: Container(
-              width: width * 0.8,
-              height: height * 0.6,
-              padding: EdgeInsets.all(16.0),
-              decoration: BoxDecoration(
-                color: changeSurface.withOpacity(0.8),
-                borderRadius: BorderRadius.circular(10),
-              ),
-              child: Form(
-                key: _formKey,
-                child: Column(
-                  mainAxisSize: MainAxisSize.min,
-                  children: [
-                    Text(
-                      'Register',
-                      style: TextStyle(
-                        fontSize: 32.0,
-                        fontWeight: FontWeight.bold,
-                        color: changePrimary,
-                      ),
-                    ),
-                    SizedBox(height: 40.0),
-                    TextFormField(
-                      controller: _usernameController,
-                      decoration: InputDecoration(
-                        labelText: 'Username',
-                        labelStyle: TextStyle(
-                          color: changePrimary
-                              .withOpacity(0.5), // Change the color
-                          fontSize: 22.0, // Change the font size
-                        ),
-                        prefixIcon: Icon(Icons.person, color: changePrimary),
-                        border: OutlineInputBorder(),
-                      ),
-                      validator: (value) {
-                        if (value == null || value.isEmpty) {
-                          return 'Please enter your username';
-                        }
-                        return null;
-                      },
-                    ),
-                    SizedBox(height: 16.0),
-                    TextFormField(
-                      controller: _emailController,
-                      decoration: InputDecoration(
-                        labelText: 'Email',
-                        labelStyle: TextStyle(
-                          color: changePrimary
-                              .withOpacity(0.5), // Change the color
-                          fontSize: 22.0, // Change the font size
-                        ),
-                        prefixIcon: Icon(Icons.email, color: changePrimary),
-                        border: OutlineInputBorder(),
-                      ),
-                      validator: (value) {
-                        if (value == null || value.isEmpty) {
-                          return 'Please enter your email';
-                        }
-                        return null;
-                      },
-                    ),
-                    SizedBox(height: 16.0),
-                    TextFormField(
-                      controller: _passwordController,
-                      decoration: InputDecoration(
-                        labelText: 'Password',
-                        labelStyle: TextStyle(
-                          color: changePrimary
-                              .withOpacity(0.5), // Change the color
-                          fontSize: 22.0, // Change the font size
-                        ),
-                        prefixIcon: Icon(Icons.lock, color: changePrimary),
-                        suffixIcon: IconButton(
-                          icon: Icon(
-                            _obscureText
-                                ? Icons.visibility
-                                : Icons.visibility_off,
-                            color: changePrimary,
-                          ),
-                          onPressed: () {
-                            setState(() {
-                              _obscureText = !_obscureText;
-                            });
-                          },
-                        ),
-                        border: OutlineInputBorder(),
-                      ),
-                      obscureText: _obscureText,
-                      validator: (value) {
-                        if (value == null || value.isEmpty) {
-                          return 'Please enter your password';
-                        }
-                        return null;
-                      },
-                    ),
-                    SizedBox(height: 16.0),
-                    TextFormField(
-                      controller: _confirmPasswordController,
-                      decoration: InputDecoration(
-                        labelText: 'Confirm Password',
-                        labelStyle: TextStyle(
-                          color: changePrimary
-                              .withOpacity(0.5), // Change the color
-                          fontSize: 22.0, // Change the font size
-                        ),
-                        prefixIcon: Icon(Icons.lock, color: changePrimary),
-                        suffixIcon: IconButton(
-                          icon: Icon(
-                            _obscureConfirmText
-                                ? Icons.visibility
-                                : Icons.visibility_off,
-                            color: changePrimary,
-                          ),
-                          onPressed: () {
-                            setState(() {
-                              _obscureConfirmText = !_obscureConfirmText;
-                            });
-                          },
-                        ),
-                        border: OutlineInputBorder(),
-                      ),
-                      obscureText: _obscureConfirmText,
-                      validator: (value) {
-                        if (value == null || value.isEmpty) {
-                          return 'Please confirm your password';
-                        }
-                        if (value != _passwordController.text) {
-                          return 'Passwords do not match';
-                        }
-                        return null;
-                      },
-                    ),
-                    SizedBox(height: 32.0),
-                    if (_errorMessage.isNotEmpty)
+            child: SingleChildScrollView(
+              child: Container(
+                width: width * 0.8,
+                height: height * 0.8,
+                padding: EdgeInsets.all(16.0),
+                decoration: BoxDecoration(
+                  color: changeSurface.withOpacity(0.8),
+                  borderRadius: BorderRadius.circular(10),
+                ),
+                child: Form(
+                  key: _formKey,
+                  child: Column(
+                    mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                    children: [
                       Text(
-                        _errorMessage,
-                        style: TextStyle(color: Colors.red, fontSize: 18),
+                        'Register',
+                        style: TextStyle(
+                          fontSize: 32.0,
+                          fontWeight: FontWeight.bold,
+                          color: changePrimary,
+                        ),
                       ),
-                    SizedBox(height: 16.0),
-                    RegisterButton(onPressed: () {
-                      _register();
-                    }),
-                  ],
+                      // SizedBox(height: 40.0),
+                      Column(
+                        children: [
+                          TextFormField(
+                            controller: _usernameController,
+                            decoration: InputDecoration(
+                              labelText: 'Username',
+                              labelStyle: TextStyle(
+                                color: changePrimary
+                                    .withOpacity(0.5), // Change the color
+                                fontSize: subTextSize, // Change the font size
+                              ),
+                              prefixIcon:
+                                  Icon(Icons.person, color: changePrimary),
+                              border: OutlineInputBorder(),
+                            ),
+                            validator: (value) {
+                              if (value == null || value.isEmpty) {
+                                return 'Please enter your username';
+                              }
+                              return null;
+                            },
+                          ),
+                          SizedBox(height: 16.0),
+                          TextFormField(
+                            controller: _displayNameController,
+                            decoration: InputDecoration(
+                              labelText: 'Display Name',
+                              labelStyle: TextStyle(
+                                color: changePrimary
+                                    .withOpacity(0.5), // Change the color
+                                fontSize: subTextSize, // Change the font size
+                              ),
+                              prefixIcon:
+                                  Icon(Icons.person, color: changePrimary),
+                              border: OutlineInputBorder(),
+                            ),
+                            validator: (value) {
+                              if (value == null || value.isEmpty) {
+                                return 'Please enter your display name';
+                              }
+                              return null;
+                            },
+                          ),
+                          SizedBox(height: 16.0),
+                          TextFormField(
+                            controller: _emailController,
+                            decoration: InputDecoration(
+                              labelText: 'Email',
+                              labelStyle: TextStyle(
+                                color: changePrimary
+                                    .withOpacity(0.5), // Change the color
+                                fontSize: subTextSize, // Change the font size
+                              ),
+                              prefixIcon:
+                                  Icon(Icons.email, color: changePrimary),
+                              border: OutlineInputBorder(),
+                            ),
+                            validator: (value) {
+                              if (value == null || value.isEmpty) {
+                                return 'Please enter your email';
+                              }
+                              return null;
+                            },
+                          ),
+                          SizedBox(height: 16.0),
+                          TextFormField(
+                            controller: _passwordController,
+                            decoration: InputDecoration(
+                              labelText: 'Password',
+                              labelStyle: TextStyle(
+                                color: changePrimary
+                                    .withOpacity(0.5), // Change the color
+                                fontSize: subTextSize, // Change the font size
+                              ),
+                              prefixIcon:
+                                  Icon(Icons.lock, color: changePrimary),
+                              suffixIcon: IconButton(
+                                icon: Icon(
+                                  _obscureText
+                                      ? Icons.visibility
+                                      : Icons.visibility_off,
+                                  color: changePrimary,
+                                ),
+                                onPressed: () {
+                                  setState(() {
+                                    _obscureText = !_obscureText;
+                                  });
+                                },
+                              ),
+                              border: OutlineInputBorder(),
+                            ),
+                            obscureText: _obscureText,
+                            validator: (value) {
+                              if (value == null || value.isEmpty) {
+                                return 'Please enter your password';
+                              }
+                              return null;
+                            },
+                          ),
+                          SizedBox(height: 16.0),
+                          TextFormField(
+                            controller: _confirmPasswordController,
+                            decoration: InputDecoration(
+                              labelText: 'Confirm Password',
+                              labelStyle: TextStyle(
+                                color: changePrimary
+                                    .withOpacity(0.5), // Change the color
+                                fontSize: subTextSize, // Change the font size
+                              ),
+                              prefixIcon:
+                                  Icon(Icons.lock, color: changePrimary),
+                              suffixIcon: IconButton(
+                                icon: Icon(
+                                  _obscureConfirmText
+                                      ? Icons.visibility
+                                      : Icons.visibility_off,
+                                  color: changePrimary,
+                                ),
+                                onPressed: () {
+                                  setState(() {
+                                    _obscureConfirmText = !_obscureConfirmText;
+                                  });
+                                },
+                              ),
+                              border: OutlineInputBorder(),
+                            ),
+                            obscureText: _obscureConfirmText,
+                            validator: (value) {
+                              if (value == null || value.isEmpty) {
+                                return 'Please confirm your password';
+                              }
+                              if (value != _passwordController.text) {
+                                return 'Passwords do not match';
+                              }
+                              return null;
+                            },
+                          ),
+                        ],
+                      ),
+
+                      // SizedBox(height: 32.0),
+                      if (_errorMessage.isNotEmpty)
+                        Text(
+                          _errorMessage,
+                          style: TextStyle(color: Colors.red, fontSize: 18),
+                        ),
+                      // SizedBox(height: 16.0),
+                      RegisterButton(onPressed: () {
+                        _register();
+                      }),
+                    ],
+                  ),
                 ),
               ),
             ),

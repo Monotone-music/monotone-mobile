@@ -1,9 +1,7 @@
+import 'dart:convert';
 import 'package:flutter/foundation.dart';
 import 'package:flutter_secure_storage/flutter_secure_storage.dart';
 import 'package:http_interceptor/http_interceptor.dart';
-import 'package:monotone_flutter/common/api_url.dart';
-import 'package:monotone_flutter/interceptor/jwt_interceptor.dart';
-import 'package:monotone_flutter/models/release_group_model.dart';
 import 'notifiers/play_button_notifier.dart';
 import 'notifiers/progress_notifier.dart';
 import 'notifiers/repeat_button_notifier.dart';
@@ -11,6 +9,12 @@ import 'package:audio_service/audio_service.dart';
 import 'services/playlist_repository.dart';
 import 'services/service_locator.dart';
 import 'package:http/http.dart' as http;
+
+import 'package:monotone_flutter/common/api_url.dart';
+import 'package:monotone_flutter/controller/media/advertisment/advertisement_loader.dart';
+import 'package:monotone_flutter/interceptor/jwt_interceptor.dart';
+import 'package:monotone_flutter/models/personal_playlist_items.dart';
+import 'package:monotone_flutter/models/release_group_model.dart';
 
 class MediaManager {
   // Listeners: Updates going to the UI
@@ -22,15 +26,14 @@ class MediaManager {
   final playButtonNotifier = PlayButtonNotifier();
   final isLastSongNotifier = ValueNotifier<bool>(true);
   final isShuffleModeEnabledNotifier = ValueNotifier<bool>(false);
-  final FlutterSecureStorage _storage = const FlutterSecureStorage();
-  final http.Client httpClient = InterceptedClient.build(interceptors: [
-    JwtInterceptor(),
-  ]);
+
   // Extra
   MediaItem? get currentMediaItem => _audioHandler.mediaItem.value;
+  int listenAgain = 0;
 
   final _audioHandler = getIt<AudioHandler>();
   var queueCounter = 0;
+  final storage = const FlutterSecureStorage();
 
   // Events: Calls coming from the UI
   void init() async {
@@ -42,6 +45,58 @@ class MediaManager {
     _listenToBufferedPosition();
     _listenToTotalDuration();
     _listenToChangesInSong();
+  }
+
+  Future<void> addAdvertisement() async {
+    final advertisementLoader = AdvertisementLoader();
+    final advertisement =
+        await advertisementLoader.fetchRandomAdvertisement('player');
+    dynamic advertisementItem;
+    if (advertisement != null) {
+      advertisementItem = MediaItem(
+        id: '${advertisement.data.id}_advertisement',
+        title: advertisement.data.title,
+        artist: 'Advertisement',
+        artUri:
+            Uri.parse('$BASE_URL/image/${advertisement.data.image.filename}'),
+        extras: {
+          'url': '$BASE_URL/advertisement/stream/${advertisement.data.id}'
+        },
+      );
+    }else{
+      advertisementItem = MediaItem(
+        id: '_advertisement',
+        title: "Ads not supported",
+        artist: 'Advertisement',
+        artUri:
+            Uri.parse('assets/image/not_available.png'),
+        duration: const Duration(seconds: 10),
+      );
+    }
+
+    _audioHandler.addQueueItem(advertisementItem);
+  }
+
+  Future<void> _handleAdvertisements(
+      String? oldPlaylist, String? newPlaylist) async {
+    var bitrate = await storage.read(key: 'bitrate');
+    if (bitrate != '192') {
+      return;
+    }
+    // WHEN THE LISTENER RE-LISTENS
+    //TO THE ALBUM FOR THE FIRST TIME,
+    //DON'T RUN ADS
+    if (oldPlaylist == null || newPlaylist == null) {
+      await addAdvertisement();
+      listenAgain = 0;
+    } else {
+      if (newPlaylist != oldPlaylist || listenAgain == 1) {
+        await addAdvertisement();
+        listenAgain = 0;
+      } else {
+        listenAgain = 1;
+      }
+    }
   }
 
   Future<void> fetchAndPrintApiResponse(String url) async {
@@ -71,28 +126,50 @@ class MediaManager {
   }
 
   void clearLoadPlaylistAndPlay(List<Track> playlist, String albumName) async {
+    String? _currentPlaylist = _audioHandler.queue.value.isNotEmpty
+        ? _audioHandler.queue.value.last.album
+        : null;
+
     await _audioHandler.stop();
     await _audioHandler.seek(Duration.zero);
     await _audioHandler.skipToQueueItem(0);
     removeAll();
+
+    await _handleAdvertisements(_currentPlaylist, albumName);
     loadPlaylist(playlist, albumName);
     play();
   }
 
+  ///========================For the release group page========================
+
   void clearLoadPlaylistAndSkipToIndex(
       List<Track> playlist, String albumName, int index) async {
+    String? _currentPlaylist = _audioHandler.queue.value.isNotEmpty
+        ? _audioHandler.queue.value.last.album
+        : null;
+
     await _audioHandler.stop();
     await _audioHandler.seek(Duration.zero);
     removeAll();
-
-    // Add the selected track first
+    // loadPlaylist(playlist, albumName);
+    // stop();
+    await _handleAdvertisements(_currentPlaylist, albumName);
+//// Add the selected track first
     final selectedTrack = playlist[index];
-    final selectedMediaItem = await _createMediaItem(selectedTrack, albumName);
+    final selectedMediaItem = MediaItem(
+      id: '${selectedTrack.id}_${queueCounter++}',
+      album: albumName,
+      title: selectedTrack.title,
+      artist: selectedTrack.artistNames.join(', '),
+      artUri: Uri.parse('$BASE_URL/image/${selectedTrack.imageUrl}'),
+      extras: {
+        'url': '$BASE_URL/tracks/stream/${selectedTrack.id}?bitrate=lossless'
+      },
+    );
     await _audioHandler.addQueueItem(selectedMediaItem);
 
     // Add the rest of the playlist
-    final remainingTracks =
-        playlist.where((track) => track.id != selectedTrack.id).toList();
+    final remainingTracks = playlist.sublist(index + 1);
     loadPlaylist(remainingTracks, albumName);
 
     await _audioHandler.skipToQueueItem(0);
@@ -100,37 +177,21 @@ class MediaManager {
     play();
   }
 
-  Future<MediaItem> _createMediaItem(Track track, String albumName) async {
-    final imageResponse = await httpClient.get(
-      Uri.parse('https://api2.ibarakoi.online/image/${track.imageUrl}'),
-    );
-    final imageUrl =
-        imageResponse.statusCode == 200 ? imageResponse.body : null;
-
-    // Retrieve the token from secure storage
-    // print(imageResponse.body);
-    // final accessToken = await _storage.read(key: 'accessToken');
-    return MediaItem(
-      id: '${track.id}_${queueCounter++}',
-      album: albumName,
-      title: track.title,
-      artist: track.artistNames.join(', '),
-      artUri: imageUrl != null ? Uri.parse(imageUrl) : null,
-      // artHeaders:
-      //     accessToken != null ? {'Authorization': 'Bearer $accessToken'} : null,
-      extras: {
-        'url': 'https://api2.ibarakoi.online/tracks/stream/${track.id}',
-      },
-    );
-  }
-
   void loadPlaylist(List<Track> playlist, String albumName) async {
     print('playlist loading');
-    final mediaItems = await Future.wait(playlist.map((track) async {
-      return await _createMediaItem(track, albumName);
-    }).toList());
+    // final songRepository = getIt<PlaylistRepository>();
+    final mediaItems = playlist.map((track) {
+      return MediaItem(
+        id: '${track.id}_${queueCounter++}',
+        album: albumName,
+        title: track.title,
+        artist: track.artistNames.join(', '),
+        artUri: Uri.parse('$BASE_URL/image/${track.imageUrl}'),
+        extras: {'url': '$BASE_URL/tracks/stream/${track.id}?bitrate=lossless'},
+      );
+    }).toList();
     await _audioHandler.addQueueItems(mediaItems);
-    print('playlist loaded: ${mediaItems}');
+    print('playlist loaded');
     // auto play the track after finish loading
   }
 
@@ -152,8 +213,6 @@ class MediaManager {
       String albumName) async {
     // final songRepository = getIt<PlaylistRepository>();
 
-    print('track loading');
-
     final fetchedTrack = track;
     final mediaItem = MediaItem(
       id: '${fetchedTrack.id}_${queueCounter++}',
@@ -161,15 +220,136 @@ class MediaManager {
       title: fetchedTrack.title,
       artist: fetchedTrack.artistNames.join(', '),
       artUri: Uri.parse('$BASE_URL/image/${fetchedTrack.imageUrl}'),
-      extras: {'url': '$BASE_URL/tracks/stream/${fetchedTrack.id}'},
+      extras: {
+        'url': '$BASE_URL/tracks/stream/${fetchedTrack.id}?bitrate=lossless'
+      },
     );
-    // fetchAndPrintApiResponse(mediaItem.extras!['url'] as String);
 
     await _audioHandler.addQueueItem(mediaItem);
     // print(mediaItem);
     print('track loaded: ${mediaItem}');
     // auto play the track after finish loading
   }
+
+  ///========================================================================
+  ///
+  ///========================For the library - playlist page========================
+  ///
+  void addToUserPlaylist(String name, String? recordingId) async {
+    final httpClient = InterceptedClient.build(interceptors: [
+      JwtInterceptor(),
+    ], retryPolicy: ExpiredTokenRetryPolicy());
+
+    final addPlaylistResponse =
+        await httpClient.put(Uri.parse('$BASE_URL/playlist'),
+            body: jsonEncode({
+              'name': name,
+              if (recordingId != null) 'recordingId': recordingId,
+            }));
+    print('addPlaylistResponse: ${addPlaylistResponse.body}');
+
+    if (addPlaylistResponse.statusCode != 200) {
+      throw Exception('Failed to load release group');
+    }
+  }
+
+  void clearLoadPlaylistAndSkipToIndexForPlaylist(
+      List<RecordingDetails> playlist, String playlistName, int index) async {
+    await _audioHandler.stop();
+    await _audioHandler.seek(Duration.zero);
+    removeAll();
+
+    // Add the selected track first
+    final selectedTrack = playlist[index];
+    final selectedMediaItem = MediaItem(
+      id: '${selectedTrack.id}_${queueCounter++}',
+      album: playlistName,
+      title: selectedTrack.title,
+      artist: selectedTrack.artists.map((artist) => artist.name).join(', '),
+      artUri: Uri.parse('$BASE_URL/image/${selectedTrack.image.filename}'),
+      extras: {
+        'url': '$BASE_URL/tracks/stream/${selectedTrack.id}?bitrate=lossless'
+      },
+    );
+    await _audioHandler.addQueueItem(selectedMediaItem);
+
+    // Add the rest of the playlist
+    final remainingTracks = playlist.sublist(index + 1);
+    loadPlaylistForRecordings(remainingTracks, playlistName);
+
+    await _audioHandler.skipToQueueItem(0);
+    print('Skipped to index: $index');
+    play();
+  }
+
+  void loadPlaylistForRecordings(
+      List<RecordingDetails> playlist, String playlistName) async {
+    print('playlist loading');
+    final mediaItems = playlist.map((recording) {
+      return MediaItem(
+        id: '${recording.id}_${queueCounter++}',
+        album: playlistName,
+        title: recording.title,
+        artist: recording.artists.map((artist) => artist.name).join(', '),
+        artUri: Uri.parse('$BASE_URL/image/${recording.image.filename}'),
+        extras: {
+          'url': '$BASE_URL/tracks/stream/${recording.id}?bitrate=lossless'
+        },
+      );
+    }).toList();
+    await _audioHandler.addQueueItems(mediaItems);
+    print('playlist loaded: ${mediaItems}');
+    // auto play the track after finish loading
+  }
+
+  void loadTrackForPlaylist(
+      RecordingDetails recording, String playlistName) async {
+    print('track loading');
+
+    final mediaItem = MediaItem(
+      id: '${recording.id}_${queueCounter++}',
+      album: playlistName,
+      title: recording.title,
+      artist: recording.artists.map((artist) => artist.name).join(', '),
+      artUri: Uri.parse('$BASE_URL/image/${recording.image.filename}'),
+      extras: {
+        'url': '$BASE_URL/tracks/stream/${recording.id}?bitrate=lossless'
+      },
+    );
+
+    await _audioHandler.addQueueItem(mediaItem);
+    print('track loaded: ${mediaItem}');
+    // auto play the track after finish loading
+  }
+
+  void clearLoadPlaylistAndPlayForPlaylist(
+      List<RecordingDetails> playlist, String playlistName) async {
+    await _audioHandler.stop();
+    await _audioHandler.seek(Duration.zero);
+    removeAll();
+
+    // Load the entire playlist
+    final mediaItems = playlist.map((recording) {
+      return MediaItem(
+        id: '${recording.id}_${queueCounter++}',
+        album: playlistName,
+        title: recording.title,
+        artist: recording.artists.map((artist) => artist.name).join(', '),
+        artUri: Uri.parse('$BASE_URL/image/${recording.image.filename}'),
+        extras: {
+          'url': '$BASE_URL/tracks/stream/${recording.id}?bitrate=lossless'
+        },
+      );
+    }).toList();
+    await _audioHandler.addQueueItems(mediaItems);
+    print('playlist loaded: ${mediaItems}');
+
+    // Start playing from the beginning
+    await _audioHandler.skipToQueueItem(0);
+    play();
+  }
+
+  ///========================================================================
 
   void _listenToChangesInPlaylist() {
     _audioHandler.queue.listen((playlist) {

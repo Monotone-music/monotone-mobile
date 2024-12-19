@@ -1,7 +1,9 @@
 import 'dart:developer';
 
+import 'package:auto_scroll_text/auto_scroll_text.dart';
 import 'package:flutter/material.dart';
 import 'package:http_interceptor/http_interceptor.dart';
+import 'package:monotone_flutter/common/api_url.dart';
 import 'package:monotone_flutter/interceptor/jwt_interceptor.dart';
 import 'package:monotone_flutter/widgets/image_widgets/image_renderer.dart';
 import 'package:monotone_flutter/view/release_group/release_group.dart';
@@ -35,9 +37,9 @@ class _PlaylistMiniState extends State<PlaylistMini> {
     final isDarkMode = themeProvider.isDarkMode;
     final screenWidth = MediaQuery.of(context).size.width;
     final imageUrl = widget.trackItem['imageUrl'];
-    final httpClient = InterceptedClient.build(interceptors: [
-      JwtInterceptor(),
-    ], retryPolicy: ExpiredTokenRetryPolicy());
+    // final httpClient = InterceptedClient.build(interceptors: [
+    //   JwtInterceptor(),
+    // ], retryPolicy: ExpiredTokenRetryPolicy());
 
     return GestureDetector(
       onTap: () async {
@@ -64,50 +66,10 @@ class _PlaylistMiniState extends State<PlaylistMini> {
           children: [
             ClipRRect(
               borderRadius: BorderRadius.circular(8.0),
-              child: FutureBuilder<Response>(
-                future: httpClient.get(
-                  Uri.parse('https://api2.ibarakoi.online/image/$imageUrl'),
-                ),
-                builder: (context, snapshot) {
-                  if (snapshot.connectionState == ConnectionState.waiting) {
-                    return Shimmer.fromColors(
-                      baseColor: Colors.grey[300]!,
-                      highlightColor: Colors.grey[100]!,
-                      child: Container(
-                        width: 50,
-                        height: 50,
-                        color: Colors.white,
-                      ),
-                    );
-                  } else if (snapshot.hasError) {
-                    return SizedBox(
-                      width: 60,
-                      height: 60,
-                      child: Icon(Icons.error),
-                    );
-                  } else if (snapshot.hasData) {
-                    final imageData = snapshot.data?.bodyBytes;
-                    if (imageData != null) {
-                      return ImageRenderer(
-                        imageUrl: imageData,
-                        width: 60,
-                        height: 60,
-                      );
-                    } else {
-                      return SizedBox(
-                        width: 60,
-                        height: 60,
-                        child: Image.asset('assets/image/not_available.png'),
-                      );
-                    }
-                  } else {
-                    return SizedBox(
-                      width: 60,
-                      height: 60,
-                      child: Image.asset('assets/image/not_available.png'),
-                    );
-                  }
-                },
+              child: ImageRenderer(
+                imageUrl: '$BASE_URL/image/$imageUrl',
+                width: 60,
+                height: 60,
               ),
             ),
             // , height: 50, width: 50),
@@ -117,24 +79,101 @@ class _PlaylistMiniState extends State<PlaylistMini> {
                 crossAxisAlignment: CrossAxisAlignment.start,
                 mainAxisAlignment: MainAxisAlignment.center,
                 children: [
-                  Text(
-                    widget.trackItem['title']!,
-                    style: TextStyle(
-                      color: isDarkMode ? Colors.white : Colors.black,
-                      fontWeight: FontWeight.bold,
-                    ),
-                    overflow: TextOverflow.ellipsis,
+                  LayoutBuilder(
+                    builder: (context, constraints) {
+                      final textSpan = TextSpan(
+                        text: widget.trackItem['title']!,
+                        style: TextStyle(
+                          color: isDarkMode ? Colors.white : Colors.black,
+                          fontWeight: FontWeight.bold,
+                        ),
+                      );
+
+                      final textPainter = TextPainter(
+                        text: textSpan,
+                        maxLines: 1,
+                        textDirection: TextDirection.ltr,
+                      );
+
+                      textPainter.layout(
+                          minWidth: 0, maxWidth: constraints.maxWidth);
+
+                      if (textPainter.didExceedMaxLines) {
+                        return AutoScrollText(
+                          widget.trackItem['title']!,
+                          textAlign: TextAlign.left,
+                          velocity:
+                              const Velocity(pixelsPerSecond: Offset(20, 0)),
+                          intervalSpaces: 5,
+                          mode: AutoScrollTextMode.endless,
+                          delayBefore: const Duration(seconds: 2),
+                          style: TextStyle(
+                            color: isDarkMode ? Colors.white : Colors.black,
+                            fontWeight: FontWeight.bold,
+                          ),
+                        );
+                      } else {
+                        return Text(
+                          widget.trackItem['title']!,
+                          style: TextStyle(
+                            color: isDarkMode ? Colors.white : Colors.black,
+                            fontWeight: FontWeight.bold,
+                          ),
+                          overflow: TextOverflow.ellipsis,
+                        );
+                      }
+                    },
                   ),
-                  const SizedBox(height: 4),
-                  Text(
-                    widget.trackItem['artistName']!,
-                    style: TextStyle(
-                      color: isDarkMode ? Colors.white70 : Colors.black87,
-                      fontSize: Theme.of(context).textTheme.bodySmall?.fontSize,
-                    ),
-                    overflow: TextOverflow.ellipsis,
+                  const SizedBox(height: 2),
+                  LayoutBuilder(
+                    builder: (context, constraints) {
+                      final textSpan = TextSpan(
+                        text: widget.trackItem['artistName']!,
+                        style: TextStyle(
+                          color: isDarkMode ? Colors.white70 : Colors.black87,
+                          fontSize:
+                              Theme.of(context).textTheme.bodySmall?.fontSize,
+                        ),
+                      );
+
+                      final textPainter = TextPainter(
+                        text: textSpan,
+                        maxLines: 1,
+                        textDirection: TextDirection.ltr,
+                      );
+
+                      textPainter.layout(
+                          minWidth: 0, maxWidth: constraints.maxWidth);
+
+                      if (textPainter.didExceedMaxLines) {
+                        return AutoScrollText(
+                          widget.trackItem['artistName']!,
+                          textAlign: TextAlign.left,
+                          velocity:
+                              const Velocity(pixelsPerSecond: Offset(20, 0)),
+                          intervalSpaces: 5,
+                          mode: AutoScrollTextMode.endless,
+                          delayBefore: const Duration(seconds: 2),
+                          style: TextStyle(
+                            color: isDarkMode ? Colors.white70 : Colors.black87,
+                            fontSize:
+                                Theme.of(context).textTheme.bodySmall?.fontSize,
+                          ),
+                        );
+                      } else {
+                        return Text(
+                          widget.trackItem['artistName']!,
+                          style: TextStyle(
+                            color: isDarkMode ? Colors.white70 : Colors.black87,
+                            fontSize:
+                                Theme.of(context).textTheme.bodySmall?.fontSize,
+                          ),
+                          overflow: TextOverflow.ellipsis,
+                        );
+                      }
+                    },
                   ),
-                  const SizedBox(height: 4),
+                  const SizedBox(height: 2),
                   Text(
                     widget.trackItem['releaseYear']!,
                     style: TextStyle(

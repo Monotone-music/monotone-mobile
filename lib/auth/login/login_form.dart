@@ -1,14 +1,10 @@
 import 'dart:math';
 import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
+import 'package:go_router/go_router.dart';
 import 'package:provider/provider.dart';
-
-import 'package:monotone_flutter/view/profile/profile.dart';
 
 import 'package:monotone_flutter/common/themes/theme_provider.dart';
-import 'package:provider/provider.dart';
-import 'package:go_router/go_router.dart';
-import 'package:monotone_flutter/widgets/routes/routes.dart';
 import 'package:monotone_flutter/auth/login/login_button.dart';
 import 'package:monotone_flutter/auth/login/services/login_loader.dart';
 
@@ -59,17 +55,24 @@ class _LoginFormState extends State<LoginForm> {
         _passwordController.text,
       );
 
-      if (result == '400') {
+      if (result == '200') {
+        // Use GoRouter for navigation
+        GoRouter.of(context).go('/home');
+      } else if (result == '400') {
         setState(() {
           _errorMessage = 'Invalid username or password';
         });
-      } else if (result == 'Other' || result == 'error') {
+      } else if (result == '401' || result == '404') {
+        setState(() {
+          _errorMessage = 'Your account does not existed or unauthorized';
+        });
+      } else {
         setState(() {
           _errorMessage = 'There must be something wrong';
         });
-      } else {
-        GoRouter.of(context).go('/');
       }
+
+      ///
     }
   }
 
@@ -82,6 +85,7 @@ class _LoginFormState extends State<LoginForm> {
     final changeSurface = themeProvider.getThemeColorSurface();
 
     return Scaffold(
+      resizeToAvoidBottomInset: false,
       body: Stack(
         children: [
           Container(
@@ -98,7 +102,7 @@ class _LoginFormState extends State<LoginForm> {
           Center(
             child: Container(
               width: width * 0.8,
-              height: height * 0.6,
+              height: height * 0.5,
               padding: EdgeInsets.all(16.0),
               decoration: BoxDecoration(
                 color: changeSurface.withOpacity(0.7),
@@ -107,7 +111,7 @@ class _LoginFormState extends State<LoginForm> {
               child: Form(
                 key: _formKey,
                 child: Column(
-                  mainAxisSize: MainAxisSize.min,
+                  mainAxisAlignment: MainAxisAlignment.spaceEvenly,
                   children: [
                     // SizedBox(height: 40.0),
                     Text(
@@ -118,63 +122,68 @@ class _LoginFormState extends State<LoginForm> {
                         color: changePrimary,
                       ),
                     ),
-                    SizedBox(height: 40.0),
-                    TextFormField(
-                      controller: _usernameController,
-                      decoration: InputDecoration(
-                        labelText: 'Username',
-                        labelStyle: TextStyle(
-                          color: changePrimary
-                              .withOpacity(0.5), // Change the color
-                          fontSize: 22.0, // Change the font size
-                        ),
-                        prefixIcon: Icon(Icons.person, color: changePrimary),
-                        border: OutlineInputBorder(),
-                      ),
-                      validator: (value) {
-                        if (value == null || value.isEmpty) {
-                          return 'Please enter your username';
-                        }
-                        return null;
-                      },
-                    ),
-                    SizedBox(height: 16.0),
-                    TextFormField(
-                      controller: _passwordController,
-                      decoration: InputDecoration(
-                        labelText: 'Password',
-                        labelStyle: TextStyle(
-                          color: changePrimary
-                              .withOpacity(0.5), // Change the color
-                          fontSize: 22.0, // Change the font size
-                        ),
-                        prefixIcon: Icon(Icons.lock, color: changePrimary),
-                        suffixIcon: IconButton(
-                          icon: Icon(
-                            _obscureText
-                                ? Icons.visibility
-                                : Icons.visibility_off,
-                            color: changePrimary,
+                    // SizedBox(height: 40.0),
+                    Column(
+                      children: [
+                        TextFormField(
+                          controller: _usernameController,
+                          decoration: InputDecoration(
+                            labelText: 'Username',
+                            labelStyle: TextStyle(
+                              color: changePrimary
+                                  .withOpacity(0.5), // Change the color
+                              fontSize: 22.0, // Change the font size
+                            ),
+                            prefixIcon:
+                                Icon(Icons.person, color: changePrimary),
+                            border: OutlineInputBorder(),
                           ),
-                          onPressed: () {
-                            setState(() {
-                              _obscureText = !_obscureText;
-                            });
+                          validator: (value) {
+                            if (value == null || value.isEmpty) {
+                              return 'Please enter your username';
+                            }
+                            return null;
                           },
                         ),
-                        border: OutlineInputBorder(),
-                      ),
-                      obscureText: _obscureText,
-                      validator: (value) {
-                        if (value == null || value.isEmpty) {
-                          return 'Please enter your password';
-                        }
-                        return null;
-                      },
+                        SizedBox(height: 16.0),
+                        TextFormField(
+                          controller: _passwordController,
+                          decoration: InputDecoration(
+                            labelText: 'Password',
+                            labelStyle: TextStyle(
+                              color: changePrimary
+                                  .withOpacity(0.5), // Change the color
+                              fontSize: 22.0, // Change the font size
+                            ),
+                            prefixIcon: Icon(Icons.lock, color: changePrimary),
+                            suffixIcon: IconButton(
+                              icon: Icon(
+                                _obscureText
+                                    ? Icons.visibility
+                                    : Icons.visibility_off,
+                                color: changePrimary,
+                              ),
+                              onPressed: () {
+                                setState(() {
+                                  _obscureText = !_obscureText;
+                                });
+                              },
+                            ),
+                            border: OutlineInputBorder(),
+                          ),
+                          obscureText: _obscureText,
+                          validator: (value) {
+                            if (value == null || value.isEmpty) {
+                              return 'Please enter your password';
+                            }
+                            return null;
+                          },
+                        ),
+                      ],
                     ),
 
                     ///
-                    SizedBox(height: 32.0),
+                    // SizedBox(height: 32.0),
                     if (_errorMessage.isNotEmpty)
                       Text(
                         _errorMessage,
@@ -186,7 +195,7 @@ class _LoginFormState extends State<LoginForm> {
                     }),
 
                     ///
-                    SizedBox(height: 30.0),
+                    // SizedBox(height: 30.0),
                     RichText(
                       text: TextSpan(
                         text: "Don't have an account? ",
@@ -207,8 +216,7 @@ class _LoginFormState extends State<LoginForm> {
                                 setState(() {
                                   _errorMessage = ''; // Clear the error message
                                 });
-                                Navigator.pushNamed(
-                                    context, AppRoutes.registerPage);
+                                GoRouter.of(context).push('/register');
                               },
                           ),
                         ],

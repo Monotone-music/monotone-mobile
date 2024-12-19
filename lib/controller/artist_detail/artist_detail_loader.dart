@@ -2,6 +2,7 @@ import 'dart:convert';
 
 import 'package:flutter/material.dart';
 import 'package:http_interceptor/http_interceptor.dart';
+import 'package:monotone_flutter/common/api_url.dart';
 
 import 'package:monotone_flutter/interceptor/jwt_interceptor.dart';
 import 'package:monotone_flutter/models/artist_detail_items.dart';
@@ -20,7 +21,7 @@ class _ArtistDetailLoaderState extends State<ArtistDetailLoader> {
   late Future<Artist> artistFuture;
   final httpClient = InterceptedClient.build(interceptors: [
     JwtInterceptor(),
-  ],retryPolicy: ExpiredTokenRetryPolicy());
+  ], retryPolicy: ExpiredTokenRetryPolicy());
 
   @override
   void initState() {
@@ -30,12 +31,13 @@ class _ArtistDetailLoaderState extends State<ArtistDetailLoader> {
 
   Future<Artist> fetchArtistData(String artistId) async {
     final response = await httpClient
-        .get(Uri.parse('https://api2.ibarakoi.online/artist/id/$artistId'));
+        .get(Uri.parse('$BASE_URL/artist/id/$artistId'));
     if (response.statusCode != 200) {
       throw Exception('Failed to load artist data');
     }
 
     final Map<String, dynamic> jsonResponse = json.decode(response.body);
+    print('fetchArtistData artist: ${jsonResponse}');
     if (!jsonResponse.containsKey('data') ||
         !jsonResponse['data'].containsKey('artist')) {
       throw Exception('Artist data not found');
@@ -47,7 +49,7 @@ class _ArtistDetailLoaderState extends State<ArtistDetailLoader> {
 
   Future<Map<String, String>> fetchImageFilenames(List<String> ids) async {
     final response =
-        await httpClient.get(Uri.parse('https://api2.ibarakoi.online/album'));
+        await httpClient.get(Uri.parse('$BASE_URL/album'));
     if (response.statusCode != 200) {
       throw Exception('Failed to load album data');
     }
@@ -67,7 +69,7 @@ class _ArtistDetailLoaderState extends State<ArtistDetailLoader> {
       for (final releaseGroupJson in releaseGroupsJson) {
         if (releaseGroupJson['_id'] == id) {
           final imageUrl =
-              'https://api2.ibarakoi.online/image/${releaseGroupJson['image']['filename']}';
+              '$BASE_URL/image/${releaseGroupJson['image']['filename']}';
           final response = await httpClient.get(
             Uri.parse(imageUrl),
           );
@@ -118,7 +120,7 @@ class _ArtistDetailLoaderState extends State<ArtistDetailLoader> {
               } else if (imageSnapshot.hasData) {
                 final imageFilenames = imageSnapshot.data!;
                 return ArtistDetailView(
-                    artist: artist, albumImageUrls: imageFilenames);
+                    artist: artist, featuredListImageUrls: imageFilenames);
               } else {
                 return Center(child: Text('No artist images available'));
               }

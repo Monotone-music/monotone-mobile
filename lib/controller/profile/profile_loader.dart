@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:monotone_flutter/models/profile_items.dart';
+import 'package:flutter_secure_storage/flutter_secure_storage.dart';
 import 'package:monotone_flutter/view/profile/profile_view.dart';
 
 class ProfileLoader extends StatefulWidget {
@@ -14,6 +14,16 @@ class ProfileLoader extends StatefulWidget {
 class _ProfileLoaderState extends State<ProfileLoader> {
   late Future<Map<String, String>> profileFuture;
 
+  Future<Map<String, dynamic>> _loadProfileAndBitrate() async {
+    final storage = FlutterSecureStorage();
+    final profile = await profileFuture;
+    final bitrate = await storage.read(key: 'bitrate');
+    return {
+      'profile': profile,
+      'bitrate': bitrate,
+    };
+  }
+
   @override
   void initState() {
     super.initState();
@@ -22,15 +32,17 @@ class _ProfileLoaderState extends State<ProfileLoader> {
 
   @override
   Widget build(BuildContext context) {
-    return FutureBuilder<Map<String, String>>(
-      future: profileFuture,
+    return FutureBuilder<Map<String, dynamic>>(
+      future: _loadProfileAndBitrate(),
       builder: (context, snapshot) {
         if (snapshot.connectionState == ConnectionState.waiting) {
           return Center(child: CircularProgressIndicator());
         } else if (snapshot.hasError) {
           return Center(child: Text('Error: ${snapshot.error}'));
         } else if (snapshot.hasData) {
-          return ProfileView(profile: snapshot.data!);
+          final profile = snapshot.data!['profile'] as Map<String, String>;
+          final bitrate = snapshot.data!['bitrate'] as String?;
+          return ProfileView(profile: profile, bitrate: bitrate);
         } else {
           return Center(child: Text('No profile data available'));
         }

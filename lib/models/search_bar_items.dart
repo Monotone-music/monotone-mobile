@@ -19,10 +19,18 @@ class Source {
     return Source(
       value: json['value'],
       type: json['type'],
-      createdAt: json['created_at'] != null ? DateTime.parse(json['created_at']) : null,
-      albumInfo: json['info'] != null && json['info']['releaseEvent'] != null ? AlbumInfo.fromJson(json['info']) : null,
-      recordingInfo: json['info'] != null && json['info']['recording'] != null ? RecordingInfo.fromJson(json['info']['recording']) : null,
-      artistInfo: json['info'] != null && json['info']['artist'] != null ? ArtistInfo.fromJson(json['info']['artist']) : null,
+      createdAt: json['created_at'] != null
+          ? DateTime.parse(json['created_at'])
+          : null,
+      albumInfo: json['info'] != null && json['info']['releaseEvent'] != null
+          ? AlbumInfo.fromJson(json['info'])
+          : null,
+      recordingInfo: json['info'] != null && json['info']['recording'] != null
+          ? RecordingInfo.fromJson(json['info']['recording'])
+          : null,
+      artistInfo: json['info'] != null && json['info']['artist'] != null
+          ? ArtistInfo.fromJson(json['info']['artist'])
+          : null,
     );
   }
 }
@@ -105,8 +113,8 @@ class mediaImage {
 
   factory mediaImage.fromJson(Map<String, dynamic> json) {
     return mediaImage(
-      width: json['dimensions']['width'],
-      height: json['dimensions']['height'],
+      width: json['width'] ?? 500,
+      height: json['height'] ?? 500,
       id: json['_id'],
       type: json['type'],
       filename: json['filename'],
@@ -229,12 +237,14 @@ class ArtistInfo {
   final String name;
   final List<String> featuredIn;
   final List<ReleaseGroup> releaseGroup;
+  final String image;
 
   ArtistInfo({
     required this.id,
     required this.name,
     required this.featuredIn,
     required this.releaseGroup,
+    required this.image,
   });
 
   factory ArtistInfo.fromJson(Map<String, dynamic> json) {
@@ -242,13 +252,15 @@ class ArtistInfo {
     List<String> featuredIn = featuredInList.map((i) => i.toString()).toList();
 
     var releaseGroupList = json['releaseGroup'] as List? ?? [];
-    List<ReleaseGroup> releaseGroups = releaseGroupList.map((i) => ReleaseGroup.fromJson(i)).toList();
+    List<ReleaseGroup> releaseGroups =
+        releaseGroupList.map((i) => ReleaseGroup.fromJson(i)).toList();
 
     return ArtistInfo(
       id: json['_id'],
       name: json['name'],
       featuredIn: featuredIn,
       releaseGroup: releaseGroups,
+      image: json['image']['filename'],
     );
   }
 }
@@ -286,7 +298,7 @@ class ReleaseGroup {
       release: releases,
       releaseType: json['releaseType'],
       title: json['title'],
-      image: json['image'],
+      image: json['image']['filename'],
     );
   }
 }
@@ -327,9 +339,12 @@ class SearchResults {
     var recordingList = json['recording'] as List? ?? [];
     var artistList = json['artist'] as List? ?? [];
 
-    List<SearchItem> albums = albumList.map((i) => SearchItem.fromJson(i)).toList();
-    List<SearchItem> recordings = recordingList.map((i) => SearchItem.fromJson(i)).toList();
-    List<SearchItem> artists = artistList.map((i) => SearchItem.fromJson(i)).toList();
+    List<SearchItem> albums =
+        albumList.map((i) => SearchItem.fromJson(i)).toList();
+    List<SearchItem> recordings =
+        recordingList.map((i) => SearchItem.fromJson(i)).toList();
+    List<SearchItem> artists =
+        artistList.map((i) => SearchItem.fromJson(i)).toList();
 
     return SearchResults(
       albums: albums,

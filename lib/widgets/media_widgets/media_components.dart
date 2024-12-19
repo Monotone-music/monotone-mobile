@@ -1,18 +1,20 @@
-import 'package:audio_service/audio_service.dart';
+import 'package:flutter/foundation.dart';
+import 'package:shimmer/shimmer.dart';
 import 'package:flutter/material.dart';
+import 'package:audio_service/audio_service.dart';
 import 'package:http_interceptor/http_interceptor.dart';
+import 'package:audio_video_progress_bar/audio_video_progress_bar.dart';
+import 'package:provider/provider.dart';
+
 import 'package:monotone_flutter/controller/media/notifiers/play_button_notifier.dart';
 import 'package:monotone_flutter/controller/media/notifiers/progress_notifier.dart';
 import 'package:monotone_flutter/controller/media/notifiers/repeat_button_notifier.dart';
 import 'package:monotone_flutter/controller/media/media_manager.dart';
 import 'package:monotone_flutter/controller/media/services/audio_handler.dart';
 import 'package:monotone_flutter/controller/media/services/service_locator.dart';
-import 'package:audio_video_progress_bar/audio_video_progress_bar.dart';
 import 'package:monotone_flutter/common/themes/theme_provider.dart';
 import 'package:monotone_flutter/interceptor/jwt_interceptor.dart';
 import 'package:monotone_flutter/widgets/image_widgets/image_renderer.dart';
-import 'package:provider/provider.dart';
-import 'package:shimmer/shimmer.dart';
 
 class CurrentSongTitle extends StatelessWidget {
   const CurrentSongTitle({Key? key}) : super(key: key);
@@ -38,9 +40,7 @@ class Playlist extends StatelessWidget {
     final themeProvider = Provider.of<ThemeProvider>(context);
     final isDarkMode = themeProvider.isDarkMode;
     final pageManager = getIt<MediaManager>();
-    final httpClient = InterceptedClient.build(interceptors: [
-      JwtInterceptor(),
-    ], retryPolicy: ExpiredTokenRetryPolicy());
+
     return Expanded(
       child: ValueListenableBuilder<List<MediaItem>>(
         valueListenable: pageManager.playlistNotifier,
@@ -49,16 +49,9 @@ class Playlist extends StatelessWidget {
             itemCount: playlist.length,
             itemBuilder: (context, index) {
               final mediaItem = playlist[index];
-              final isPlaying =
-                  mediaItem.id == pageManager.currentMediaItem?.id;
-              // print('Media Item: ${mediaItem.artist}');
+              final isAdvertisement = mediaItem.artist == 'Advertisement';
+
               return ListTile(
-                titleAlignment: ListTileTitleAlignment.center,
-                tileColor: isPlaying
-                    ? isDarkMode
-                        ? Colors.white.withOpacity(0.2)
-                        : Colors.black.withOpacity(0.1)
-                    : null,
                 leading: ClipRRect(
                   borderRadius: BorderRadius.circular(8.0),
                   child: ImageRenderer(
@@ -80,14 +73,18 @@ class Playlist extends StatelessWidget {
                 onTap: () {
                   getIt<AudioHandler>().skipToQueueItem(index);
                 },
-                trailing: IconButton(
-                  alignment: Alignment.center,
-                  icon: const Icon(Icons.remove_rounded),
-                  onPressed: () {
-                    getIt<AudioHandler>().removeQueueItemAt(index);
-                    // print('delete song at index: $index');
-                  },
-                ),
+                trailing: !isAdvertisement
+                    ? IconButton(
+                        alignment: Alignment.centerRight,
+                        icon: const Icon(Icons.remove),
+                        onPressed: () {
+                          getIt<AudioHandler>().removeQueueItemAt(index);
+                          // print('delete song at index: $index');
+                        },
+                      )
+                    : null,
+
+                ///
               );
             },
           );

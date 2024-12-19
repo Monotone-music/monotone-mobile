@@ -1,27 +1,19 @@
 import 'dart:async';
-
 import 'package:app_links/app_links.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_stripe/flutter_stripe.dart';
-import 'package:go_router/go_router.dart';
-import 'package:http_interceptor/http_interceptor.dart';
-import 'package:monotone_flutter/interceptor/jwt_interceptor.dart';
-import 'package:monotone_flutter/view/bottom_tab_navi.dart';
-import 'package:audio_service/audio_service.dart';
-import 'package:dio/dio.dart';
-// import 'package:audio_service_example/common.dart';
-import 'package:flutter/material.dart';
-import 'package:monotone_flutter/interceptor/jwt_interceptor.dart';
 import 'package:provider/provider.dart';
 
+import 'package:monotone_flutter/auth/login/services/maintain_session_service.dart';
+// import 'package:audio_service_example/common.dart';
+
 // import 'package:get/get.dart';
+import 'package:monotone_flutter/controller/media/notifiers/bitrate_notifier.dart';
 import 'package:monotone_flutter/widgets/routes/routes.dart';
 import 'package:monotone_flutter/controller/media/media_manager.dart';
 import 'package:monotone_flutter/controller/media/services/audio_handler.dart';
 import 'package:monotone_flutter/controller/media/services/service_locator.dart';
 import 'package:monotone_flutter/common/themes/theme_provider.dart';
-import 'package:monotone_flutter/view/login.dart';
-import 'package:provider/provider.dart';
 
 // Create a singleton instance of TrackHandler
 // TrackHandler _trackHandler = TrackHandler();
@@ -34,15 +26,12 @@ void main() async {
 
   await setupServiceLocator();
   //Run
-
-  // final httpClient = InterceptedClient.build(interceptors: [
-  //   JwtInterceptor(),
-  // ]);
-  // final alive = await httpClient.keepAlive();
-  // print('alive response: ${alive?.data}');
-  // if (alive?.data == 200) {
-  initialRoute = '/login';
-  // }
+  final session_service = MaintainSessionService();
+  await session_service.refreshToken(
+    onRefreshFailed: () {
+      AppRoutes().router.go('/login');
+    },
+  );
 
   ///
   runApp(MyApp(initialRoute: initialRoute));
@@ -58,7 +47,6 @@ class MyApp extends StatefulWidget {
 class _MyAppState extends State<MyApp> {
   late StreamSubscription<Uri> _sub;
   late AppLinks _appLinks;
-  late GoRouter _router;
 
   @override
   void initState() {
@@ -66,29 +54,12 @@ class _MyAppState extends State<MyApp> {
     getIt<MediaManager>().init();
     _appLinks = AppLinks();
     _initDeepLinkListener();
-    _router = GoRouter(
-      initialLocation: widget.initialRoute,
-      routes: <RouteBase>[
-        GoRoute(
-          path: '/login',
-          builder: (context, state) {
-            return LoginPage();
-          },
-        ),
-        GoRoute(
-          path: '/',
-          builder: (context, state) {
-            return BottomTabNavigator();
-          },
-        ),
-      ],
-    );
   }
 
   void _initDeepLinkListener() {
     _sub = _appLinks.uriLinkStream.listen((Uri uri) {
       if (uri != null) {
-        _router.go(uri.path);
+        AppRoutes().router.go(uri.path);
       }
     }, onError: (err) {
       print('Failed to handle deep link: $err');
@@ -106,6 +77,7 @@ class _MyAppState extends State<MyApp> {
   Widget build(BuildContext context) {
     return MultiProvider(
       providers: [
+        ChangeNotifierProvider(create: (_) => BitrateProvider()),
         ChangeNotifierProvider(
           create: (context) => MyAudioHandler(),
         ),
@@ -119,9 +91,7 @@ class _MyAppState extends State<MyApp> {
             title: 'Monotone',
             debugShowCheckedModeBanner: false,
             theme: Provider.of<ThemeProvider>(context).themeData,
-            routerConfig: _router,
-
-            ///
+            routerConfig: AppRoutes().getRoutes(), // Use GoRouter for routes
           );
         },
       ),

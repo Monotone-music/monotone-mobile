@@ -42,9 +42,6 @@ class _PlaylistSectionGeneratorState extends State<PlaylistSectionGenerator> {
                     padding: const EdgeInsets.symmetric(
                         horizontal: 8.0), // Add space between items
                     child: SizedBox(
-                      //     height: MediaQuery.of(context).size.width * 1, // Set a specific height
-                      //     child: Container(
-                      //       width: MediaQuery.of(context).size.width * 0.39,
                       child: PlaylistCard(
                           playlistItem:
                               item), // Use PlaylistCard to display the item

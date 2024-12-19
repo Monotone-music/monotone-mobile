@@ -1,71 +1,24 @@
+import 'dart:convert';
+import 'package:http_interceptor/http_interceptor.dart';
+import 'package:monotone_flutter/common/api_url.dart';
+import 'package:monotone_flutter/interceptor/jwt_interceptor.dart';
 import 'package:monotone_flutter/models/playlist_items.dart';
 
-class DataService {
-  Future<List<PlaylistItem>> fetchPlaylistItems() async {
-    // Simulate a delay for fetching data from the database
-    await Future.delayed(Duration(seconds: 0));
+Future<List<PlaylistItem>> fetchPlaylists() async {
+  final httpClient = InterceptedClient.build(interceptors: [
+    JwtInterceptor(),
+  ], retryPolicy: ExpiredTokenRetryPolicy());
 
-    // Simulated data
-    return [
-      PlaylistItem(
-        title: 'Song 1',
-        artist: 'Artist 1',
-        picture: 'assets/image/rajang.jpg',
-        amount: '12',
-      ),
-      PlaylistItem(
-        title: 'UrnaCacti',
-        artist: 'Artist 333333',
-        picture:
-            'https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcTy8Xkz9aPYcCsmw0fLnK96-Whkqm5Oyl2CxA&s',
-        amount: '15',
-      ),
-      // Add more items as needed
-    ];
+  final response =
+      await httpClient.get(Uri.parse('$BASE_URL/listener/profile'));
+
+  if (response.statusCode != 200) {
+    throw Exception('Failed to load playlists');
   }
 
-  Future<List<PlaylistItem>> fetchAnotherPlaylistItems() async {
-    // Simulate a delay for fetching data from the database
-    await Future.delayed(Duration(seconds: 0));
+  final responseBody = jsonDecode(response.body);
+  final playlists = List<PlaylistItem>.from(responseBody['data']['playlist']
+      .map((playlist) => PlaylistItem.fromJson(playlist)));
 
-    // Simulated data
-    return [
-      // PlaylistItem(
-      //   title: 'Another Song 1',
-      //   artist: 'Another Artist 1',
-      //   picture: 'assets/image/rajang.jpg',
-      //   amount: '20',
-      // ),
-      // PlaylistItem(
-      //   title: 'UrnaCacti',
-      //   artist: ' 333333',
-      //   picture: 'assets/image/rajang.jpg',
-      //   amount: '25',
-      // ),
-      // // Add more items as needed
-    ];
-  }
-
-  Future<List<PlaylistItem>> fetchAnotherNotherPlaylistItems() async {
-    // Simulate a delay for fetching data from the database
-    await Future.delayed(Duration(seconds: 0));
-
-    // Simulated data
-    return [
-      PlaylistItem(
-        title: 'Diddy',
-        artist: 'Artist 333333',
-        picture: 'assets/image/rajang.jpg',
-        amount: '35',
-      ),
-      PlaylistItem(
-        title: 'Diddy',
-        artist: 'Artist 333333',
-        picture: 'assets/image/rajang.jpg',
-        amount: '35',
-      ),
-      // Add more items as needed
-    ];
-  }
-  // Add more methods for fetching different types of data as needed
+  return playlists;
 }

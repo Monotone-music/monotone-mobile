@@ -1,5 +1,6 @@
 import 'dart:async';
 
+import 'package:auto_scroll_text/auto_scroll_text.dart';
 import 'package:flutter/material.dart';
 import 'package:monotone_flutter/common/api_url.dart';
 import 'package:http_interceptor/http_interceptor.dart';
@@ -115,8 +116,8 @@ class CustomSearchDelegate extends SearchDelegate {
             baseColor: Colors.grey[300]!,
             highlightColor: Colors.grey[100]!,
             child: Container(
-              width: 40,
-              height: 40,
+              width: 50,
+              height: 50,
               color: Colors.white,
             ),
           );
@@ -233,11 +234,11 @@ class CustomSearchDelegate extends SearchDelegate {
         if (item.source.type == 'album' &&
             item.source.albumInfo?.image != null) {
           imageUrl =
-              'https://api2.ibarakoi.online/image/${item.source.albumInfo!.image.filename}';
+              '$BASE_URL/image/${item.source.albumInfo!.image.filename}';
         } else if (item.source.type == 'recording' &&
             item.source.recordingInfo?.image != null) {
           imageUrl =
-              'https://api2.ibarakoi.online/image/${item.source.recordingInfo!.image.filename}';
+              '$BASE_URL/image/${item.source.recordingInfo!.image.filename}';
         }
 
         return FutureBuilder<Response>(
@@ -315,8 +316,13 @@ class CustomSearchDelegate extends SearchDelegate {
                           width: 50,
                           height: 50,
                         ),
-                  title: Text(item.source.value ?? 'No title',
-                      style: TextStyle(fontSize: 20)),
+                  title: AutoScrollText(
+                    item.source.value ?? 'No title',
+                    textAlign: TextAlign.left,
+                    velocity: const Velocity(pixelsPerSecond: Offset(20, 0)),
+                    mode: AutoScrollTextMode.endless,
+                    style: TextStyle(fontSize: 20),
+                  ),
                   subtitle: Text(
                     item.source.type != null
                         ? '${item.source.type![0].toUpperCase()}${item.source.type!.substring(1)}'
@@ -354,10 +360,20 @@ class CustomSearchDelegate extends SearchDelegate {
 
   Iterable<Widget> _buildArtistList(
       BuildContext context, String title, Iterable<SearchItem> items) {
+    final themeProvider = Provider.of<ThemeProvider>(context);
+    final changePrimary = themeProvider.getThemeColorPrimary();
+
     List<Widget> list = [];
     if (items.isNotEmpty) {
       list.add(_buildSectionTitle(title));
       list.addAll(items.map((item) {
+        String imageUrl = 'assets/image/not_available.png'; // Placeholder image
+
+        if (item.source.artistInfo?.image != null) {
+          imageUrl =
+              'https://api2.ibarakoi.online/image/${item.source.artistInfo!.image}';
+        }
+
         return InkWell(
           onTap: () {
             if (item.source.artistInfo != null) {
@@ -373,13 +389,18 @@ class CustomSearchDelegate extends SearchDelegate {
           },
           child: ListTile(
             leading: CircleAvatar(
-              backgroundImage: AssetImage('assets/image/rajang.jpg'),
+              backgroundImage: NetworkImage(imageUrl),
               radius: 25,
             ),
             title: Text(item.source.value ?? 'No title',
                 style: TextStyle(fontSize: 18)),
-            subtitle: Text(item.source.type ?? 'No type',
-                style: TextStyle(fontSize: 16)),
+            subtitle: Text(
+              item.source.type != null
+                  ? '${item.source.type![0].toUpperCase()}${item.source.type!.substring(1)}'
+                  : 'No type',
+              style: TextStyle(
+                  fontSize: 16, color: changePrimary.withOpacity(0.5)),
+            ),
           ),
         );
       }));

@@ -1,17 +1,14 @@
 import 'package:auto_scroll_text/auto_scroll_text.dart';
 import 'package:flutter/material.dart';
-import 'package:go_router/go_router.dart';
-import 'package:http_interceptor/http_interceptor.dart';
 import 'package:monotone_flutter/common/api_url.dart';
-import 'package:monotone_flutter/controller/release_group/release_group_controller.dart';
-import 'package:shimmer/shimmer.dart';
-
-import 'package:monotone_flutter/common/themes/theme_provider.dart';
 import 'package:monotone_flutter/controller/media/media_manager.dart';
 import 'package:monotone_flutter/controller/media/services/service_locator.dart';
-import 'package:monotone_flutter/interceptor/jwt_interceptor.dart';
-import 'package:monotone_flutter/models/release_group_model.dart';
+import 'package:monotone_flutter/controller/playlist/playlist_controller.dart';
+import 'package:monotone_flutter/models/artist_detail_items.dart';
+import 'package:monotone_flutter/models/personal_playlist_items.dart';
 import 'package:monotone_flutter/widgets/image_widgets/image_renderer.dart';
+import 'package:monotone_flutter/common/themes/theme_provider.dart';
+import 'package:shimmer/shimmer.dart';
 
 String formatDuration(double duration) {
   final minutes = duration ~/ 60;
@@ -117,11 +114,8 @@ Widget buildShimmerLoading(BuildContext context) {
   );
 }
 
-Widget buildAlbumImageWithBackButton(
-    BuildContext context,
-    ReleaseGroup releaseGroup,
-    Map<String, String> imageCache,
-    ThemeProvider themeProvider) {
+Widget buildAlbumImageWithBackButton(BuildContext context, Playlist playlist,
+    Map<String, String> imageCache, ThemeProvider themeProvider) {
   return Stack(
     children: [
       Container(
@@ -130,7 +124,8 @@ Widget buildAlbumImageWithBackButton(
         child: Stack(
           children: [
             ImageRenderer(
-              imageUrl: '$BASE_URL/image/${imageCache[releaseGroup.imageUrl]}',
+              imageUrl:
+                  '$BASE_URL/image/${imageCache[playlist.image.filename]}',
               width: double.infinity,
               height: 400,
               // fit: BoxFit.cover,
@@ -163,7 +158,7 @@ Widget buildAlbumImageWithBackButton(
             shape: BoxShape.circle,
           ),
           child: IconButton(
-            icon: Icon(Icons.arrow_back, color: Colors.white),
+            icon: const Icon(Icons.arrow_back, color: Colors.white),
             onPressed: () {
               Navigator.of(context).pop();
             },
@@ -171,23 +166,36 @@ Widget buildAlbumImageWithBackButton(
         ),
       ),
       //More actions button
-      // Positioned(
-      //   top: 16,
-      //   right: 16,
-      //   child: Container(
-      //     decoration: BoxDecoration(
-      //       color:
-      //           Colors.black.withOpacity(0.2), // Background color with opacity
-      //       shape: BoxShape.circle,
-      //     ),
-      //     child: IconButton(
-      //       icon: Icon(Icons.more_vert, color: Colors.white),
-      //       onPressed: () {
-      //         // Add more actions here
-      //       },
-      //     ),
-      //   ),
-      // ),
+      Positioned(
+        top: 16,
+        right: 16,
+        child: Container(
+          decoration: BoxDecoration(
+            color:
+                Colors.black.withOpacity(0.2), // Background color with opacity
+            shape: BoxShape.circle,
+          ),
+          child: PopupMenuButton<int>(
+            icon: const Icon(Icons.more_vert, color: Colors.white),
+            onSelected: (value) async {
+              if (value == 0) {
+                // Delete playlist
+                await PlaylistController().deletePlaylist(playlist.id);
+                Navigator.of(context).pop(); // Close the playlist detail view
+              }
+            },
+            itemBuilder: (context) => [
+              PopupMenuItem<int>(
+                value: 0,
+                child: ListTile(
+                  leading: const Icon(Icons.delete),
+                  title: const Text('Delete Playlist'),
+                ),
+              ),
+            ],
+          ),
+        ),
+      ),
       // Play shuffle button
       Positioned(
         left: 0,
@@ -206,8 +214,9 @@ Widget buildAlbumImageWithBackButton(
                 icon:
                     const Icon(Icons.play_arrow, color: Colors.green, size: 40),
                 onPressed: () async {
-                  getIt<MediaManager>().clearLoadPlaylistAndPlay(
-                      releaseGroup.tracks, releaseGroup.name);
+                  getIt<MediaManager>().clearLoadPlaylistAndPlayForPlaylist(
+                      playlist.recordings.map((r) => r.recording).toList(),
+                      playlist.name);
                 },
               ),
             ),
@@ -215,21 +224,6 @@ Widget buildAlbumImageWithBackButton(
             Row(
               mainAxisAlignment: MainAxisAlignment.center,
               children: [
-                // Container(
-                //   width: 40,
-                //   height: 40,
-                //   decoration: BoxDecoration(
-                //     color: Colors.black.withOpacity(0.2),
-                //     shape: BoxShape.circle,
-                //   ),
-                //   child: IconButton(
-                //     icon:
-                //         const Icon(Icons.favorite, color: Colors.red, size: 20),
-                //     onPressed: () {
-                //       // Handle add to favorite action
-                //     },
-                //   ),
-                // ),
                 const SizedBox(width: 16),
                 Container(
                   width: 40,
@@ -242,27 +236,13 @@ Widget buildAlbumImageWithBackButton(
                     icon: const Icon(Icons.queue, color: Colors.blue, size: 20),
                     onPressed: () {
                       // Handle add to queue action
-                      getIt<MediaManager>()
-                          .sequentialLoadTracks(releaseGroup.tracks, releaseGroup.name);
+                      getIt<MediaManager>().loadPlaylistForRecordings(
+                          playlist.recordings.map((r) => r.recording).toList(),
+                          playlist.name);
                     },
                   ),
                 ),
                 const SizedBox(width: 16),
-                // Container(
-                //   width: 40,
-                //   height: 40,
-                //   decoration: BoxDecoration(
-                //     color: Colors.black.withOpacity(0.2),
-                //     shape: BoxShape.circle,
-                //   ),
-                //   child: IconButton(
-                //     icon:
-                //         const Icon(Icons.share, color: Colors.yellow, size: 20),
-                //     onPressed: () {
-                //       // Handle share action
-                //     },
-                //   ),
-                // ),
               ],
             ),
           ],
@@ -272,15 +252,22 @@ Widget buildAlbumImageWithBackButton(
   );
 }
 
-Widget buildTrackList(BuildContext context, ReleaseGroup releaseGroup,
-    bool isDarkMode, Map<String, String> imageCache) {
-  ///
+Widget buildTrackList(
+  BuildContext context,
+  Playlist playlist,
+  bool isDarkMode,
+  Map<String, String> imageCache,
+  VoidCallback reloadPlaylist,
+) {
   return ListView.builder(
     shrinkWrap: true,
     physics: const NeverScrollableScrollPhysics(),
-    itemCount: releaseGroup.tracks.length,
+    itemCount: playlist.recordings.length,
     itemBuilder: (context, index) {
-      final track = releaseGroup.tracks[index];
+      final recordingInstance = playlist.recordings[index];
+      final imageUrl = imageCache[recordingInstance.recording.image.filename] ??
+          'default_image.png'; // Provide a default image
+
       return ListTile(
         leading: Row(
           mainAxisSize: MainAxisSize.min,
@@ -288,7 +275,7 @@ Widget buildTrackList(BuildContext context, ReleaseGroup releaseGroup,
             SizedBox(
               width: 15,
               child: Text(
-                track.position.toString(),
+                (recordingInstance.index + 1).toString(),
                 textAlign: TextAlign.end,
               ),
             ),
@@ -296,7 +283,7 @@ Widget buildTrackList(BuildContext context, ReleaseGroup releaseGroup,
             ClipRRect(
               borderRadius: BorderRadius.circular(8.0),
               child: ImageRenderer(
-                imageUrl: '$BASE_URL/image/${imageCache[track.imageUrl]}',
+                imageUrl: '$BASE_URL/image/$imageUrl',
                 width: 60,
                 height: 60,
               ),
@@ -306,7 +293,7 @@ Widget buildTrackList(BuildContext context, ReleaseGroup releaseGroup,
         title: LayoutBuilder(
           builder: (context, constraints) {
             final textSpan = TextSpan(
-              text: track.title,
+              text: recordingInstance.recording.title,
               style: Theme.of(context).textTheme.bodyLarge,
             );
 
@@ -320,7 +307,7 @@ Widget buildTrackList(BuildContext context, ReleaseGroup releaseGroup,
 
             if (textPainter.didExceedMaxLines) {
               return AutoScrollText(
-                track.title,
+                recordingInstance.recording.title,
                 textAlign: TextAlign.left,
                 velocity: const Velocity(pixelsPerSecond: Offset(20, 0)),
                 intervalSpaces: 5,
@@ -330,7 +317,7 @@ Widget buildTrackList(BuildContext context, ReleaseGroup releaseGroup,
               );
             } else {
               return Text(
-                track.title,
+                recordingInstance.recording.title,
                 style: Theme.of(context).textTheme.bodyLarge,
               );
             }
@@ -339,7 +326,7 @@ Widget buildTrackList(BuildContext context, ReleaseGroup releaseGroup,
         subtitle: Row(
           children: [
             Text(
-              '${formatDuration(track.duration)} • ',
+              '${formatDuration(recordingInstance.recording.duration)} • ',
               style: Theme.of(context).textTheme.bodyMedium?.copyWith(
                     color: isDarkMode
                         ? Colors.white.withOpacity(0.7)
@@ -350,7 +337,9 @@ Widget buildTrackList(BuildContext context, ReleaseGroup releaseGroup,
             Expanded(
               child: LayoutBuilder(
                 builder: (context, constraints) {
-                  final artistNames = track.artistNames.join(', ');
+                  final artistNames = recordingInstance.recording.artists
+                      .map((artist) => artist.name)
+                      .join(', ');
                   final textSpan = TextSpan(
                     text: artistNames,
                     style: Theme.of(context).textTheme.bodyMedium?.copyWith(
@@ -401,8 +390,6 @@ Widget buildTrackList(BuildContext context, ReleaseGroup releaseGroup,
             ),
           ],
         ),
-
-        ///
         trailing: SizedBox(
           width: MediaQuery.of(context).size.width * 0.25,
           child: Row(
@@ -411,7 +398,7 @@ Widget buildTrackList(BuildContext context, ReleaseGroup releaseGroup,
                 child: LayoutBuilder(
                   builder: (context, constraints) {
                     final textSpan = TextSpan(
-                      text: '${track.view}',
+                      text: '${recordingInstance.recording.view}',
                       style: TextStyle(
                         color: isDarkMode
                             ? Colors.white.withOpacity(0.7)
@@ -431,7 +418,7 @@ Widget buildTrackList(BuildContext context, ReleaseGroup releaseGroup,
 
                     if (textPainter.didExceedMaxLines) {
                       return AutoScrollText(
-                        '${track.view}',
+                        '${recordingInstance.recording.view}',
                         textAlign: TextAlign.right,
                         velocity:
                             const Velocity(pixelsPerSecond: Offset(20, 0)),
@@ -446,7 +433,7 @@ Widget buildTrackList(BuildContext context, ReleaseGroup releaseGroup,
                       );
                     } else {
                       return Text(
-                        '${track.view}',
+                        '${recordingInstance.recording.view}',
                         textAlign: TextAlign.right,
                         style: TextStyle(
                           color: isDarkMode
@@ -459,9 +446,6 @@ Widget buildTrackList(BuildContext context, ReleaseGroup releaseGroup,
                   },
                 ),
               ),
-
-              ///
-
               PopupMenuButton<int>(
                 icon: const Icon(Icons.more_vert),
                 onSelected: (value) {
@@ -475,42 +459,42 @@ Widget buildTrackList(BuildContext context, ReleaseGroup releaseGroup,
                   PopupMenuItem<int>(
                     value: 0,
                     child: ListTile(
-                      leading: const Icon(Icons.playlist_add),
-                      title: const Text('Add to Playlist'),
-                      onTap: () {
-                        // Add track to playlist
-                        openPlaylistModal(context, track.id);
+                      leading: const Icon(Icons.remove_circle_outline_outlined),
+                      title: const Text('Remove from playlist'),
+                      onTap: () async {
+                        // Remove track from playlist
+                        await PlaylistController().removeFromPlaylist(
+                            playlist.id, recordingInstance.index);
+                        reloadPlaylist();
                       },
                     ),
                   ),
                   PopupMenuItem<int>(
                     value: 1,
                     child: ListTile(
-                      leading: Icon(Icons.queue),
-                      title: Text('Add to Queue'),
+                      leading: const Icon(Icons.queue),
+                      title: const Text('Add to Queue'),
                       onTap: () {
-                        getIt<MediaManager>()
-                            .loadTrack(track, releaseGroup.name);
+                        getIt<MediaManager>().loadTrackForPlaylist(
+                            recordingInstance.recording, playlist.name);
                       }, // Add track to queue
                     ),
                   ),
-
-                  ///
                 ],
               ),
-
-              ///
             ],
           ),
         ),
         onTap: () async {
           // Play the track
-          print('Recording id: ${track.id}');
-          print('Album: ${releaseGroup.name}');
+          print('Recording id: ${recordingInstance.recording.id}');
+          print('Playlist: ${playlist.name}');
 
-          getIt<MediaManager>().clearLoadPlaylistAndSkipToIndex(
-              releaseGroup.tracks, releaseGroup.name, index);
-          //skip to the selected track
+          getIt<MediaManager>().clearLoadPlaylistAndSkipToIndexForPlaylist(
+              playlist.recordings.map((r) => r.recording).toList(),
+              playlist.name,
+              index);
+
           print('get indexed track: $index');
         },
       );

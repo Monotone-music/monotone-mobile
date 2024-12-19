@@ -1,14 +1,16 @@
+import 'dart:convert';
 import 'package:flutter/material.dart';
 import 'package:flutter_secure_storage/flutter_secure_storage.dart';
 import 'package:http_interceptor/http_interceptor.dart';
+import 'package:monotone_flutter/view/home/home_ad_section.dart';
 import 'package:provider/provider.dart';
-import 'dart:convert';
 
 import 'package:monotone_flutter/interceptor/jwt_interceptor.dart';
 import 'package:monotone_flutter/widgets/skeletons/skeleton_home.dart';
 import 'package:monotone_flutter/view/login.dart';
 import 'package:monotone_flutter/view/home/home_music_sect.dart';
 import 'package:monotone_flutter/common/themes/theme_provider.dart';
+import 'package:monotone_flutter/controller/home/home_playlist_section.dart';
 
 class HomePage extends StatefulWidget {
   const HomePage({super.key});
@@ -19,32 +21,27 @@ class HomePage extends StatefulWidget {
 
 class _HomePageState extends State<HomePage> {
   int _selectedIndex = 0;
+  late Future<List<Map<String, String>>> topReleaseGroup;
   late Future<List<Map<String, String>>> releaseGroups;
+  final _storage = const FlutterSecureStorage();
 
   @override
   void initState() {
     super.initState();
-    releaseGroups = fetchReleaseGroups();
+    releaseGroups = fetchReleaseGroups('https://api2.ibarakoi.online/album/');
+    topReleaseGroup =
+        fetchReleaseGroups('https://api2.ibarakoi.online/album/top');
   }
 
-  Future<void> _checkFirstTimeUser() async {
-    final secureStorage = FlutterSecureStorage();
-
-    if (await secureStorage.read(key: 'isLoggedIn') != 'true') {
-      // Navigate to login page
-      Navigator.pushReplacement(
-        context,
-        MaterialPageRoute(builder: (context) => LoginPage()),
-      );
-    }
+  Future<String?> _getBitrate() async {
+    return await _storage.read(key: 'bitrate');
   }
 
-  Future<List<Map<String, String>>> fetchReleaseGroups() async {
+  Future<List<Map<String, String>>> fetchReleaseGroups(String url) async {
     final httpClient = InterceptedClient.build(interceptors: [
       JwtInterceptor(),
     ], retryPolicy: ExpiredTokenRetryPolicy());
-    final response =
-        await httpClient.get(Uri.parse('https://api2.ibarakoi.online/album/'));
+    final response = await httpClient.get(Uri.parse(url));
 
     if (response.statusCode != 200) {
       throw Exception('Failed to load release groups');
@@ -75,45 +72,49 @@ class _HomePageState extends State<HomePage> {
   Widget build(BuildContext context) {
     final themeProvider = Provider.of<ThemeProvider>(context);
     final isDarkMode = themeProvider.isDarkMode;
-    final screenWidth = MediaQuery.of(context).size.width;
 
     return DefaultTabController(
-      length: 3,
+      length: 1,
       child: Scaffold(
         appBar: AppBar(
           title: TabBar(
             onTap: _onButtonPressed,
             tabs: const [
               Tab(text: 'Music'),
-              Tab(text: 'Podcasts'),
-              Tab(text: 'Audiobooks'),
+              // Tab(text: 'Podcasts'),
+              // Tab(text: 'Audiobooks'),
             ],
           ),
         ),
-        body: Container(
-          child: _selectedIndex == 0
-              ? FutureBuilder<List<Map<String, String>>>(
-                  future: releaseGroups,
-                  builder: (context, snapshot) {
-                    if (snapshot.connectionState == ConnectionState.waiting) {
-                      // if (true) {
-                      return SkeletonHome(
-                          screenWidth: screenWidth, isDarkMode: isDarkMode);
-                    } else if (snapshot.hasError) {
-                      return Center(child: Text('Error: ${snapshot.error}'));
-                    } else if (!snapshot.hasData || snapshot.data!.isEmpty) {
-                      return Center(child: Text('No data available'));
-                    } else {
-                      return PlaylistList(trackItems: snapshot.data!);
-                    }
-                  },
-                )
-              : Center(
-                  child: Text(
-                    _selectedIndex == 1 ? 'Podcasts' : 'Audiobooks',
-                    style: TextStyle(fontSize: 24),
-                  ),
+        body: FutureBuilder<String?>(
+          future: _getBitrate(),
+          builder: (context, snapshot) {
+            if (snapshot.connectionState == ConnectionState.waiting) {
+              return const Center(child: CircularProgressIndicator());
+            } else if (snapshot.hasError) {
+              return Center(child: Text('Error: ${snapshot.error}'));
+            } else {
+              final bitrate = snapshot.data;
+              return SingleChildScrollView(
+                child: Column(
+                  children: [
+                    if (bitrate == '192') 
+                    HomeAdSection(),
+                    // Top Album Section
+                    HomePlaylistSection(
+                      title: 'Most Popular Albums',
+                      loader: topReleaseGroup,
+                    ),
+                    // Another Playlist Section
+                    HomePlaylistSection(
+                      title: 'New Releases',
+                      loader: releaseGroups,
+                    ),
+                  ],
                 ),
+              );
+            }
+          },
         ),
       ),
     );
