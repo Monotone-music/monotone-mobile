@@ -129,7 +129,7 @@ class CustomSearchDelegate extends SearchDelegate {
             snapshot.data!.albums.isEmpty &&
                 snapshot.data!.recordings.isEmpty &&
                 snapshot.data!.artists.isEmpty) {
-          return Center(
+          return const Center(
               child: Text('No results found', style: TextStyle(fontSize: 18)));
         } else {
           searchResults = [
@@ -158,7 +158,7 @@ class CustomSearchDelegate extends SearchDelegate {
       future: result,
       builder: (context, snapshot) {
         if (snapshot.connectionState == ConnectionState.waiting) {
-          return Center(
+          return const Center(
             child: CircularProgressIndicator(),
           );
         } else if (snapshot.hasError) {
@@ -233,121 +233,47 @@ class CustomSearchDelegate extends SearchDelegate {
 
         if (item.source.type == 'album' &&
             item.source.albumInfo?.image != null) {
-          imageUrl =
-              '$BASE_URL/image/${item.source.albumInfo!.image.filename}';
+          imageUrl = '$BASE_URL/image/${item.source.albumInfo!.image.filename}';
         } else if (item.source.type == 'recording' &&
             item.source.recordingInfo?.image != null) {
           imageUrl =
               '$BASE_URL/image/${item.source.recordingInfo!.image.filename}';
         }
-
-        return FutureBuilder<Response>(
-          future: httpClient.get(
-            Uri.parse(imageUrl),
+        return ListTile(
+          leading: ImageRenderer(
+            imageUrl: imageUrl,
+            width: 50,
+            height: 50,
           ),
-          builder: (context, snapshot) {
-            if (snapshot.connectionState == ConnectionState.waiting) {
-              return ListTile(
-                leading: Shimmer.fromColors(
-                  baseColor: Colors.grey[300]!,
-                  highlightColor: Colors.grey[100]!,
-                  child: Container(
-                    width: 50,
-                    height: 50,
-                    color: Colors.white,
-                  ),
-                ),
-                title: Text(item.source.value ?? 'No title',
-                    style: TextStyle(fontSize: 24)),
-                subtitle: Text(
-                  item.source.type != null
-                      ? '${item.source.type![0].toUpperCase()}${item.source.type!.substring(1)}'
-                      : 'No type',
-                  style: TextStyle(
-                      fontSize: 16, color: changePrimary.withOpacity(0.5)),
+          title: Text(
+            item.source.value ?? 'No title',
+            style: TextStyle(fontSize: 24),
+          ),
+          subtitle: Text(
+            item.source.type != null
+                ? '${item.source.type![0].toUpperCase()}${item.source.type!.substring(1)}'
+                : 'No type',
+            style:
+                TextStyle(fontSize: 16, color: changePrimary.withOpacity(0.5)),
+          ),
+          onTap: () {
+            if (item.source.type == 'album') {
+              Navigator.push(
+                context,
+                MaterialPageRoute(
+                  builder: (context) =>
+                      ReleaseGroupPage(id: item.source.albumInfo!.id),
                 ),
               );
-            } else if (snapshot.hasError) {
-              return ListTile(
-                leading: Icon(Icons.error),
-                title: Text(item.source.value ?? 'No title',
-                    style: TextStyle(fontSize: 24)),
-                subtitle: Text(
-                  item.source.type != null
-                      ? '${item.source.type![0].toUpperCase()}${item.source.type!.substring(1)}'
-                      : 'No type',
-                  style: TextStyle(
-                      fontSize: 16, color: changePrimary.withOpacity(0.5)),
-                ),
-              );
-            } else if (snapshot.hasData) {
-              final imageData = snapshot.data?.bodyBytes;
-              return InkWell(
-                onTap: () {
-                  if (item.source.type == 'album') {
-                    Navigator.push(
-                      context,
-                      MaterialPageRoute(
-                        builder: (context) =>
-                            ReleaseGroupPage(id: item.source.albumInfo!.id),
-                      ),
-                    );
-                  } // Handle item tap
-                  if (item.source.type == 'recording') {
-                    Navigator.push(
-                      context,
-                      MaterialPageRoute(
-                        builder: (context) => ArtistDetailPage(
-                          artistId: item.source.recordingInfo!.artists[0].id,
-                        ),
-                      ),
-                    );
-                  }
-                },
-                child: ListTile(
-                  leading: imageData != null
-                      ? ImageRenderer(
-                          imageUrl: imageData,
-                          width: 50,
-                          height: 50,
-                        )
-                      : ImageRenderer(
-                          imageUrl: 'assets/image/not_available.png',
-                          width: 50,
-                          height: 50,
-                        ),
-                  title: AutoScrollText(
-                    item.source.value ?? 'No title',
-                    textAlign: TextAlign.left,
-                    velocity: const Velocity(pixelsPerSecond: Offset(20, 0)),
-                    mode: AutoScrollTextMode.endless,
-                    style: TextStyle(fontSize: 20),
-                  ),
-                  subtitle: Text(
-                    item.source.type != null
-                        ? '${item.source.type![0].toUpperCase()}${item.source.type!.substring(1)}'
-                        : 'No type',
-                    style: TextStyle(
-                        fontSize: 16, color: changePrimary.withOpacity(0.5)),
+            } else if (item.source.type == 'recording') {
+              Navigator.push(
+                context,
+                MaterialPageRoute(
+                  builder: (context) => ArtistDetailPage(
+                    artistId: item.source.recordingInfo!.artists[0].id,
                   ),
                 ),
               );
-            } else {
-              return ListTile(
-                leading: Image.asset('assets/image/not_available.png',
-                    width: 50, height: 50),
-                title: Text(item.source.value ?? 'No title',
-                    style: TextStyle(fontSize: 24)),
-                subtitle: Text(
-                  item.source.type != null
-                      ? '${item.source.type![0].toUpperCase()}${item.source.type!.substring(1)}'
-                      : 'No type',
-                  style: TextStyle(
-                      fontSize: 16, color: changePrimary.withOpacity(0.5)),
-                ),
-              );
-
-              ///
             }
           },
         );

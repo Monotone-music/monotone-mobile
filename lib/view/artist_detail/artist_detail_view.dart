@@ -169,142 +169,87 @@ class ArtistDetailView extends StatelessWidget {
                     release.releaseType.substring(1);
                 final imageUrl = featuredListImageUrls[release.id] ?? '';
 
-                return FutureBuilder<Response>(
-                  future: httpClient.get(
-                    Uri.parse(imageUrl),
-                  ),
-                  builder: (context, snapshot) {
-                    if (snapshot.connectionState == ConnectionState.waiting) {
-                      return ListTile(
-                        leading: Shimmer.fromColors(
-                          baseColor: Colors.grey[300]!,
-                          highlightColor: Colors.grey[100]!,
-                          child: Container(
-                            width: 50,
-                            height: 50,
-                            color: Colors.white,
-                          ),
+                return InkWell(
+                  onTap: () {
+                    Navigator.push(
+                      context,
+                      MaterialPageRoute(
+                        builder: (context) => ReleaseGroupPage(id: release.id),
+                      ),
+                    );
+                  },
+                  child: Row(
+                    children: [
+                      Container(
+                        width: width * 0.2,
+                        height: height * 0.1,
+                        decoration: BoxDecoration(
+                          color: changePrimary.withOpacity(0.6),
+                          borderRadius: BorderRadius.circular(8.0),
                         ),
-                        title: Text(release.title,
-                            style: const TextStyle(fontSize: 24)),
-                        subtitle: Text(
-                          releaseType,
-                          style: TextStyle(
-                              fontSize: 16,
-                              color: changePrimary.withOpacity(0.5)),
+                        child: ImageRenderer(
+                          imageUrl: imageUrl,
+                          width: width * 0.2,
+                          height: height * 0.1,
                         ),
-                      );
-                    } else if (snapshot.hasError) {
-                      return ListTile(
-                        leading: const Icon(Icons.error),
-                        title: Text(release.title,
-                            style: const TextStyle(fontSize: 24)),
-                        subtitle: Text(
-                          releaseType,
-                          style: TextStyle(
-                              fontSize: 16,
-                              color: changePrimary.withOpacity(0.5)),
-                        ),
-                      );
-                    } else if (snapshot.hasData) {
-                      final imageData = snapshot.data?.bodyBytes;
-                      return InkWell(
-                        onTap: () {
-                          Navigator.push(
-                            context,
-                            MaterialPageRoute(
-                                builder: (context) => ReleaseGroupPage(
-                                      id: release.id,
-                                    )),
-                          );
-                        },
-                        child: Row(
+                      ),
+                      const SizedBox(width: 16),
+                      Expanded(
+                        child: Column(
+                          crossAxisAlignment: CrossAxisAlignment.start,
                           children: [
-                            Container(
-                              width: width * 0.2,
-                              height: height * 0.1,
-                              decoration: BoxDecoration(
-                                color: changePrimary.withOpacity(0.6),
-                                borderRadius: BorderRadius.circular(8.0),
-                              ),
-                              child: ImageRenderer(
-                                imageUrl: imageData,
+                            Text(
+                              release.title,
+                              style: const TextStyle(
+                                fontSize: 18,
+                                fontWeight: FontWeight.bold,
                               ),
                             ),
-                            const SizedBox(width: 16),
-                            Expanded(
-                              child: Column(
-                                crossAxisAlignment: CrossAxisAlignment.start,
-                                children: [
-                                  Text(
-                                    release.title,
-                                    style: const TextStyle(
-                                      fontSize: 18,
-                                      fontWeight: FontWeight.bold,
+                            const SizedBox(height: 8),
+                            Row(
+                              children: [
+                                Text(
+                                  year,
+                                  style: TextStyle(
+                                    fontSize: 14,
+                                    color: changePrimary.withOpacity(0.5),
+                                  ),
+                                ),
+                                Padding(
+                                  padding: const EdgeInsets.symmetric(
+                                      horizontal: 8.0),
+                                  child: Text(
+                                    '•',
+                                    style: TextStyle(
+                                      fontSize: 14,
+                                      color: changePrimary.withOpacity(0.5),
                                     ),
                                   ),
-                                  const SizedBox(height: 8),
-                                  Row(
-                                    children: [
-                                      Text(
-                                        year,
-                                        style: TextStyle(
-                                          fontSize: 14,
-                                          color: changePrimary.withOpacity(0.5),
-                                        ),
-                                      ),
-                                      Padding(
-                                        padding: const EdgeInsets.symmetric(
-                                            horizontal: 8.0),
-                                        child: Text(
-                                          '•',
-                                          style: TextStyle(
-                                            fontSize: 14,
-                                            color:
-                                                changePrimary.withOpacity(0.5),
-                                          ),
-                                        ),
-                                      ),
-                                      Text(
-                                        releaseType,
-                                        style: TextStyle(
-                                          fontSize: 14,
-                                          color: changePrimary.withOpacity(0.5),
-                                        ),
-                                      ),
-                                    ],
+                                ),
+                                Text(
+                                  releaseType,
+                                  style: TextStyle(
+                                    fontSize: 14,
+                                    color: changePrimary.withOpacity(0.5),
                                   ),
-                                ],
-                              ),
-                            ),
-                            IconButton(
-                              icon: ImageRenderer(
-                                imageUrl: 'assets/image/vertical_more_icon.svg',
-                                width: 50,
-                                height: 50,
-                              ),
-                              onPressed: () {
-                                print('Icon button pressed for item $index');
-                              },
+                                ),
+                              ],
                             ),
                           ],
                         ),
-                      );
-                    } else {
-                      return ListTile(
-                        leading: Image.asset('assets/image/not_available.png',
-                            width: 50, height: 50),
-                        title: Text(release.title,
-                            style: const TextStyle(fontSize: 24)),
-                        subtitle: Text(
-                          releaseType,
-                          style: TextStyle(
-                              fontSize: 16,
-                              color: changePrimary.withOpacity(0.5)),
+                      ),
+                      IconButton(
+                        icon: ImageRenderer(
+                          imageUrl: 'assets/image/vertical_more_icon.svg',
+                          width: 50,
+                          height: 50,
                         ),
-                      );
-                    }
-                  },
+                        onPressed: () {
+                          print('Icon button pressed for item $index');
+                        },
+                      ),
+                    ],
+                  ),
                 );
               }),
             ),
@@ -364,92 +309,52 @@ class ArtistDetailView extends StatelessWidget {
                   final releaseType = album.releaseType[0].toUpperCase() +
                       album.releaseType.substring(1);
                   final imageUrl = featuredListImageUrls[album.id] ?? '';
-                  return FutureBuilder<Response>(
-                    future: httpClient.get(
-                      Uri.parse(imageUrl),
-                    ),
-                    builder: (context, snapshot) {
-                      if (snapshot.connectionState == ConnectionState.waiting) {
-                        return Shimmer.fromColors(
-                          baseColor: Colors.grey[300]!,
-                          highlightColor: Colors.grey[100]!,
-                          child: Container(
+
+                  return InkWell(
+                    onTap: () {
+                      Navigator.push(
+                        context,
+                        MaterialPageRoute(
+                          builder: (context) => ReleaseGroupPage(id: album.id),
+                        ),
+                      );
+                    },
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        Container(
+                          width: width * 0.4,
+                          height: width * 0.4,
+                          decoration: BoxDecoration(
+                            color: changePrimary.withOpacity(0.6),
+                            borderRadius: BorderRadius.circular(8.0),
+                          ),
+                          child: ImageRenderer(
+                            imageUrl: imageUrl,
                             width: width * 0.4,
                             height: width * 0.4,
-                            color: Colors.white,
                           ),
-                        );
-                      } else if (snapshot.hasError) {
-                        return Container(
+                        ),
+                        SizedBox(
                           width: width * 0.4,
-                          height: width * 0.4,
-                          decoration: BoxDecoration(
-                            color: changePrimary.withOpacity(0.6),
-                            borderRadius: BorderRadius.circular(8.0),
+                          child: Text(
+                            album.title,
+                            style: const TextStyle(
+                              overflow: TextOverflow.ellipsis,
+                              fontSize: 16,
+                              fontWeight: FontWeight.bold,
+                            ),
                           ),
-                          child: const Center(child: Icon(Icons.error)),
-                        );
-                      } else if (snapshot.hasData) {
-                        final imageData = snapshot.data?.bodyBytes;
-                        return InkWell(
-                          onTap: () {
-                            Navigator.push(
-                              context,
-                              MaterialPageRoute(
-                                  builder: (context) =>
-                                      ReleaseGroupPage(id: album.id)),
-                            );
-                          },
-                          child: Column(
-                            crossAxisAlignment: CrossAxisAlignment.start,
-                            children: [
-                              Container(
-                                width: width * 0.4,
-                                height: width * 0.4,
-                                decoration: BoxDecoration(
-                                  color: changePrimary.withOpacity(0.6),
-                                  borderRadius: BorderRadius.circular(8.0),
-                                ),
-                                child: ImageRenderer(
-                                  imageUrl: imageData,
-                                ),
-                              ),
-                              SizedBox(
-                                width: width * 0.4,
-                                child: Text(
-                                  album.title,
-                                  style: const TextStyle(
-                                    overflow: TextOverflow.ellipsis,
-                                    fontSize: 16,
-                                    fontWeight: FontWeight.bold,
-                                  ),
-                                ),
-                              ),
-
-                              // SizedBox(height: 4),
-                              Text(
-                                '$releaseType • $year',
-                                style: TextStyle(
-                                  fontSize: 14,
-                                  color: changePrimary.withOpacity(0.5),
-                                ),
-                              ),
-                            ],
+                        ),
+                        Text(
+                          '$releaseType • $year',
+                          style: TextStyle(
+                            fontSize: 14,
+                            color: changePrimary.withOpacity(0.5),
                           ),
-                        );
-                      } else {
-                        return Container(
-                          width: width * 0.4,
-                          height: width * 0.4,
-                          decoration: BoxDecoration(
-                            color: changePrimary.withOpacity(0.6),
-                            borderRadius: BorderRadius.circular(8.0),
-                          ),
-                          child: Image.asset('assets/image/not_available.png',
-                              fit: BoxFit.cover),
-                        );
-                      }
-                    },
+                        ),
+                      ],
+                    ),
                   );
                 },
               ),
@@ -512,84 +417,44 @@ class ArtistDetailView extends StatelessWidget {
                       release.releaseType.substring(1);
                   final imageUrl = featuredListImageUrls[release.id] ?? '';
 
-                  return FutureBuilder<Response>(
-                    future: httpClient.get(
-                      Uri.parse(imageUrl),
-                    ),
-                    builder: (context, snapshot) {
-                      if (snapshot.connectionState == ConnectionState.waiting) {
-                        return Container(
-                          width: width * 0.3,
-                          height: width * 0.3,
-                          decoration: BoxDecoration(
-                            color: changePrimary.withOpacity(0.6),
-                            borderRadius: BorderRadius.circular(8.0),
-                          ),
-                          child:
-                              const Center(child: CircularProgressIndicator()),
-                        );
-                      } else if (snapshot.hasError) {
-                        return Container(
-                          width: width * 0.3,
-                          height: width * 0.3,
-                          decoration: BoxDecoration(
-                            color: changePrimary.withOpacity(0.6),
-                            borderRadius: BorderRadius.circular(8.0),
-                          ),
-                          child: const Center(child: Icon(Icons.error)),
-                        );
-                      } else if (snapshot.hasData) {
-                        final imageData = snapshot.data?.bodyBytes;
-                        return InkWell(
-                          onTap: () {
-                            print('Single/Compilation $index pressed');
-                          },
-                          child: Column(
-                            crossAxisAlignment: CrossAxisAlignment.start,
-                            children: [
-                              Container(
-                                width: width * 0.3,
-                                height: width * 0.3,
-                                decoration: BoxDecoration(
-                                  color: changePrimary.withOpacity(0.6),
-                                  borderRadius: BorderRadius.circular(8.0),
-                                ),
-                                child: ImageRenderer(
-                                  imageUrl: imageData,
-                                ),
-                              ),
-                              const SizedBox(height: 8),
-                              Text(
-                                release.title,
-                                style: const TextStyle(
-                                  fontSize: 18,
-                                  fontWeight: FontWeight.bold,
-                                ),
-                              ),
-                              const SizedBox(height: 4),
-                              Text(
-                                '$releaseType • $year',
-                                style: TextStyle(
-                                  fontSize: 14,
-                                  color: changePrimary.withOpacity(0.5),
-                                ),
-                              ),
-                            ],
-                          ),
-                        );
-                      } else {
-                        return Container(
-                          width: width * 0.3,
-                          height: width * 0.3,
-                          decoration: BoxDecoration(
-                            color: changePrimary.withOpacity(0.6),
-                            borderRadius: BorderRadius.circular(8.0),
-                          ),
-                          child: Image.asset('assets/image/not_available.png',
-                              fit: BoxFit.cover),
-                        );
-                      }
+                  return InkWell(
+                    onTap: () {
+                      print('Single/Compilation $index pressed');
                     },
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        Container(
+                          width: width * 0.3,
+                          height: width * 0.3,
+                          decoration: BoxDecoration(
+                            color: changePrimary.withOpacity(0.6),
+                            borderRadius: BorderRadius.circular(8.0),
+                          ),
+                          child: ImageRenderer(
+                            imageUrl: imageUrl,
+                            width: width * 0.3,
+                            height: width * 0.3,
+                          ),
+                        ),
+                        const SizedBox(height: 8),
+                        Text(
+                          release.title,
+                          style: const TextStyle(
+                            fontSize: 18,
+                            fontWeight: FontWeight.bold,
+                          ),
+                        ),
+                        const SizedBox(height: 4),
+                        Text(
+                          '$releaseType • $year',
+                          style: TextStyle(
+                            fontSize: 14,
+                            color: changePrimary.withOpacity(0.5),
+                          ),
+                        ),
+                      ],
+                    ),
                   );
                 },
               ),
@@ -721,92 +586,52 @@ class ArtistDetailView extends StatelessWidget {
                       featuredList.releaseType[0].toUpperCase() +
                           featuredList.releaseType.substring(1);
                   final imageUrl = featuredListImageUrls[featuredList.id] ?? '';
-                  return FutureBuilder<Response>(
-                    future: httpClient.get(
-                      Uri.parse(imageUrl),
-                    ),
-                    builder: (context, snapshot) {
-                      if (snapshot.connectionState == ConnectionState.waiting) {
-                        return Shimmer.fromColors(
-                          baseColor: Colors.grey[300]!,
-                          highlightColor: Colors.grey[100]!,
-                          child: Container(
+                  return InkWell(
+                    onTap: () {
+                      Navigator.push(
+                        context,
+                        MaterialPageRoute(
+                          builder: (context) =>
+                              ReleaseGroupPage(id: featuredList.id),
+                        ),
+                      );
+                    },
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        Container(
+                          width: width * 0.4,
+                          height: width * 0.4,
+                          decoration: BoxDecoration(
+                            color: changePrimary.withOpacity(0.6),
+                            borderRadius: BorderRadius.circular(8.0),
+                          ),
+                          child: ImageRenderer(
+                            imageUrl: imageUrl,
                             width: width * 0.4,
                             height: width * 0.4,
-                            color: Colors.white,
                           ),
-                        );
-                      } else if (snapshot.hasError) {
-                        return Container(
+                        ),
+                        SizedBox(
                           width: width * 0.4,
-                          height: width * 0.4,
-                          decoration: BoxDecoration(
-                            color: changePrimary.withOpacity(0.6),
-                            borderRadius: BorderRadius.circular(8.0),
+                          child: Text(
+                            featuredList.title,
+                            style: const TextStyle(
+                              overflow: TextOverflow.ellipsis,
+                              fontSize: 16,
+                              fontWeight: FontWeight.bold,
+                            ),
                           ),
-                          child: const Center(child: Icon(Icons.error)),
-                        );
-                      } else if (snapshot.hasData) {
-                        final imageData = snapshot.data?.bodyBytes;
-                        return InkWell(
-                          onTap: () {
-                            Navigator.push(
-                              context,
-                              MaterialPageRoute(
-                                  builder: (context) =>
-                                      ReleaseGroupPage(id: featuredList.id)),
-                            );
-                          },
-                          child: Column(
-                            crossAxisAlignment: CrossAxisAlignment.start,
-                            children: [
-                              Container(
-                                width: width * 0.4,
-                                height: width * 0.4,
-                                decoration: BoxDecoration(
-                                  color: changePrimary.withOpacity(0.6),
-                                  borderRadius: BorderRadius.circular(8.0),
-                                ),
-                                child: ImageRenderer(
-                                  imageUrl: imageData,
-                                ),
-                              ),
-                              SizedBox(
-                                width: width * 0.4,
-                                child: Text(
-                                  featuredList.title,
-                                  style: const TextStyle(
-                                    overflow: TextOverflow.ellipsis,
-                                    fontSize: 16,
-                                    fontWeight: FontWeight.bold,
-                                  ),
-                                ),
-                              ),
-
-                              // SizedBox(height: 4),
-                              Text(
-                                '$releaseType • $year',
-                                style: TextStyle(
-                                  fontSize: 14,
-                                  color: changePrimary.withOpacity(0.5),
-                                ),
-                              ),
-                            ],
+                        ),
+                        Text(
+                          '$releaseType • $year',
+                          style: TextStyle(
+                            fontSize: 14,
+                            color: changePrimary.withOpacity(0.5),
                           ),
-                        );
-                      } else {
-                        return Container(
-                          width: width * 0.4,
-                          height: width * 0.4,
-                          decoration: BoxDecoration(
-                            color: changePrimary.withOpacity(0.6),
-                            borderRadius: BorderRadius.circular(8.0),
-                          ),
-                          child: Image.asset('assets/image/not_available.png',
-                              fit: BoxFit.cover),
-                        );
-                      }
-                    },
+                        ),
+                      ],
+                    ),
                   );
                 },
               ),

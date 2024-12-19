@@ -30,26 +30,28 @@ class _ArtistDetailLoaderState extends State<ArtistDetailLoader> {
   }
 
   Future<Artist> fetchArtistData(String artistId) async {
-    final response = await httpClient
-        .get(Uri.parse('$BASE_URL/artist/id/$artistId'));
+    final response =
+        await httpClient.get(Uri.parse('$BASE_URL/artist/id/$artistId'));
     if (response.statusCode != 200) {
       throw Exception('Failed to load artist data');
     }
 
-    final Map<String, dynamic> jsonResponse = json.decode(response.body);
-    print('fetchArtistData artist: ${jsonResponse}');
-    if (!jsonResponse.containsKey('data') ||
-        !jsonResponse['data'].containsKey('artist')) {
-      throw Exception('Artist data not found');
+    try {
+      final Map<String, dynamic> jsonResponse = json.decode(response.body);
+      if (!jsonResponse.containsKey('data') ||
+          !jsonResponse['data'].containsKey('artist')) {
+        throw Exception('Artist data not found');
+      }
+      final artist = Artist.fromJson(jsonResponse['data']['artist']);
+      return artist;
+    } catch (e) {
+      print('Error parsing JSON: $e');
+      throw Exception('Failed to parse artist data');
     }
-
-    final artist = Artist.fromJson(jsonResponse['data']['artist']);
-    return artist;
   }
 
   Future<Map<String, String>> fetchImageFilenames(List<String> ids) async {
-    final response =
-        await httpClient.get(Uri.parse('$BASE_URL/album'));
+    final response = await httpClient.get(Uri.parse('$BASE_URL/album'));
     if (response.statusCode != 200) {
       throw Exception('Failed to load album data');
     }
@@ -70,12 +72,7 @@ class _ArtistDetailLoaderState extends State<ArtistDetailLoader> {
         if (releaseGroupJson['_id'] == id) {
           final imageUrl =
               '$BASE_URL/image/${releaseGroupJson['image']['filename']}';
-          final response = await httpClient.get(
-            Uri.parse(imageUrl),
-          );
-          if (response.statusCode == 200) {
-            imageFilenames[id] = imageUrl;
-          }
+          imageFilenames[id] = imageUrl;
           break;
         }
       }
@@ -84,10 +81,36 @@ class _ArtistDetailLoaderState extends State<ArtistDetailLoader> {
   }
 
   ///
+  Future<Map<String, String>> fetchSingularImageFilenames(List<String> ids) async {
+    Map<String, String> imageFilenames = {};
+
+    for (final id in ids) {
+      final response = await httpClient.get(Uri.parse('$BASE_URL/album/id/$id'));
+      if (response.statusCode != 200) {
+        throw Exception('Failed to load album data for id $id');
+      }
+
+      var body = jsonDecode(response.body);
+      final Map<String, dynamic> jsonResponse = body;
+      if (!jsonResponse.containsKey('data') ||
+          !jsonResponse['data'].containsKey('image')) {
+        throw Exception('Image data not found for album id $id');
+      }
+
+      final imageUrl =
+          '$BASE_URL/image/${jsonResponse['data']['image']['filename']}';
+      imageFilenames[id] = imageUrl;
+    }
+
+    return imageFilenames;
+  }
+
+  ///
   Future<Map<String, String>> fetchAlbumAndFeaturedImages(
       List<String> albumIds, List<String> featuredIds) async {
-    final albumImages = await fetchImageFilenames(albumIds);
-    final featuredImages = await fetchImageFilenames(featuredIds);
+    print('featuredIds $featuredIds');
+    final albumImages = await fetchSingularImageFilenames(albumIds);
+    final featuredImages = await fetchSingularImageFilenames(featuredIds);
 
     return {...albumImages, ...featuredImages};
   }
@@ -114,7 +137,7 @@ class _ArtistDetailLoaderState extends State<ArtistDetailLoader> {
             future: fetchAlbumAndFeaturedImages(albumIds, featuredIds),
             builder: (context, imageSnapshot) {
               if (imageSnapshot.connectionState == ConnectionState.waiting) {
-                return Center(child: CircularProgressIndicator());
+                return const Center(child: CircularProgressIndicator());
               } else if (imageSnapshot.hasError) {
                 return Center(child: Text('Error: ${imageSnapshot.error}'));
               } else if (imageSnapshot.hasData) {
