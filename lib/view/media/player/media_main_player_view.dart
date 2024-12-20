@@ -50,22 +50,22 @@ Widget buildMainPlayer(BuildContext context, MyAudioHandler mediaPlayerProvider,
                   ],
                 ),
               ),
-              if (!isAdvertisement)
-                IconButton(
-                  icon: const Icon(Icons.favorite_border,
-                      color: Color(0xFF898989)),
-                  onPressed: () {
-                    // Implement favorite functionality
-                  },
-                ),
-              if (!isAdvertisement)
-                IconButton(
-                  icon:
-                      const Icon(Icons.playlist_add, color: Color(0xFF898989)),
-                  onPressed: () {
-                    // Implement add to playlist functionality
-                  },
-                ),
+              // if (!isAdvertisement)
+              //   IconButton(
+              //     icon: const Icon(Icons.favorite_border,
+              //         color: Color(0xFF898989)),
+              //     onPressed: () {
+              //       // Implement favorite functionality
+              //     },
+              //   ),
+              // if (!isAdvertisement)
+              //   IconButton(
+              //     icon:
+              //         const Icon(Icons.playlist_add, color: Color(0xFF898989)),
+              //     onPressed: () {
+              //       // Implement add to playlist functionality
+              //     },
+              //   ),
             ],
           ),
         ),

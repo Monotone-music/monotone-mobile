@@ -160,7 +160,7 @@ class ReleaseGroup {
       mbid: json['mbid'],
       releaseType: json['releaseType'] ?? '',
       title: json['title'] ?? '',
-      image: json['image']['filename'] ?? '', // Handle null image field
+      image: json['image']?['filename'] ?? '', // Handle null image field
     );
   }
 }
