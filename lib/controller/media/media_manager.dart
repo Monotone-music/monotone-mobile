@@ -2,6 +2,7 @@ import 'dart:convert';
 import 'package:flutter/foundation.dart';
 import 'package:flutter_secure_storage/flutter_secure_storage.dart';
 import 'package:http_interceptor/http_interceptor.dart';
+import 'package:monotone_flutter/controller/media/services/audio_handler.dart';
 import 'notifiers/play_button_notifier.dart';
 import 'notifiers/progress_notifier.dart';
 import 'notifiers/repeat_button_notifier.dart';
@@ -38,7 +39,7 @@ class MediaManager {
   // Events: Calls coming from the UI
   void init() async {
     // await _initLoadPlaylist();
-
+    getIt<AudioHandler>();
     _listenToChangesInPlaylist();
     _listenToPlaybackState();
     _listenToCurrentPosition();
@@ -63,13 +64,12 @@ class MediaManager {
           'url': '$BASE_URL/advertisement/stream/${advertisement.data.id}'
         },
       );
-    }else{
+    } else {
       advertisementItem = MediaItem(
         id: '_advertisement',
         title: "Ads not supported",
         artist: 'Advertisement',
-        artUri:
-            Uri.parse('assets/image/not_available.png'),
+        artUri: Uri.parse('assets/image/not_available.png'),
         duration: const Duration(seconds: 10),
       );
     }
@@ -97,6 +97,22 @@ class MediaManager {
         listenAgain = 1;
       }
     }
+  }
+
+  ///NOTE: NOT DONE, USED TO ELIMINATE MEDIA WHEN LOG OUT
+// New function to stop and eliminate all background media items
+  Future<void> stopAndRemoveAllMedia() async {
+    // Stop the music playback
+    progressNotifier.value = const ProgressBarState(
+      current: Duration.zero,
+      buffered: Duration.zero,
+      total: Duration.zero,
+    );
+    await _audioHandler.pause();
+    stop();
+    await addNull();
+    remove();
+    dispose();
   }
 
   Future<void> fetchAndPrintApiResponse(String url) async {
@@ -474,9 +490,20 @@ class MediaManager {
       id: song['id'] ?? '',
       album: song['album'] ?? '',
       title: song['title'] ?? '',
-      extras: {'url': song['url']},
     );
     _audioHandler.addQueueItem(mediaItem);
+  }
+
+  Future<void> addNull() async {
+    final mediaItem = MediaItem(
+      id: '',
+      title: 'No media loaded',
+      album: '',
+      extras: {'url': ''},
+    );
+
+    await _audioHandler.addQueueItem(mediaItem);
+    await _audioHandler.seek(Duration.zero);
   }
 
   void remove() {
@@ -485,19 +512,19 @@ class MediaManager {
     _audioHandler.removeQueueItemAt(lastIndex);
   }
 
-  void removeAll() {
+  void removeAll() async {
     final queueLength = _audioHandler.queue.value.length;
     for (int i = queueLength - 1; i >= 0; i--) {
-      _audioHandler.removeQueueItemAt(i);
+      await _audioHandler.removeQueueItemAt(i);
     }
-    print('All items removed from the queue');
+    print('All items removed from the queue ');
   }
 
-  void dispose() {
-    _audioHandler.customAction('dispose');
+  void dispose() async {
+    await _audioHandler.dispose();
   }
 
-  void stop() {
-    _audioHandler.stop();
+  void stop() async {
+    await _audioHandler.stop();
   }
 }

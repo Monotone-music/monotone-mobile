@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
+import 'package:monotone_flutter/controller/media/media_manager.dart';
 import 'package:monotone_flutter/controller/media/services/audio_handler.dart';
+import 'package:monotone_flutter/controller/media/services/service_locator.dart';
 import 'package:monotone_flutter/widgets/image_widgets/image_renderer.dart';
 
 Widget buildMainPlayer(BuildContext context, MyAudioHandler mediaPlayerProvider,
@@ -51,13 +53,14 @@ Widget buildMainPlayer(BuildContext context, MyAudioHandler mediaPlayerProvider,
                 ),
               ),
               // if (!isAdvertisement)
-              //   IconButton(
-              //     icon: const Icon(Icons.favorite_border,
-              //         color: Color(0xFF898989)),
-              //     onPressed: () {
-              //       // Implement favorite functionality
-              //     },
-              //   ),
+              // IconButton(
+              //   icon:
+              //       const Icon(Icons.favorite_border, color: Color(0xFF898989)),
+              //   onPressed: () {
+              //     // Implement favorite functionality
+              //     getIt<MediaManager>().dispose();
+              //   },
+              // ),
               // if (!isAdvertisement)
               //   IconButton(
               //     icon:

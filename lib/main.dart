@@ -51,7 +51,6 @@ class _MyAppState extends State<MyApp> {
   @override
   void initState() {
     super.initState();
-    getIt<MediaManager>().init();
     _appLinks = AppLinks();
     _initDeepLinkListener();
   }

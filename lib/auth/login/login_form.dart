@@ -1,9 +1,11 @@
 import 'dart:math';
 import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
-import 'package:go_router/go_router.dart';
 import 'package:provider/provider.dart';
+import 'package:go_router/go_router.dart';
 
+import 'package:monotone_flutter/controller/media/media_manager.dart';
+import 'package:monotone_flutter/controller/media/services/service_locator.dart';
 import 'package:monotone_flutter/common/themes/theme_provider.dart';
 import 'package:monotone_flutter/auth/login/login_button.dart';
 import 'package:monotone_flutter/auth/login/services/login_loader.dart';
@@ -44,6 +46,7 @@ class _LoginFormState extends State<LoginForm> {
   void dispose() {
     _usernameController.dispose();
     _passwordController.dispose();
+
     super.dispose();
   }
 
@@ -54,6 +57,7 @@ class _LoginFormState extends State<LoginForm> {
         _usernameController.text,
         _passwordController.text,
       );
+      if (!mounted) return; // Check if the widget is still mounted
 
       if (result == '200') {
         // Use GoRouter for navigation

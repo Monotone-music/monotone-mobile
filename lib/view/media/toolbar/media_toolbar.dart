@@ -20,7 +20,23 @@ class MediaToolbar extends StatefulWidget {
   _MediaToolbarState createState() => _MediaToolbarState();
 }
 
-class _MediaToolbarState extends State<MediaToolbar> {
+class _MediaToolbarState extends State<MediaToolbar> { 
+  // late MediaManager pageManager;
+
+  // @override
+  // void initState() {
+  //   print('KYS');
+  //   super.initState();
+  //   pageManager = getIt<MediaManager>();
+  // }
+
+  // @override
+  // void dispose() {
+  //   print('KYS2');
+  //   pageManager.dispose(); // Dispose of the media manager
+  //   super.dispose();
+  // }
+
   bool _isMediaPlayerVisible = true;
   void _toggleMediaPlayer() {
     setState(() {});

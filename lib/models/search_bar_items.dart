@@ -353,3 +353,28 @@ class SearchResults {
     );
   }
 }
+
+class SearchSuggestion {
+  final String id;
+  final String title;
+  final String artistName;
+  final String year;
+
+  SearchSuggestion({
+    required this.id,
+    required this.title,
+    required this.artistName,
+    required this.year,
+  });
+
+  factory SearchSuggestion.fromJson(Map<String, dynamic> json) {
+    return SearchSuggestion(
+      id: json['_id'].toString(),
+      title: json['title'].toString(),
+      artistName: json['releaseType'] == 'compilation'
+          ? 'Various Artists'
+          : json['albumArtist'].toString(),
+      year: json['releaseEvent']['date'].substring(0, 4).toString(),
+    );
+  }
+}

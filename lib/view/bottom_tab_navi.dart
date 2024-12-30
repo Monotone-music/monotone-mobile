@@ -1,5 +1,9 @@
+import 'package:audio_service/audio_service.dart';
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
+
+import 'package:monotone_flutter/controller/media/media_manager.dart';
+import 'package:monotone_flutter/controller/media/services/service_locator.dart';
 import 'package:monotone_flutter/widgets/image_widgets/image_renderer.dart';
 import 'package:provider/provider.dart';
 import 'package:monotone_flutter/view/media/player/media_player.dart';
@@ -22,6 +26,7 @@ class BottomTabNavigator extends StatefulWidget {
 
 class _BottomTabNavigatorState extends State<BottomTabNavigator>
     with SingleTickerProviderStateMixin {
+  late MediaManager pageManager;
   int _currentIndex = 0;
   // late AnimationController _controller;
 
@@ -35,16 +40,12 @@ class _BottomTabNavigatorState extends State<BottomTabNavigator>
 
   @override
   void initState() {
+    getIt<MediaManager>().init();
     super.initState();
-    // _controller = AnimationController(
-    //   duration: const Duration(seconds: 2),
-    //   vsync: this,
-    // );
   }
 
   @override
   void dispose() {
-    // _controller.dispose();
     super.dispose();
   }
 

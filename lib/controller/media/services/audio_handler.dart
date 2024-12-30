@@ -160,10 +160,14 @@ class MyAudioHandler extends BaseAudioHandler
 
     ///Risky factor: 3
     ///
-    await _playlist.removeAt(index);
+    try {
+      await _playlist.removeAt(index);
 
-    print('Removed item at index: $index');
-    if (_playlist.children.isEmpty) queue.add([]);
+      print('Removed item at index: $index');
+      if (_playlist.children.isEmpty) queue.add([]);
+    } catch (e) {
+      print('Error while removing item at $index: $e');
+    }
 
     ///Risky factor: 4
     // final newQueue = List<MediaItem>.from(queue.value)..removeAt(index);
@@ -228,8 +232,10 @@ class MyAudioHandler extends BaseAudioHandler
   @override
   Future<void> customAction(String name, [Map<String, dynamic>? extras]) async {
     if (name == 'dispose') {
-      await _player.dispose();
-      super.stop();
+      await _playlist.clear();
+      await _player.stop();
+      await super.stop();
+      print('Dispose playlist: ${_playlist.children}');
     }
   }
 
@@ -237,5 +243,11 @@ class MyAudioHandler extends BaseAudioHandler
   Future<void> stop() async {
     await _player.stop();
     return super.stop();
+  }
+}
+
+extension AudioHandlerExtension on AudioHandler {
+  Future<void> dispose() async {
+    await customAction('dispose');
   }
 }

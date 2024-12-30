@@ -3,14 +3,16 @@ import 'package:flutter/material.dart';
 import 'package:flutter_secure_storage/flutter_secure_storage.dart';
 import 'package:go_router/go_router.dart';
 import 'package:monotone_flutter/common/themes/theme_provider.dart';
-import 'package:monotone_flutter/view/login.dart';
+import 'package:monotone_flutter/controller/media/media_manager.dart';
+import 'package:monotone_flutter/controller/media/services/service_locator.dart';
 import 'package:provider/provider.dart';
 
 class LogoutButton extends StatelessWidget {
   final VoidCallback onPressed;
 
   LogoutButton({required this.onPressed});
-  final FlutterSecureStorage secureStorage = FlutterSecureStorage();
+  final FlutterSecureStorage secureStorage = const FlutterSecureStorage();
+  final audioHandler = MediaManager();
 
   @override
   Widget build(BuildContext context) {
@@ -43,6 +45,7 @@ class LogoutButton extends StatelessWidget {
     ///
     await secureStorage
         .deleteAll(); // This will delete all tokens and other stored data
-    // await secureStorage.write(key: 'isLoggedIn', value: 'false');
+    getIt<MediaManager>().removeAll();
+    await audioHandler.stopAndRemoveAllMedia();
   }
 }

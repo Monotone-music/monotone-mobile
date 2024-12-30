@@ -1,6 +1,3 @@
-import 'dart:async';
-
-import 'package:auto_scroll_text/auto_scroll_text.dart';
 import 'package:flutter/material.dart';
 import 'package:monotone_flutter/common/api_url.dart';
 import 'package:http_interceptor/http_interceptor.dart';
@@ -104,7 +101,7 @@ class CustomSearchDelegate extends SearchDelegate {
     });
 
     if (query.isEmpty) {
-      return Center(
+      return const Center(
           child: Text('No results found', style: TextStyle(fontSize: 18)));
     }
 
@@ -138,7 +135,7 @@ class CustomSearchDelegate extends SearchDelegate {
             ...snapshot.data!.artists,
           ];
           return ListView(
-            children: _buildSuggestions(context),
+            children: _fetchSearchList(context, 1),
           );
         }
       },
@@ -147,13 +144,8 @@ class CustomSearchDelegate extends SearchDelegate {
 
   @override
   Widget buildSuggestions(BuildContext context) {
-    debouncer.debounce(() {
-      result = searchBarLoader.fetchSearchResults(query);
-    });
+    result = searchBarLoader.fetchSuggestion();
 
-    if (query.isEmpty) {
-      return Container();
-    }
     return FutureBuilder<SearchResults>(
       future: result,
       builder: (context, snapshot) {
@@ -164,12 +156,12 @@ class CustomSearchDelegate extends SearchDelegate {
         } else if (snapshot.hasError) {
           return Center(
               child: Text('Error: ${snapshot.error}',
-                  style: TextStyle(fontSize: 18)));
+                  style: const TextStyle(fontSize: 18)));
         } else if (!snapshot.hasData ||
             snapshot.data!.albums.isEmpty &&
                 snapshot.data!.recordings.isEmpty &&
                 snapshot.data!.artists.isEmpty) {
-          return Center(
+          return const Center(
               child:
                   Text('No suggestions found', style: TextStyle(fontSize: 18)));
         } else {
@@ -179,27 +171,31 @@ class CustomSearchDelegate extends SearchDelegate {
             ...snapshot.data!.artists,
           ];
           return ListView(
-            children: _buildSuggestions(context),
+            children: _fetchSearchList(context, 0),
           );
         }
       },
     );
   }
 
-  List<Widget> _buildSuggestions(BuildContext context) {
+  List<Widget> _fetchSearchList(BuildContext context, int flag) {
     List<Widget> suggestions = [];
 
+    ///FLAG == 1 ==> RESULT; FLAG ==0 ==> SUGGESTION
     var albums =
         searchResults.where((item) => item.source.type == 'album').toList();
-    if (albums.isNotEmpty) {
+    if (albums.isNotEmpty && flag == 1) {
       suggestions.addAll(_buildList(context, 'Albums', albums));
     }
-
-    var songs =
-        searchResults.where((item) => item.source.type == 'recording').toList();
-    if (songs.isNotEmpty) {
-      suggestions.addAll(_buildList(context, 'Songs', songs));
+    else if (albums.isNotEmpty && flag == 0){
+      suggestions.addAll(_buildList(context, 'Most Popular Albums', albums));
     }
+
+    // var songs =
+    //     searchResults.where((item) => item.source.type == 'recording').toList();
+    // if (songs.isNotEmpty) {
+    //   suggestions.addAll(_buildList(context, 'Songs', songs));
+    // }
 
     var artists =
         searchResults.where((item) => item.source.type == 'artist').toList();
@@ -215,7 +211,7 @@ class CustomSearchDelegate extends SearchDelegate {
       padding: const EdgeInsets.all(8.0),
       child: Text(
         title,
-        style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
+        style: const TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
       ),
     );
   }
@@ -296,8 +292,7 @@ class CustomSearchDelegate extends SearchDelegate {
         String imageUrl = 'assets/image/not_available.png'; // Placeholder image
 
         if (item.source.artistInfo?.image != null) {
-          imageUrl =
-              'https://api2.ibarakoi.online/image/${item.source.artistInfo!.image}';
+          imageUrl = '$BASE_URL/image/${item.source.artistInfo!.image}';
         }
 
         return InkWell(

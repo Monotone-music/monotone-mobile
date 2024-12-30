@@ -28,11 +28,19 @@ class MediaPlayer extends StatelessWidget {
             valueListenable: pageManager.currentSongTitleNotifier,
             builder: (context, currentSongTitle, child) {
               final currentMediaItem = pageManager.currentMediaItem;
-              final imageUrl = currentMediaItem?.artUri?.toString() ??
-                  'assets/image/not_available.png';
-              final title = currentMediaItem?.title ?? 'Unknown Title';
-              final artistName = currentMediaItem?.artist ?? 'Unknown Artist';
-              final albumName = currentMediaItem?.album ?? 'Unknown Album';
+              final imageUrl = currentSongTitle.isEmpty
+                  ? 'assets/image/not_available.png'
+                  : currentMediaItem?.artUri?.toString() ??
+                      'assets/image/not_available.png';
+              final title = currentSongTitle.isEmpty
+                  ? 'No Track Selected'
+                  : currentMediaItem?.title ?? 'Unknown Title';
+              final artistName = currentSongTitle.isEmpty
+                  ? 'Select a track to play'
+                  : currentMediaItem?.artist ?? 'Unknown Artist';
+              final albumName = currentSongTitle.isEmpty
+                  ? ''
+                  : currentMediaItem?.album ?? 'Unknown Album';
               return Scaffold(
                   backgroundColor: isDarkMode
                       ? const Color(0xFF333842)
@@ -104,8 +112,8 @@ class MediaPlayer extends StatelessWidget {
                                     imageUrl,
                                     title,
                                     artistName);
-                              case 2:
-                                return buildLyrics(context);
+                              // case 2:
+                              //   return buildLyrics(context);
                               default:
                                 return const SizedBox();
                             }
