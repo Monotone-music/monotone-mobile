@@ -60,11 +60,16 @@ class _MediaToolbarState extends State<MediaToolbar> {
               valueListenable: pageManager.currentSongTitleNotifier,
               builder: (context, currentSongTitle, child) {
                 final currentMediaItem = pageManager.currentMediaItem;
-                final imageUrl = currentMediaItem?.artUri?.toString() ??
-                    'assets/image/not_available.png';
-                final trackName = currentMediaItem?.title ?? 'No media loaded';
-                final artistName = currentMediaItem?.artist ?? '';
-
+                final imageUrl = currentSongTitle.isEmpty
+                    ? 'assets/image/not_available.png'
+                    : currentMediaItem?.artUri?.toString() ??
+                        'assets/image/not_available.png';
+                final trackName = currentSongTitle.isEmpty
+                    ? 'No media loaded'
+                    : currentMediaItem?.title ?? 'No media loaded';
+                final artistName = currentSongTitle.isEmpty
+                    ? 'Select a track to play'
+                    : currentMediaItem?.artist ?? 'Select a track to play';
                 return Column(
                   children: [
                     Row(
@@ -72,7 +77,7 @@ class _MediaToolbarState extends State<MediaToolbar> {
                       crossAxisAlignment: CrossAxisAlignment.center,
                       children: [
                         // Media thumbnail
-                        SizedBox(
+                        const SizedBox(
                           width: 6.0,
                         ),
                         ClipRRect(

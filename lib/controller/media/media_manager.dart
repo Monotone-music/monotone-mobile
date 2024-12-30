@@ -63,13 +63,12 @@ class MediaManager {
           'url': '$BASE_URL/advertisement/stream/${advertisement.data.id}'
         },
       );
-    }else{
+    } else {
       advertisementItem = MediaItem(
         id: '_advertisement',
         title: "Ads not supported",
         artist: 'Advertisement',
-        artUri:
-            Uri.parse('assets/image/not_available.png'),
+        artUri: Uri.parse('assets/image/not_available.png'),
         duration: const Duration(seconds: 10),
       );
     }
@@ -485,12 +484,18 @@ class MediaManager {
     _audioHandler.removeQueueItemAt(lastIndex);
   }
 
-  void removeAll() {
+  void removeAll() async {
     final queueLength = _audioHandler.queue.value.length;
     for (int i = queueLength - 1; i >= 0; i--) {
       _audioHandler.removeQueueItemAt(i);
     }
     print('All items removed from the queue');
+    // _audioHandler.pause();
+    // _audioHandler.seek(Duration.zero);
+    // _audioHandler.skipToQueueItem(0);
+
+    // playlistNotifier.value = [];
+    // currentSongTitleNotifier.value = '';
   }
 
   void dispose() {
@@ -499,5 +504,17 @@ class MediaManager {
 
   void stop() {
     _audioHandler.stop();
+  }
+
+  Future<void> logOut() async {
+    progressNotifier.value = const ProgressBarState(
+      current: Duration.zero,
+      buffered: Duration.zero,
+      total: Duration.zero,
+    );
+    await _audioHandler.pause();
+    await _audioHandler.seek(Duration.zero);
+    await _audioHandler.skipToQueueItem(0);
+    stop();
   }
 }
