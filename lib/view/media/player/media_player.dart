@@ -100,7 +100,7 @@ class MediaPlayer extends StatelessWidget {
                         Expanded(
                             child: PageView.builder(
                           controller: PageController(initialPage: 1),
-                          itemCount: 3,
+                          itemCount: 2,
                           itemBuilder: (context, index) {
                             switch (index) {
                               case 0:
