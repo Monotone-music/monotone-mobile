@@ -99,7 +99,6 @@ class MediaManager {
     }
   }
 
-  ///NOTE: NOT DONE, USED TO ELIMINATE MEDIA WHEN LOG OUT
 // New function to stop and eliminate all background media items
   Future<void> stopAndRemoveAllMedia() async {
     // Stop the music playback
