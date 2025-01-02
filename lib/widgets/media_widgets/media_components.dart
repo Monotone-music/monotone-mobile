@@ -50,7 +50,8 @@ class Playlist extends StatelessWidget {
             itemBuilder: (context, index) {
               final mediaItem = playlist[index];
               final isAdvertisement = mediaItem.artist == 'Advertisement';
-
+              final isPlaying =
+                  mediaItem.id == pageManager.currentMediaItem?.id;
               return ListTile(
                 leading: ClipRRect(
                   borderRadius: BorderRadius.circular(8.0),
@@ -61,6 +62,12 @@ class Playlist extends StatelessWidget {
                     height: 50,
                   ),
                 ),
+                titleAlignment: ListTileTitleAlignment.center,
+                tileColor: isPlaying
+                    ? isDarkMode
+                        ? Colors.white.withOpacity(0.2)
+                        : Colors.black.withOpacity(0.1)
+                    : null,
                 title: Text(mediaItem.title),
                 subtitle: Text(
                   mediaItem.artist ?? 'Unknown Artist',
