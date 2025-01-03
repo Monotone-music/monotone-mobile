@@ -6,7 +6,7 @@ class SearchDebouncer {
   Timer? _timer;
   VoidCallback? _callback;
 
-  SearchDebouncer({this.delay = const Duration(milliseconds: 100)});
+  SearchDebouncer({this.delay = const Duration(milliseconds: 500)});
 
   void debounce(VoidCallback callback) {
     _callback = callback;

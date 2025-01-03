@@ -108,9 +108,6 @@ class MediaManager {
       total: Duration.zero,
     );
     await _audioHandler.pause();
-    stop();
-    await addNull();
-    remove();
     dispose();
   }
 
@@ -493,7 +490,7 @@ class MediaManager {
     _audioHandler.addQueueItem(mediaItem);
   }
 
-  Future<void> addNull() async {
+  void addNull() async {
     final mediaItem = MediaItem(
       id: '',
       title: 'No media loaded',
@@ -502,7 +499,10 @@ class MediaManager {
     );
 
     await _audioHandler.addQueueItem(mediaItem);
-    await _audioHandler.seek(Duration.zero);
+    await _audioHandler.skipToQueueItem(0);
+    /// ADD AND REMOVE TO TAKE THE IMAGE OF THE LATEST NULL MEDIA ITEM
+    /// TO DISPLAY NOTIFICATION "NO MEDIA LOADED"
+    await _audioHandler.removeQueueItemAt(0);
   }
 
   void remove() {
@@ -520,7 +520,11 @@ class MediaManager {
   }
 
   void dispose() async {
+    stop();
     await _audioHandler.dispose();
+    ///ADD NULL FUNCTION HELP REMOVE ALL PLACEHOLDER SONGS WILL THE NULL SONGS
+    /// THAT DISPLAYS "NO MEDIA LOADED"
+    addNull();
   }
 
   void stop() async {
