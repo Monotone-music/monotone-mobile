@@ -1,15 +1,13 @@
 import 'package:auto_scroll_text/auto_scroll_text.dart';
 import 'package:flutter/material.dart';
-import 'package:go_router/go_router.dart';
-import 'package:http_interceptor/http_interceptor.dart';
 import 'package:monotone_flutter/common/api_url.dart';
 import 'package:monotone_flutter/controller/release_group/release_group_controller.dart';
+import 'package:monotone_flutter/view/artist_detail/artist_detail.dart';
 import 'package:shimmer/shimmer.dart';
 
 import 'package:monotone_flutter/common/themes/theme_provider.dart';
 import 'package:monotone_flutter/controller/media/media_manager.dart';
 import 'package:monotone_flutter/controller/media/services/service_locator.dart';
-import 'package:monotone_flutter/interceptor/jwt_interceptor.dart';
 import 'package:monotone_flutter/models/release_group_model.dart';
 import 'package:monotone_flutter/widgets/image_widgets/image_renderer.dart';
 
@@ -122,6 +120,8 @@ Widget buildAlbumImageWithBackButton(
     ReleaseGroup releaseGroup,
     Map<String, String> imageCache,
     ThemeProvider themeProvider) {
+  final artistId = releaseGroup.artistId;
+
   return Stack(
     children: [
       Container(
@@ -163,7 +163,7 @@ Widget buildAlbumImageWithBackButton(
             shape: BoxShape.circle,
           ),
           child: IconButton(
-            icon: Icon(Icons.arrow_back, color: Colors.white),
+            icon: const Icon(Icons.arrow_back, color: Colors.white),
             onPressed: () {
               Navigator.of(context).pop();
             },
@@ -171,23 +171,40 @@ Widget buildAlbumImageWithBackButton(
         ),
       ),
       //More actions button
-      // Positioned(
-      //   top: 16,
-      //   right: 16,
-      //   child: Container(
-      //     decoration: BoxDecoration(
-      //       color:
-      //           Colors.black.withOpacity(0.2), // Background color with opacity
-      //       shape: BoxShape.circle,
-      //     ),
-      //     child: IconButton(
-      //       icon: Icon(Icons.more_vert, color: Colors.white),
-      //       onPressed: () {
-      //         // Add more actions here
-      //       },
-      //     ),
-      //   ),
-      // ),
+      if(artistId!= 'Various Artists')
+      Positioned(
+        top: 16,
+        right: 16,
+        child: Container(
+          decoration: BoxDecoration(
+            color:
+                Colors.black.withOpacity(0.2), // Background color with opacity
+            shape: BoxShape.circle,
+          ),
+          child: PopupMenuButton<int>(
+            icon: const Icon(Icons.more_vert, color: Colors.white),
+            onSelected: (value) {
+              if (value == 0) {
+                Navigator.push(
+                  context,
+                  MaterialPageRoute(
+                    builder: (context) => ArtistDetailPage(artistId: artistId),
+                  ),
+                );
+              }
+            },
+            itemBuilder: (context) => [
+              const PopupMenuItem<int>(
+                value: 0,
+                child: ListTile(
+                  leading: Icon(Icons.info),
+                  title: Text('About this artist'),
+                ),
+              ),
+            ],
+          ),
+        ),
+      ),
       // Play shuffle button
       Positioned(
         left: 0,
@@ -242,8 +259,8 @@ Widget buildAlbumImageWithBackButton(
                     icon: const Icon(Icons.queue, color: Colors.blue, size: 20),
                     onPressed: () {
                       // Handle add to queue action
-                      getIt<MediaManager>()
-                          .sequentialLoadTracks(releaseGroup.tracks, releaseGroup.name);
+                      getIt<MediaManager>().sequentialLoadTracks(
+                          releaseGroup.tracks, releaseGroup.name);
                     },
                   ),
                 ),

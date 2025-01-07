@@ -1,6 +1,7 @@
 import 'dart:math';
 import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
+import 'package:fluttertoast/fluttertoast.dart';
 import 'package:provider/provider.dart';
 import 'package:go_router/go_router.dart';
 
@@ -51,6 +52,17 @@ class _LoginFormState extends State<LoginForm> {
   }
 
   Future<void> _login() async {
+    if (_usernameController.text.length > 25) {
+      Fluttertoast.showToast(
+        msg: 'Exceed max username length of 25',
+        toastLength: Toast.LENGTH_SHORT,
+        backgroundColor: Colors.red,
+        fontSize: 18,
+        gravity: ToastGravity.BOTTOM,
+      );
+      return;
+    }
+
     if (_formKey.currentState!.validate()) {
       // Perform login action
       final result = await _loginLoader.login(
@@ -60,21 +72,40 @@ class _LoginFormState extends State<LoginForm> {
       if (!mounted) return; // Check if the widget is still mounted
 
       if (result == '200') {
-        // Use GoRouter for navigation
-        GoRouter.of(context).go('/home');
-      } else if (result == '400') {
-        setState(() {
-          _errorMessage = 'Invalid username or password';
-        });
-      } else if (result == '401' || result == '404') {
-        setState(() {
-          _errorMessage = 'Your account does not existed or unauthorized';
-        });
-      } else {
-        setState(() {
-          _errorMessage = 'There must be something wrong';
-        });
-      }
+      Fluttertoast.showToast(
+        msg: 'Login successfully',
+        toastLength: Toast.LENGTH_SHORT,
+        backgroundColor: Colors.green,
+        fontSize: 18,
+        gravity: ToastGravity.BOTTOM,
+      );
+      // Use GoRouter for navigation
+      GoRouter.of(context).go('/home');
+    } else if (result == '400') {
+      Fluttertoast.showToast(
+        msg: 'Invalid username or password',
+        toastLength: Toast.LENGTH_SHORT,
+        backgroundColor: Colors.red,
+        fontSize: 18,
+        gravity: ToastGravity.BOTTOM,
+      );
+    } else if (result == '401' || result == '404') {
+      Fluttertoast.showToast(
+        msg: 'Your account does not exist or unauthorized',
+        toastLength: Toast.LENGTH_SHORT,
+        backgroundColor: Colors.red,
+        fontSize: 18,
+        gravity: ToastGravity.BOTTOM,
+      );
+    } else {
+      Fluttertoast.showToast(
+        msg: 'An unknown error occurred',
+        toastLength: Toast.LENGTH_SHORT,
+        backgroundColor: Colors.red,
+        fontSize: 18,
+        gravity: ToastGravity.BOTTOM,
+      );
+    }
 
       ///
     }
@@ -107,7 +138,7 @@ class _LoginFormState extends State<LoginForm> {
             child: Container(
               width: width * 0.8,
               height: height * 0.5,
-              padding: EdgeInsets.all(16.0),
+              padding: const EdgeInsets.all(16.0),
               decoration: BoxDecoration(
                 color: changeSurface.withOpacity(0.7),
                 borderRadius: BorderRadius.circular(10),
@@ -140,7 +171,7 @@ class _LoginFormState extends State<LoginForm> {
                             ),
                             prefixIcon:
                                 Icon(Icons.person, color: changePrimary),
-                            border: OutlineInputBorder(),
+                            border: const OutlineInputBorder(),
                           ),
                           validator: (value) {
                             if (value == null || value.isEmpty) {
@@ -149,7 +180,7 @@ class _LoginFormState extends State<LoginForm> {
                             return null;
                           },
                         ),
-                        SizedBox(height: 16.0),
+                        const SizedBox(height: 16.0),
                         TextFormField(
                           controller: _passwordController,
                           decoration: InputDecoration(
@@ -173,7 +204,7 @@ class _LoginFormState extends State<LoginForm> {
                                 });
                               },
                             ),
-                            border: OutlineInputBorder(),
+                            border: const OutlineInputBorder(),
                           ),
                           obscureText: _obscureText,
                           validator: (value) {
@@ -191,9 +222,9 @@ class _LoginFormState extends State<LoginForm> {
                     if (_errorMessage.isNotEmpty)
                       Text(
                         _errorMessage,
-                        style: TextStyle(color: Colors.red, fontSize: 18),
+                        style: const TextStyle(color: Colors.red, fontSize: 18),
                       ),
-                    SizedBox(height: 16.0),
+                    const SizedBox(height: 16.0),
                     LoginButton(onPressed: () {
                       _login();
                     }),

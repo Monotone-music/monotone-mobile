@@ -45,7 +45,6 @@ class LogoutButton extends StatelessWidget {
     ///
     await secureStorage
         .deleteAll(); // This will delete all tokens and other stored data
-    getIt<MediaManager>().removeAll();
     await audioHandler.stopAndRemoveAllMedia();
   }
 }

@@ -144,7 +144,7 @@ class CustomSearchDelegate extends SearchDelegate {
 
   @override
   Widget buildSuggestions(BuildContext context) {
-    result = searchBarLoader.fetchSuggestion();
+    result = searchBarLoader.fetchSearchResults(query);
 
     return FutureBuilder<SearchResults>(
       future: result,
@@ -167,7 +167,7 @@ class CustomSearchDelegate extends SearchDelegate {
         } else {
           searchResults = [
             ...snapshot.data!.albums,
-            ...snapshot.data!.recordings,
+            // ...snapshot.data!.recordings,:
             ...snapshot.data!.artists,
           ];
           return ListView(

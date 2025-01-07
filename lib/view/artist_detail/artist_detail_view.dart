@@ -102,14 +102,14 @@ class ArtistDetailView extends StatelessWidget {
                           )),
                     ),
                     const Spacer(),
-                    IconButton(
-                        onPressed: () {
-                          print('Artist Detail Play Button Pressed');
-                        },
-                        icon: ImageRenderer(
-                            height: height * 0.05,
-                            width: width * 0.05,
-                            imageUrl: 'assets/image/play_button_icon.svg')),
+                    // IconButton(
+                    //     onPressed: () {
+                    //       print('Artist Detail Play Button Pressed');
+                    //     },
+                    //     icon: ImageRenderer(
+                    //         height: height * 0.05,
+                    //         width: width * 0.05,
+                    //         imageUrl: 'assets/image/play_button_icon.svg')),
                   ],
                 ),
               ],
@@ -238,16 +238,16 @@ class ArtistDetailView extends StatelessWidget {
                           ],
                         ),
                       ),
-                      IconButton(
-                        icon: ImageRenderer(
-                          imageUrl: 'assets/image/vertical_more_icon.svg',
-                          width: 50,
-                          height: 50,
-                        ),
-                        onPressed: () {
-                          print('Icon button pressed for item $index');
-                        },
-                      ),
+                      // IconButton(
+                      //   icon: ImageRenderer(
+                      //     imageUrl: 'assets/image/vertical_more_icon.svg',
+                      //     width: 50,
+                      //     height: 50,
+                      //   ),
+                      //   onPressed: () {
+                      //     print('Icon button pressed for item $index');
+                      //   },
+                      // ),
                     ],
                   ),
                 );

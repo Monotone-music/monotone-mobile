@@ -45,10 +45,14 @@ class Playlist extends StatelessWidget {
       child: ValueListenableBuilder<List<MediaItem>>(
         valueListenable: pageManager.playlistNotifier,
         builder: (context, playlist, _) {
+          // Filter out items with id 'null'
+          final filteredPlaylist =
+              playlist.where((mediaItem) => mediaItem.id != 'null').toList();
+
           return ListView.builder(
-            itemCount: playlist.length,
+            itemCount: filteredPlaylist.length,
             itemBuilder: (context, index) {
-              final mediaItem = playlist[index];
+              final mediaItem = filteredPlaylist[index];
               final isAdvertisement = mediaItem.artist == 'Advertisement';
 
               return ListTile(
@@ -79,12 +83,9 @@ class Playlist extends StatelessWidget {
                         icon: const Icon(Icons.remove),
                         onPressed: () {
                           getIt<AudioHandler>().removeQueueItemAt(index);
-                          // print('delete song at index: $index');
                         },
                       )
                     : null,
-
-                ///
               );
             },
           );
@@ -177,11 +178,11 @@ class AudioControlButtons extends StatelessWidget {
   const AudioControlButtons({Key? key}) : super(key: key);
   @override
   Widget build(BuildContext context) {
-    return SizedBox(
+    return const SizedBox(
       height: 60,
       child: Row(
         mainAxisAlignment: MainAxisAlignment.spaceAround,
-        children: const [
+        children: [
           RepeatButton(),
           PreviousSongButton(),
           PlayButton(),

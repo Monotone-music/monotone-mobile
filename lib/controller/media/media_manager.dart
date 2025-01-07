@@ -108,6 +108,9 @@ class MediaManager {
       total: Duration.zero,
     );
     await _audioHandler.pause();
+    stop();
+    await removeAll();
+    await addNull();
     dispose();
   }
 
@@ -145,7 +148,7 @@ class MediaManager {
     await _audioHandler.stop();
     await _audioHandler.seek(Duration.zero);
     await _audioHandler.skipToQueueItem(0);
-    removeAll();
+    await removeAll();
 
     await _handleAdvertisements(_currentPlaylist, albumName);
     loadPlaylist(playlist, albumName);
@@ -162,7 +165,7 @@ class MediaManager {
 
     await _audioHandler.stop();
     await _audioHandler.seek(Duration.zero);
-    removeAll();
+    await removeAll();
     // loadPlaylist(playlist, albumName);
     // stop();
     await _handleAdvertisements(_currentPlaylist, albumName);
@@ -214,7 +217,7 @@ class MediaManager {
   }
 
   void clearAndLoadTrack(Track track, String albumName) async {
-    removeAll();
+    await removeAll();
     loadTrack(track, albumName);
     play();
   }
@@ -269,7 +272,7 @@ class MediaManager {
       List<RecordingDetails> playlist, String playlistName, int index) async {
     await _audioHandler.stop();
     await _audioHandler.seek(Duration.zero);
-    removeAll();
+    await removeAll();
 
     // Add the selected track first
     final selectedTrack = playlist[index];
@@ -338,7 +341,7 @@ class MediaManager {
       List<RecordingDetails> playlist, String playlistName) async {
     await _audioHandler.stop();
     await _audioHandler.seek(Duration.zero);
-    removeAll();
+    await removeAll();
 
     // Load the entire playlist
     final mediaItems = playlist.map((recording) {
@@ -490,41 +493,34 @@ class MediaManager {
     _audioHandler.addQueueItem(mediaItem);
   }
 
-  void addNull() async {
+  Future<void> addNull() async {
     final mediaItem = MediaItem(
-      id: '',
+      id: 'null',
       title: 'No media loaded',
       album: '',
       extras: {'url': ''},
     );
-
-    await _audioHandler.addQueueItem(mediaItem);
+    await _audioHandler.insertQueueItem(0, mediaItem);
     await _audioHandler.skipToQueueItem(0);
-    /// ADD AND REMOVE TO TAKE THE IMAGE OF THE LATEST NULL MEDIA ITEM
-    /// TO DISPLAY NOTIFICATION "NO MEDIA LOADED"
     await _audioHandler.removeQueueItemAt(0);
   }
 
-  void remove() {
+  void remove() async {
     final lastIndex = _audioHandler.queue.value.length - 1;
     if (lastIndex < 0) return;
-    _audioHandler.removeQueueItemAt(lastIndex);
+    await _audioHandler.removeQueueItemAt(lastIndex);
   }
 
-  void removeAll() async {
+  Future<void> removeAll() async {
     final queueLength = _audioHandler.queue.value.length;
     for (int i = queueLength - 1; i >= 0; i--) {
       await _audioHandler.removeQueueItemAt(i);
     }
-    print('All items removed from the queue ');
+    print('All items removed from the queue');
   }
 
   void dispose() async {
-    stop();
     await _audioHandler.dispose();
-    ///ADD NULL FUNCTION HELP REMOVE ALL PLACEHOLDER SONGS WILL THE NULL SONGS
-    /// THAT DISPLAYS "NO MEDIA LOADED"
-    addNull();
   }
 
   void stop() async {

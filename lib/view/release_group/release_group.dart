@@ -1,5 +1,6 @@
 import 'package:auto_scroll_text/auto_scroll_text.dart';
 import 'package:flutter/material.dart';
+import 'package:monotone_flutter/view/artist_detail/artist_detail.dart';
 import 'package:provider/provider.dart';
 
 import 'package:monotone_flutter/controller/release_group/release_group_data.dart';
@@ -51,7 +52,6 @@ class _ReleaseGroupPageState extends State<ReleaseGroupPage> {
             } else {
               final releaseGroup = snapshot.data!['releaseGroup'];
               final imageCache = snapshot.data!['imageCache'];
-              print('imageCache: ${imageCache}');
 
               // Calculate total duration
               final totalDuration = releaseGroup.tracks.fold<double>(
@@ -79,16 +79,31 @@ class _ReleaseGroupPageState extends State<ReleaseGroupPage> {
                           ),
                           const SizedBox(height: 8),
                           // Artist name
-                          Text(
-                            releaseGroup.artistName,
-                            style:
-                                Theme.of(context).textTheme.bodyLarge?.copyWith(
-                                      color: isDarkMode
-                                          ? Colors.white.withOpacity(0.7)
-                                          : Colors.black,
-                                      fontWeight: FontWeight.w400,
-                                    ),
-                          ),
+                          // GestureDetector(
+                          //   onTap: () {
+                          //     Navigator.push(
+                          //       context,
+                          //       MaterialPageRoute(
+                          //         builder: (context) => ArtistDetailPage(
+                          //             artistId: releaseGroup.artistId),
+                          //       ),
+                          //     );
+                          //   }, child: 
+                            Text(
+                              releaseGroup.artistName,
+                              style: Theme.of(context)
+                                  .textTheme
+                                  .bodyLarge
+                                  ?.copyWith(
+                                    color: isDarkMode
+                                        ? Colors.white.withOpacity(0.7)
+                                        : Colors.black,
+                                    fontWeight: FontWeight.w400,
+                                    decoration: TextDecoration
+                                        .none, // Add underline to indicate it's a link
+                                  ),
+                            ),
+                          // ),
                           const SizedBox(height: 8),
                           //release year, total tracks, total duration
                           Text(

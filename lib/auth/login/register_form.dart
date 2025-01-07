@@ -1,4 +1,5 @@
 import 'dart:math';
+import 'package:fluttertoast/fluttertoast.dart';
 import 'package:go_router/go_router.dart';
 import 'package:provider/provider.dart';
 import 'package:flutter/material.dart';
@@ -53,6 +54,23 @@ class _RegisterFormState extends State<RegisterForm> {
   }
 
   Future<void> _register() async {
+    if (_usernameController.text.length > 25) {
+      Fluttertoast.showToast(
+        msg: 'Exceed max username length of 25',
+        toastLength: Toast.LENGTH_SHORT,
+        gravity: ToastGravity.BOTTOM,
+      );
+      return;
+    }
+    if (_displayNameController.text.length > 25) {
+      Fluttertoast.showToast(
+        msg: 'Exceed max display name length of 25',
+        toastLength: Toast.LENGTH_SHORT,
+        gravity: ToastGravity.BOTTOM,
+      );
+      return;
+    }
+
     if (_formKey.currentState!.validate()) {
       // Perform registration action
       final result = await _registerLoader.register(
@@ -62,26 +80,40 @@ class _RegisterFormState extends State<RegisterForm> {
         _passwordController.text,
       );
 
-      if (result == '400') {
-        setState(() {
-          _errorMessage = 'Invalid registration details';
-        });
-      } else if (result == 'Unexpected status code' ||
-          result == 'Unexpected error') {
-        setState(() {
-          _errorMessage = 'There must be something wrong';
-        });
-      } else if (result == 'Network error') {
-        setState(() {
-          _errorMessage = 'There must be something wrong';
-        });
-      } else if (result == '401') {
-        setState(() {
-          _errorMessage = 'The account is already exist';
-        });
-      } else {
+      if (result == '200') {
+        Fluttertoast.showToast(
+          msg: 'Register successfully',
+          toastLength: Toast.LENGTH_SHORT,
+          backgroundColor: Colors.green,
+          fontSize: 18,
+          gravity: ToastGravity.BOTTOM,
+        );
         // Navigate to login page
         GoRouter.of(context).push('/login');
+      } else if (result == 'Network error') {
+        Fluttertoast.showToast(
+          msg: 'There must be something wrong',
+          toastLength: Toast.LENGTH_SHORT,
+          backgroundColor: Colors.red,
+          fontSize: 18,
+          gravity: ToastGravity.BOTTOM,
+        );
+      } else if (result == '401') {
+        Fluttertoast.showToast(
+          msg: 'The account already exists',
+          toastLength: Toast.LENGTH_SHORT,
+          backgroundColor: Colors.red,
+          fontSize: 18,
+          gravity: ToastGravity.BOTTOM,
+        );
+      } else {
+        Fluttertoast.showToast(
+          msg: 'An unknown error occurred',
+          toastLength: Toast.LENGTH_SHORT,
+          backgroundColor: Colors.red,
+          fontSize: 18,
+          gravity: ToastGravity.BOTTOM,
+        );
       }
     }
   }
@@ -114,7 +146,7 @@ class _RegisterFormState extends State<RegisterForm> {
             top: 0,
             left: 0,
             child: IconButton(
-              icon: Icon(Icons.arrow_back, color: Colors.white),
+              icon: const Icon(Icons.arrow_back, color: Colors.white),
               onPressed: () {
                 Navigator.of(context).pop();
               },
@@ -157,7 +189,7 @@ class _RegisterFormState extends State<RegisterForm> {
                               ),
                               prefixIcon:
                                   Icon(Icons.person, color: changePrimary),
-                              border: OutlineInputBorder(),
+                              border: const OutlineInputBorder(),
                             ),
                             validator: (value) {
                               if (value == null || value.isEmpty) {
@@ -166,7 +198,7 @@ class _RegisterFormState extends State<RegisterForm> {
                               return null;
                             },
                           ),
-                          SizedBox(height: 16.0),
+                          const SizedBox(height: 16.0),
                           TextFormField(
                             controller: _displayNameController,
                             decoration: InputDecoration(
@@ -178,7 +210,7 @@ class _RegisterFormState extends State<RegisterForm> {
                               ),
                               prefixIcon:
                                   Icon(Icons.person, color: changePrimary),
-                              border: OutlineInputBorder(),
+                              border: const OutlineInputBorder(),
                             ),
                             validator: (value) {
                               if (value == null || value.isEmpty) {
@@ -187,7 +219,7 @@ class _RegisterFormState extends State<RegisterForm> {
                               return null;
                             },
                           ),
-                          SizedBox(height: 16.0),
+                          const SizedBox(height: 16.0),
                           TextFormField(
                             controller: _emailController,
                             decoration: InputDecoration(
@@ -199,7 +231,7 @@ class _RegisterFormState extends State<RegisterForm> {
                               ),
                               prefixIcon:
                                   Icon(Icons.email, color: changePrimary),
-                              border: OutlineInputBorder(),
+                              border: const OutlineInputBorder(),
                             ),
                             validator: (value) {
                               if (value == null || value.isEmpty) {
@@ -208,7 +240,7 @@ class _RegisterFormState extends State<RegisterForm> {
                               return null;
                             },
                           ),
-                          SizedBox(height: 16.0),
+                          const SizedBox(height: 16.0),
                           TextFormField(
                             controller: _passwordController,
                             decoration: InputDecoration(
@@ -233,7 +265,7 @@ class _RegisterFormState extends State<RegisterForm> {
                                   });
                                 },
                               ),
-                              border: OutlineInputBorder(),
+                              border: const OutlineInputBorder(),
                             ),
                             obscureText: _obscureText,
                             validator: (value) {
@@ -243,7 +275,7 @@ class _RegisterFormState extends State<RegisterForm> {
                               return null;
                             },
                           ),
-                          SizedBox(height: 16.0),
+                          const SizedBox(height: 16.0),
                           TextFormField(
                             controller: _confirmPasswordController,
                             decoration: InputDecoration(

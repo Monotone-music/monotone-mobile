@@ -3,6 +3,7 @@ class Track {
   final int position;
   final String title;
   final double duration;
+  // final List<String> artistIds;
   final List<String> artistNames;
   final String imageUrl;
   final int view;
@@ -12,6 +13,7 @@ class Track {
     required this.position,
     required this.title,
     required this.duration,
+    // required this.artistIds,
     required this.artistNames,
     required this.imageUrl,
     required this.view,
@@ -24,6 +26,13 @@ class Track {
         artistNames.add(artist['name']);
       }
     }
+    // List<String> artistIds = [];
+    // if (json['artist'] != null) {
+    //   for (var artist in json['artist']) {
+    //     artistNames.add(artist['_id']);
+    //   }
+    // }
+    
     return Track(
       id: json['_id'] ?? 'unknown', // Ensure the id is correctly parsed
       position: json['position']['no'] ?? 0,
@@ -38,6 +47,7 @@ class Track {
 
 class ReleaseGroup {
   final String name;
+  final String artistId;
   final String artistName;
   final String releaseYear;
   final String imageUrl;
@@ -45,6 +55,7 @@ class ReleaseGroup {
 
   ReleaseGroup({
     required this.name,
+    required this.artistId,
     required this.artistName,
     required this.releaseYear,
     required this.imageUrl,
@@ -70,8 +81,12 @@ class ReleaseGroup {
     String artistName = json['releaseType'] == 'compilation'
         ? 'Various Artists'
         : json['release'][0]['recording'][0]['artist'][0]['name'];
+    String artistId = json['releaseType'] == 'compilation'
+        ? 'Various Artists'
+        : json['release'][0]['recording'][0]['artist'][0]['_id'];
     return ReleaseGroup(
       name: json['title'],
+      artistId: artistId,
       artistName: artistName,
       releaseYear: json['releaseEvent']['date'].substring(0, 4),
       imageUrl: json['release'][0]['recording'][0]['image']['filename'],

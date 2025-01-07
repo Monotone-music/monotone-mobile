@@ -1,6 +1,9 @@
 import 'package:audio_service/audio_service.dart';
 import 'package:flutter/material.dart';
 import 'package:just_audio/just_audio.dart';
+import 'package:monotone_flutter/controller/media/media_manager.dart';
+import 'package:monotone_flutter/controller/media/services/service_locator.dart';
+
 
 Future<AudioHandler> initAudioService() async {
   return await AudioService.init(

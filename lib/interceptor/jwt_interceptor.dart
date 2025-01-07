@@ -30,8 +30,8 @@ class JwtInterceptor implements InterceptorContract {
     int statusCode = response.statusCode;
 
     ///
-    if (response is Response) {
-    print('RESPONSE: ${jsonDecode(response.body)}');}
+    // if (response is Response) {
+    // print('RESPONSE: ${jsonDecode(response.body)}');}
     ///
 
     if (response.request?.url.path == '/auth/login' ||
