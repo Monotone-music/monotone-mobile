@@ -5,6 +5,7 @@ import 'dart:io';
 import 'package:http/http.dart' as http;
 import 'package:http_interceptor/http_interceptor.dart';
 import 'package:http_parser/http_parser.dart';
+import 'package:monotone_flutter/models/profile_items.dart';
 import 'package:provider/provider.dart';
 
 import 'package:monotone_flutter/common/api_url.dart';
@@ -15,28 +16,6 @@ import 'package:monotone_flutter/controller/media/notifiers/bitrate_notifier.dar
 import 'package:monotone_flutter/interceptor/jwt_interceptor.dart';
 
 class ProfileDataService {
-  String? name;
-  String? identifier;
-  String? avatar;
-  int? follower;
-  int? following;
-  bool? member;
-  String? member_type;
-  String? membership_price_amount;
-  String? membership_price_unit;
-
-  ProfileDataService({
-    this.name,
-    this.identifier,
-    this.avatar,
-    this.follower,
-    this.following,
-    this.member,
-    this.member_type,
-    this.membership_price_amount,
-    this.membership_price_unit,
-  });
-
   Future<String> changeDisplayName(String newDisplayName) async {
     final httpClient = InterceptedClient.build(interceptors: [
       JwtInterceptor(),
@@ -144,27 +123,28 @@ class ProfileDataService {
     try {
       final response = await httpClient.get(Uri.parse(api));
       if (response.statusCode == 200) {
-        print('Profile data fetched successfully.');
+        // print('Profile data fetched successfully.');
         final Map<String, dynamic> responseBody = jsonDecode(response.body);
-        final data = responseBody['data'];
-        final String displayName = data['displayName'];
-        final String membershipType = data['membership']['type'];
-        final String filename = data['image']['filename'];
+        // print('Response Body: $responseBody'); // Debug print
 
-        final String bitrate =
-            data['membership']['quality'].replaceAll('kbps', '').trim();
-        await _storage.write(key: 'bitrate', value: bitrate);
-        print('Profile data: $displayName, $membershipType');
+        if (responseBody.containsKey('data')) {
+          final profile = ProfileItems.fromJson(responseBody);
+          // print('Parsed Profile: $profile'); // Debug print
+          await _storage.write(key: 'bitrate', value: profile.bitrate);
+          // print('Profile data: ${profile.displayName}, ${profile.membershipType}');
 
-        // Notify the BitrateProvider to update its state
-        Provider.of<BitrateProvider>(context, listen: false)
-            .setBitrate(bitrate);
+          // Notify the BitrateProvider to update its state
+          Provider.of<BitrateProvider>(context, listen: false)
+              .setBitrate(profile.bitrate);
 
-        return {
-          'displayName': displayName,
-          'filename': filename,
-          'membershipType': membershipType,
-        };
+          return {
+            'displayName': profile.displayName,
+            'filename': profile.filename,
+            'membershipType': profile.membershipType,
+          };
+        } else {
+          print('Key "data" not found in response body.');
+        }
       } else {
         print(
             'Failed to fetch profile data. Status code: ${response.statusCode}');

@@ -75,9 +75,9 @@ class _RegisterFormState extends State<RegisterForm> {
       // Perform registration action
       final result = await _registerLoader.register(
         _usernameController.text,
-        _displayNameController.text,
-        _emailController.text,
         _passwordController.text,
+        _emailController.text,
+        _displayNameController.text,
       );
 
       if (result == '201') {

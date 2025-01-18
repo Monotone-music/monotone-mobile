@@ -41,7 +41,6 @@ class ProfileBody extends StatelessWidget {
   Widget build(BuildContext context) {
     // Fetch the profile data from the service
     final fetchProfile = () => ProfileDataService().fetchProfileApi(context);
-
     return ProfileLoader(fetchProfileData: fetchProfile);
   }
 }

@@ -1,23 +1,26 @@
 class ProfileItems {
-  final String name;
-  final String identifier;
-  final String avatar;
-  final int follower;
-  final int following;
-  final bool member;
-  final String member_type;
-  final String membership_price_amount;
-  final String membership_price_unit;
+  final String displayName;
+  final String membershipType;
+  final String filename;
+  final String bitrate;
 
   ProfileItems({
-    required this.name,
-    required this.identifier,
-    required this.avatar,
-    required this.follower,
-    required this.following,
-    required this.member,
-    required this.member_type,
-    required this.membership_price_amount,
-    required this.membership_price_unit,
+    required this.displayName,
+    required this.membershipType,
+    required this.filename,
+    required this.bitrate,
   });
+
+  factory ProfileItems.fromJson(Map<String, dynamic> json) {
+    final data = json['data'] ?? {};
+    final membership = data['membership'] ?? {};
+    final image = data['image'] ?? {};
+    
+   return ProfileItems(
+      displayName: data['displayName'] ?? 'Unknown',
+      membershipType: membership['type'] ?? 'Unknown',
+      filename: image['filename'] ?? 'assets/image/blank_avatar.png',
+      bitrate: (membership['quality'] ?? '0kbps').replaceAll('kbps', '').trim(),
+    );
+  }
 }

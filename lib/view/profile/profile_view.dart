@@ -331,8 +331,11 @@ class _ProfileViewState extends State<ProfileView> {
                                 fit: BoxFit.cover,
                               )
                             : ImageRenderer(
-                                imageUrl:
-                                    '$BASE_URL/image/${profile['filename']}',
+                                imageUrl: profile['filename'] == null ||
+                                        profile['filename']!
+                                            .endsWith('blank_avatar.png')
+                                    ? 'assets/image/blank_avatar.png'
+                                    : '$BASE_URL/image/${profile['filename']}',
                                 height: min(
                                     MediaQuery.sizeOf(context).height * 0.13,
                                     100),
@@ -506,7 +509,7 @@ class _ProfileViewState extends State<ProfileView> {
                         ///
                         SizedBox(
                           child: Text(
-                            'Current plan: ${profile['membershipType']}',
+                            'Current plan: ${profile['membershipType'] ?? 'free'}',
                             style: const TextStyle(
                                 fontSize: 23, fontWeight: FontWeight.bold),
                           ),
@@ -602,7 +605,7 @@ class _ProfileViewState extends State<ProfileView> {
                       const SizedBox(width: 5),
                       SizedBox(
                         child: Text(
-                          'Current plan: ${profile['membershipType']}',
+                          'Current plan: ${profile['membershipType'] ?? 'basic'}',
                           style: const TextStyle(
                               fontSize: 23, fontWeight: FontWeight.bold),
                         ),
