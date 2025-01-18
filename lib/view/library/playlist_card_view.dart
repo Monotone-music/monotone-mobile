@@ -143,13 +143,13 @@ class _PlaylistCardState extends State<PlaylistCard> {
               color: Color.fromARGB(255, 0, 0, 0),
               borderRadius: BorderRadius.all(Radius.circular(100)),
             ),
-            child: Transform.rotate(
-              angle: 0.75,
-              child: const Icon(
-                Icons.push_pin_outlined,
-                color: Color.fromARGB(255, 89, 204, 93),
-              ),
-            ),
+            // child: Transform.rotate(
+            //   angle: 0.75,
+            //   child: const Icon(
+            //     Icons.push_pin_outlined,
+            //     color: Color.fromARGB(255, 89, 204, 93),
+            //   ),
+            // ),
           ),
         ),
       ],
