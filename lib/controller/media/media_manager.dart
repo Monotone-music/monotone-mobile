@@ -28,6 +28,8 @@ class MediaManager {
   final isLastSongNotifier = ValueNotifier<bool>(true);
   final isShuffleModeEnabledNotifier = ValueNotifier<bool>(false);
 
+  final currentMediaItemNotifier = ValueNotifier<MediaItem?>(null);
+
   // Extra
   MediaItem? get currentMediaItem => _audioHandler.mediaItem.value;
   int listenAgain = 0;
@@ -35,6 +37,10 @@ class MediaManager {
   final _audioHandler = getIt<AudioHandler>();
   var queueCounter = 0;
   final storage = const FlutterSecureStorage();
+
+  MediaManager() {
+    _listenToCurrentMediaItem();
+  }
 
   // Events: Calls coming from the UI
   void init() async {
@@ -46,6 +52,12 @@ class MediaManager {
     _listenToBufferedPosition();
     _listenToTotalDuration();
     _listenToChangesInSong();
+  }
+
+  void _listenToCurrentMediaItem() {
+    _audioHandler.mediaItem.listen((mediaItem) {
+      currentMediaItemNotifier.value = mediaItem;
+    });
   }
 
   Future<void> addAdvertisement() async {
@@ -145,6 +157,13 @@ class MediaManager {
         ? _audioHandler.queue.value.last.album
         : null;
 
+    int flag = 0;
+    if (isShuffleModeEnabledNotifier.value) {
+      _audioHandler.setShuffleMode(AudioServiceShuffleMode.none);
+      isShuffleModeEnabledNotifier.value = false;
+      flag = 1;
+    }
+
     await _audioHandler.stop();
     await _audioHandler.seek(Duration.zero);
     await _audioHandler.skipToQueueItem(0);
@@ -153,6 +172,11 @@ class MediaManager {
     await _handleAdvertisements(_currentPlaylist, albumName);
     loadPlaylist(playlist, albumName);
     play();
+
+    // If it is shuffle previously, shuffle it after add queue
+    if (flag == 1) {
+      shuffle();
+    }
   }
 
   ///========================For the release group page========================
@@ -162,6 +186,13 @@ class MediaManager {
     String? _currentPlaylist = _audioHandler.queue.value.isNotEmpty
         ? _audioHandler.queue.value.last.album
         : null;
+
+    int flag = 0;
+    if (isShuffleModeEnabledNotifier.value) {
+      _audioHandler.setShuffleMode(AudioServiceShuffleMode.none);
+      isShuffleModeEnabledNotifier.value = false;
+      flag = 1;
+    }
 
     await _audioHandler.stop();
     await _audioHandler.seek(Duration.zero);
@@ -190,6 +221,11 @@ class MediaManager {
     await _audioHandler.skipToQueueItem(0);
     print('Skipped to index: $index');
     play();
+
+    // If it is shuffle previously, shuffle it after add queue
+    if (flag == 1) {
+      shuffle();
+    }
   }
 
   void loadPlaylist(List<Track> playlist, String albumName) async {
@@ -217,9 +253,21 @@ class MediaManager {
   }
 
   void clearAndLoadTrack(Track track, String albumName) async {
+    int flag = 0;
+    if (isShuffleModeEnabledNotifier.value) {
+      _audioHandler.setShuffleMode(AudioServiceShuffleMode.none);
+      isShuffleModeEnabledNotifier.value = false;
+      flag = 1;
+    }
+
     await removeAll();
     loadTrack(track, albumName);
     play();
+
+    // If it is shuffle previously, shuffle it after add queue
+    if (flag == 1) {
+      shuffle();
+    }
   }
 
   void loadTrack(
@@ -270,6 +318,14 @@ class MediaManager {
 
   void clearLoadPlaylistAndSkipToIndexForPlaylist(
       List<RecordingDetails> playlist, String playlistName, int index) async {
+    // Disable shuffle mode before adding a new track or playlist
+    int flag = 0;
+    if (isShuffleModeEnabledNotifier.value) {
+      _audioHandler.setShuffleMode(AudioServiceShuffleMode.none);
+      isShuffleModeEnabledNotifier.value = false;
+      flag = 1;
+    }
+
     await _audioHandler.stop();
     await _audioHandler.seek(Duration.zero);
     await removeAll();
@@ -295,6 +351,11 @@ class MediaManager {
     await _audioHandler.skipToQueueItem(0);
     print('Skipped to index: $index');
     play();
+
+    // If it is shuffle previously, shuffle it after add queue
+    if (flag == 1) {
+      shuffle();
+    }
   }
 
   void loadPlaylistForRecordings(
@@ -339,6 +400,13 @@ class MediaManager {
 
   void clearLoadPlaylistAndPlayForPlaylist(
       List<RecordingDetails> playlist, String playlistName) async {
+    int flag = 0;
+    if (isShuffleModeEnabledNotifier.value) {
+      _audioHandler.setShuffleMode(AudioServiceShuffleMode.none);
+      isShuffleModeEnabledNotifier.value = false;
+      flag = 1;
+    }
+
     await _audioHandler.stop();
     await _audioHandler.seek(Duration.zero);
     await removeAll();
@@ -362,6 +430,11 @@ class MediaManager {
     // Start playing from the beginning
     await _audioHandler.skipToQueueItem(0);
     play();
+
+    // If it is shuffle previously, shuffle it after add queue
+    if (flag == 1) {
+      shuffle();
+    }
   }
 
   ///========================================================================
@@ -494,7 +567,7 @@ class MediaManager {
   }
 
   Future<void> addNull() async {
-    final mediaItem = MediaItem(
+    const  mediaItem = MediaItem(
       id: 'null',
       title: 'No media loaded',
       album: '',

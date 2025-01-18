@@ -13,7 +13,12 @@ class RegisterLoader {
     final httpClient = InterceptedClient.build(interceptors: [
       JwtInterceptor(),
     ]);
+
     try {
+    if (email == null || !_isValidEmail(email)) {
+      return 'Invalid email';
+    }
+
       var body = jsonEncode({
         'username': username,
         'password': password,
@@ -36,14 +41,13 @@ class RegisterLoader {
         return '201';
       } else {
         // Handle other status codes here if needed
-        print('Unexpected status code: ${response.statusCode}');
-        return 'Unexpected status code';
+        return '${response.statusCode}';
       }
     } on DioException catch (e) {
       if (e.response != null) {
         // Handle specific status codes
         if (e.response!.statusCode == 400) {
-          print(e.response!);
+          print('${e.response!}');
           return '400';
         } else if (e.response!.statusCode == 401) {
           return '401';
@@ -57,9 +61,13 @@ class RegisterLoader {
         print('Error during login request: $e');
         return 'Network error';
       }
-    } catch (e) {
-      print('Error during login request: $e');
-      return 'Unexpected error';
     }
+  }
+
+  bool _isValidEmail(String email) {
+    final emailRegex = RegExp(
+      r'^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$',
+    );
+    return emailRegex.hasMatch(email);
   }
 }

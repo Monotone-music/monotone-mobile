@@ -35,6 +35,7 @@ class CurrentSongTitle extends StatelessWidget {
 
 class Playlist extends StatelessWidget {
   const Playlist({Key? key}) : super(key: key);
+
   @override
   Widget build(BuildContext context) {
     final themeProvider = Provider.of<ThemeProvider>(context);
@@ -49,43 +50,72 @@ class Playlist extends StatelessWidget {
           final filteredPlaylist =
               playlist.where((mediaItem) => mediaItem.id != 'null').toList();
 
-          return ListView.builder(
-            itemCount: filteredPlaylist.length,
-            itemBuilder: (context, index) {
-              final mediaItem = filteredPlaylist[index];
-              final isAdvertisement = mediaItem.artist == 'Advertisement';
+          return ValueListenableBuilder<MediaItem?>(
+            valueListenable: pageManager.currentMediaItemNotifier,
+            builder: (context, currentMediaItem, _) {
+              return ListView.builder(
+                itemCount: filteredPlaylist.length,
+                itemBuilder: (context, index) {
+                  final mediaItem = filteredPlaylist[index];
+                  final isAdvertisement = mediaItem.artist == 'Advertisement';
+                  final isPlaying = mediaItem.id == currentMediaItem?.id;
 
-              return ListTile(
-                leading: ClipRRect(
-                  borderRadius: BorderRadius.circular(8.0),
-                  child: ImageRenderer(
-                    imageUrl: mediaItem.artUri?.toString() ??
-                        'assets/image/album_1.png',
-                    width: 50,
-                    height: 50,
-                  ),
-                ),
-                title: Text(mediaItem.title),
-                subtitle: Text(
-                  mediaItem.artist ?? 'Unknown Artist',
-                  style: Theme.of(context).textTheme.bodyMedium?.copyWith(
-                      color: isDarkMode
-                          ? Colors.white.withOpacity(0.7)
-                          : Colors.black,
-                      fontWeight: FontWeight.w300),
-                ),
-                onTap: () {
-                  getIt<AudioHandler>().skipToQueueItem(index);
+                  return Container(
+                    decoration: isPlaying
+                        ? BoxDecoration(
+                            gradient: LinearGradient(
+                              colors: [
+                                Colors.white.withOpacity(0.5),
+                                Colors.transparent,
+                              ],
+                              begin: Alignment.centerLeft,
+                              end: Alignment.centerRight,
+                            ),
+                          )
+                        : null,
+                    child: ListTile(
+                      leading: ClipRRect(
+                        borderRadius: BorderRadius.circular(8.0),
+                        child: ImageRenderer(
+                          imageUrl: mediaItem.artUri?.toString() ??
+                              'assets/image/album_1.png',
+                          width: 50,
+                          height: 50,
+                        ),
+                      ),
+                      title: Text(
+                        mediaItem.title,
+                        style: isPlaying
+                            ? const TextStyle(
+                                fontWeight: FontWeight.bold,
+                                // Remove color change
+                              )
+                            : null,
+                      ),
+                      subtitle: Text(
+                        mediaItem.artist ?? 'Unknown Artist',
+                        style: Theme.of(context).textTheme.bodyMedium?.copyWith(
+                            color: isDarkMode
+                                ? Colors.white.withOpacity(0.7)
+                                : Colors.black,
+                            fontWeight: FontWeight.w300),
+                      ),
+                      onTap: () {
+                        getIt<AudioHandler>().skipToQueueItem(index);
+                      },
+                      trailing: !isAdvertisement
+                          ? IconButton(
+                              alignment: Alignment.centerRight,
+                              icon: const Icon(Icons.remove),
+                              onPressed: () {
+                                getIt<AudioHandler>().removeQueueItemAt(index);
+                                getIt<AudioHandler>().skipToNext();
+                              },
+                            )
+                          : null,
+                    ),
+                  );
                 },
-                trailing: !isAdvertisement
-                    ? IconButton(
-                        alignment: Alignment.centerRight,
-                        icon: const Icon(Icons.remove),
-                        onPressed: () {
-                          getIt<AudioHandler>().removeQueueItemAt(index);
-                        },
-                      )
-                    : null,
               );
             },
           );

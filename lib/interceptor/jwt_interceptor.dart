@@ -20,7 +20,7 @@ class JwtInterceptor implements InterceptorContract {
     if (accessToken != null) {
       request.headers['Authorization'] = 'Bearer $accessToken';
     }
-    // print(request.url);
+    // print('REQUEST: ${request}');
     return request;
   }
 
@@ -31,7 +31,8 @@ class JwtInterceptor implements InterceptorContract {
 
     ///
     // if (response is Response) {
-    // print('RESPONSE: ${jsonDecode(response.body)}');}
+    // print('RESPONSE: ${jsonDecode(response.body)}');
+    // print('RESPONSE STATUS: ${response.statusCode}');}
     ///
 
     if (response.request?.url.path == '/auth/login' ||

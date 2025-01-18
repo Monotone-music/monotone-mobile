@@ -7,8 +7,7 @@ import 'package:http_interceptor/http_interceptor.dart';
 import 'package:monotone_flutter/interceptor/jwt_interceptor.dart';
 
 class LoginLoader {
-  final Uri apiUrl =
-      Uri.parse('$BASE_URL/auth/login?label=listener');
+  final Uri apiUrl = Uri.parse('$BASE_URL/auth/login?label=listener');
   final storage = const FlutterSecureStorage();
   Future<String> login(String username, String password) async {
     final httpClient = InterceptedClient.build(interceptors: [
@@ -42,6 +41,8 @@ class LoginLoader {
           return '400';
         } else if (e.response!.statusCode == 401) {
           return '401';
+        } else if (e.response!.statusCode == 403) {
+          return '403';
         } else if (e.response!.statusCode == 404) {
           return '404';
         } else {

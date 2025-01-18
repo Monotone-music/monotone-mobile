@@ -1,25 +1,279 @@
+import 'dart:io';
+import 'package:mime/mime.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_secure_storage/flutter_secure_storage.dart';
+import 'package:fluttertoast/fluttertoast.dart';
 import 'package:go_router/go_router.dart';
-import 'package:monotone_flutter/auth/login/logout_button.dart';
-import 'package:monotone_flutter/controller/payment/subscription_controller.dart';
-import 'package:monotone_flutter/view/payment/transaction_status.dart';
-import 'package:monotone_flutter/widgets/image_widgets/image_renderer.dart';
+import 'package:image_picker/image_picker.dart';
+import 'package:monotone_flutter/common/api_url.dart';
 import 'dart:math';
 import 'package:provider/provider.dart';
+
+import 'package:monotone_flutter/auth/login/logout_button.dart';
+import 'package:monotone_flutter/controller/payment/subscription_controller.dart';
+import 'package:monotone_flutter/controller/profile/profile_data_services.dart';
+import 'package:monotone_flutter/controller/profile/profile_loader.dart';
+import 'package:monotone_flutter/view/payment/transaction_status.dart';
+import 'package:monotone_flutter/widgets/image_widgets/image_renderer.dart';
 import 'package:monotone_flutter/auth/login/logout_button.dart';
 import 'package:monotone_flutter/widgets/image_widgets/image_renderer.dart';
 import 'package:monotone_flutter/models/profile_items.dart';
 import 'package:monotone_flutter/common/themes/theme_provider.dart';
 
-class ProfileView extends StatelessWidget {
+class ProfileView extends StatefulWidget {
   final Map<String, String> profile;
   final String? bitrate;
 
   ProfileView({required this.profile, required this.bitrate});
 
   @override
+  _ProfileViewState createState() => _ProfileViewState();
+}
+
+class _ProfileViewState extends State<ProfileView> {
+  bool isEditing = false;
+  bool isLoading = false;
+  TextEditingController displayNameController = TextEditingController();
+  final _profileDataService = ProfileDataService();
+  File? _selectedImage;
+  File? _placeHolderImage;
+
+  @override
+  void initState() {
+    super.initState();
+    displayNameController.text = widget.profile['displayName'] ?? '';
+  }
+
+// MAKE A REQUEST TO THE API
+  Future<void> updateDisplayName(String newName) async {
+    try {
+      if (newName.trim().isEmpty) {
+        Fluttertoast.showToast(
+          msg: 'Your display name cannot be empty',
+          toastLength: Toast.LENGTH_SHORT,
+          gravity: ToastGravity.BOTTOM,
+          backgroundColor: Colors.red,
+          textColor: Colors.white,
+        );
+        return;
+      }
+
+      final result = await _profileDataService.changeDisplayName(newName);
+
+      if (result == '200') {
+        setState(() {
+          widget.profile['displayName'] = newName;
+          isEditing = false;
+        });
+        Fluttertoast.showToast(
+          msg: 'Name updated successfully',
+          toastLength: Toast.LENGTH_SHORT,
+          gravity: ToastGravity.BOTTOM,
+          backgroundColor: Colors.green,
+          textColor: Colors.white,
+        );
+      } else {
+        Fluttertoast.showToast(
+          msg: 'Failed to update display name',
+          toastLength: Toast.LENGTH_SHORT,
+          gravity: ToastGravity.BOTTOM,
+          backgroundColor: Colors.red,
+          textColor: Colors.white,
+        );
+        return;
+      }
+    } catch (e) {
+      Fluttertoast.showToast(
+        msg: 'Error updating display name',
+        toastLength: Toast.LENGTH_SHORT,
+        gravity: ToastGravity.BOTTOM,
+        backgroundColor: Colors.red,
+        textColor: Colors.white,
+      );
+      return;
+    }
+  }
+
+  Future<void> updateProfileImage(File? imageFile) async {
+    try {
+      if (imageFile == null) {
+        Fluttertoast.showToast(
+          msg: 'Please choose a file',
+          toastLength: Toast.LENGTH_SHORT,
+          gravity: ToastGravity.BOTTOM,
+          backgroundColor: Colors.red,
+          textColor: Colors.white,
+        );
+        return;
+      }
+
+      final result = await _profileDataService.changeAvatar(imageFile);
+
+      if (result == '200') {
+        setState(() {
+          _placeHolderImage = imageFile;
+          _selectedImage = null;
+          isLoading = false;
+        });
+        Fluttertoast.showToast(
+          msg: 'Profile image updated successfully',
+          toastLength: Toast.LENGTH_SHORT,
+          gravity: ToastGravity.BOTTOM,
+          backgroundColor: Colors.green,
+          textColor: Colors.white,
+        );
+      } else {
+        setState(() {
+          isLoading = false;
+        });
+        Fluttertoast.showToast(
+          msg: 'Failed to update profile image',
+          toastLength: Toast.LENGTH_SHORT,
+          gravity: ToastGravity.BOTTOM,
+          backgroundColor: Colors.red,
+          textColor: Colors.white,
+        );
+        return;
+      }
+    } catch (e) {
+      print('Error updating profile image: $e');
+      Fluttertoast.showToast(
+        msg: 'Error updating profile image',
+        toastLength: Toast.LENGTH_SHORT,
+        gravity: ToastGravity.BOTTOM,
+        backgroundColor: Colors.red,
+        textColor: Colors.white,
+      );
+      return;
+    }
+  }
+
+// HANDLE CALL IN UI
+  void _showEditDisplayNameDialog() {
+    String tempName = widget.profile['displayName'] ?? '';
+    displayNameController.text = tempName;
+
+    showDialog(
+      context: context,
+      builder: (BuildContext context) {
+        return AlertDialog(
+          title: const Text('Edit Display Name'),
+          content: TextField(
+            controller: displayNameController,
+            decoration: InputDecoration(
+                labelText: 'Display Name',
+                labelStyle: TextStyle(
+                  color: Colors.white.withOpacity(0.7),
+                )),
+            onSubmitted: (newValue) {
+              updateDisplayName(newValue);
+              Navigator.of(context).pop();
+            },
+          ),
+          actions: [
+            TextButton(
+              onPressed: () {
+                displayNameController.text = tempName;
+                Navigator.of(context).pop();
+              },
+              child: const Text('Cancel'),
+            ),
+            TextButton(
+              onPressed: () {
+                updateDisplayName(displayNameController.text);
+                Navigator.of(context).pop();
+              },
+              child: const Text('Save'),
+            ),
+          ],
+        );
+      },
+    );
+  }
+
+  Future<void> _pickImageFromGallery(StateSetter setState) async {
+    setState(() {
+      isLoading = true;
+    });
+
+    final ImagePicker _picker = ImagePicker();
+    final XFile? returnImage =
+        await _picker.pickImage(source: ImageSource.gallery);
+
+    if (returnImage != null) {
+      // print(returnImage.path);
+
+      setState(() {
+        _selectedImage = File(returnImage.path);
+        isLoading = false;
+      });
+    }
+  }
+
+  void _showEditAvatarDialog() {
+    const _nullImage = null;
+
+    showDialog(
+      context: context,
+      builder: (BuildContext context) {
+        return StatefulBuilder(
+          builder: (BuildContext context, StateSetter setState) {
+            return AlertDialog(
+              title: const Text('Choose an Image'),
+              content: Column(
+                mainAxisSize: MainAxisSize.min,
+                children: [
+                  isLoading
+                      ? const CircularProgressIndicator()
+                      : _selectedImage != null
+                          ? GestureDetector(
+                              onTap: () => _pickImageFromGallery(setState),
+                              child: Image.file(_selectedImage!),
+                            )
+                          : IconButton(
+                              icon: const Icon(Icons.file_upload_outlined),
+                              color: Colors.white.withOpacity(0.3),
+                              iconSize: 200,
+                              onPressed: () => _pickImageFromGallery(setState),
+                            ),
+                ],
+              ),
+
+              ///
+              actions: [
+                TextButton(
+                  onPressed: () {
+                    _selectedImage = _nullImage; // Revert to the original image
+                    Navigator.of(context).pop();
+                  },
+                  child: const Text(
+                    'Cancel',
+                    style: TextStyle(fontSize: 20),
+                  ),
+                ),
+                TextButton(
+                  onPressed: () {
+                    updateProfileImage(_selectedImage);
+                    // Handle image submission here
+                    Navigator.of(context).pop();
+                  },
+                  child: const Text(
+                    'Submit',
+                    style: TextStyle(fontSize: 20),
+                  ),
+                ),
+              ],
+            );
+          },
+        );
+      },
+    );
+  }
+
+  @override
   Widget build(BuildContext context) {
+    final profile = widget.profile;
+    final bitrate = widget.bitrate;
     final themeProvider = Provider.of<ThemeProvider>(context);
     final changePrimary = themeProvider.getThemeColorPrimary();
     final SubscriptionController _subscriptionController =
@@ -65,13 +319,27 @@ class ProfileView extends StatelessWidget {
                         ),
                       ),
                       child: ClipOval(
-                        child: ImageRenderer(
-                          imageUrl: 'assets/image/blank_avatar.png',
-                          height: min(
-                              MediaQuery.sizeOf(context).height * 0.13, 100),
-                          width:
-                              min(MediaQuery.sizeOf(context).width * 0.25, 100),
-                        ),
+                        child: _placeHolderImage != null
+                            ? Image.file(
+                                _placeHolderImage!,
+                                height: min(
+                                    MediaQuery.sizeOf(context).height * 0.13,
+                                    100),
+                                width: min(
+                                    MediaQuery.sizeOf(context).width * 0.25,
+                                    100),
+                                fit: BoxFit.cover,
+                              )
+                            : ImageRenderer(
+                                imageUrl:
+                                    '$BASE_URL/image/${profile['filename']}',
+                                height: min(
+                                    MediaQuery.sizeOf(context).height * 0.13,
+                                    100),
+                                width: min(
+                                    MediaQuery.sizeOf(context).width * 0.25,
+                                    100),
+                              ),
                       ),
                     ),
                   ],
@@ -110,40 +378,41 @@ class ProfileView extends StatelessWidget {
                               const SizedBox(
                                 width: 25,
                               ),
-                              // IconButton(
-                              //   icon: ImageRenderer(
-                              //     imageUrl:
-                              //         'assets/image/profile_adjust_icon.svg',
-                              //     width: min(
-                              //         MediaQuery.sizeOf(context).height * 0.035,
-                              //         35),
-                              //     height: min(
-                              //         MediaQuery.sizeOf(context).height * 0.035,
-                              //         35),
-                              //   ),
-                              //   color: changePrimary.withOpacity(1),
-                              //   onPressed: () {
-                              //     // Handle edit action
-                              //     print('Edit button pressed');
-                              //   },
-                              // ),
-                              // IconButton(
-                              //   icon: ImageRenderer(
-                              //     imageUrl:
-                              //         'assets/image/profile_avatar_upload_icon.svg',
-                              //     width: min(
-                              //         MediaQuery.sizeOf(context).height * 0.03,
-                              //         35),
-                              //     height: min(
-                              //         MediaQuery.sizeOf(context).height * 0.03,
-                              //         35),
-                              //   ),
-                              //   color: changePrimary.withOpacity(1),
-                              //   onPressed: () {
-                              //     // Handle edit action
-                              //     print('Edit button pressed');
-                              //   },
-                              // ),
+                              IconButton(
+                                icon: ImageRenderer(
+                                  imageUrl:
+                                      'assets/image/profile_adjust_icon.svg',
+                                  width: min(
+                                      MediaQuery.sizeOf(context).height * 0.035,
+                                      35),
+                                  height: min(
+                                      MediaQuery.sizeOf(context).height * 0.035,
+                                      35),
+                                ),
+                                color: changePrimary.withOpacity(1),
+                                onPressed: () {
+                                  _showEditDisplayNameDialog();
+                                },
+                              ),
+
+                              ///
+                              IconButton(
+                                icon: ImageRenderer(
+                                  imageUrl:
+                                      'assets/image/profile_avatar_upload_icon.svg',
+                                  width: min(
+                                      MediaQuery.sizeOf(context).height * 0.03,
+                                      35),
+                                  height: min(
+                                      MediaQuery.sizeOf(context).height * 0.03,
+                                      35),
+                                ),
+                                color: changePrimary.withOpacity(1),
+                                onPressed: () {
+                                  // Handle edit action
+                                  _showEditAvatarDialog();
+                                },
+                              ),
                             ]),
 
                         const SizedBox(

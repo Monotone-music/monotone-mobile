@@ -80,9 +80,9 @@ class _RegisterFormState extends State<RegisterForm> {
         _passwordController.text,
       );
 
-      if (result == '200') {
+      if (result == '201') {
         Fluttertoast.showToast(
-          msg: 'Register successfully',
+          msg: 'Register successfully, please check your email',
           toastLength: Toast.LENGTH_SHORT,
           backgroundColor: Colors.green,
           fontSize: 18,
@@ -90,17 +90,33 @@ class _RegisterFormState extends State<RegisterForm> {
         );
         // Navigate to login page
         GoRouter.of(context).push('/login');
-      } else if (result == 'Network error') {
+      } else if (result == '401') {
         Fluttertoast.showToast(
-          msg: 'There must be something wrong',
+          msg: 'The account already exists',
           toastLength: Toast.LENGTH_SHORT,
           backgroundColor: Colors.red,
           fontSize: 18,
           gravity: ToastGravity.BOTTOM,
         );
-      } else if (result == '401') {
+      } else if (result == 'Invalid email') {
         Fluttertoast.showToast(
-          msg: 'The account already exists',
+          msg: 'Invalid email format',
+          toastLength: Toast.LENGTH_SHORT,
+          backgroundColor: Colors.red,
+          fontSize: 18,
+          gravity: ToastGravity.BOTTOM,
+        );
+      } else if (result == '400') {
+        Fluttertoast.showToast(
+          msg: 'Account already exist',
+          toastLength: Toast.LENGTH_SHORT,
+          backgroundColor: Colors.red,
+          fontSize: 18,
+          gravity: ToastGravity.BOTTOM,
+        );
+      } else if (result == 'Network error') {
+        Fluttertoast.showToast(
+          msg: 'A network error wrong',
           toastLength: Toast.LENGTH_SHORT,
           backgroundColor: Colors.red,
           fontSize: 18,

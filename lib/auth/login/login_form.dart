@@ -97,6 +97,14 @@ class _LoginFormState extends State<LoginForm> {
         fontSize: 18,
         gravity: ToastGravity.BOTTOM,
       );
+      } else if (result == '403') {
+      Fluttertoast.showToast(
+        msg: 'Account is inactive or suspended',
+        toastLength: Toast.LENGTH_SHORT,
+        backgroundColor: Colors.red,
+        fontSize: 18,
+        gravity: ToastGravity.BOTTOM,
+      );
     } else {
       Fluttertoast.showToast(
         msg: 'An unknown error occurred',

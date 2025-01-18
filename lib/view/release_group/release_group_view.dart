@@ -1,5 +1,7 @@
 import 'package:auto_scroll_text/auto_scroll_text.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
+import 'package:fluttertoast/fluttertoast.dart';
 import 'package:monotone_flutter/common/api_url.dart';
 import 'package:monotone_flutter/controller/release_group/release_group_controller.dart';
 import 'package:monotone_flutter/view/artist_detail/artist_detail.dart';
@@ -171,40 +173,41 @@ Widget buildAlbumImageWithBackButton(
         ),
       ),
       //More actions button
-      if(artistId!= 'Various Artists')
-      Positioned(
-        top: 16,
-        right: 16,
-        child: Container(
-          decoration: BoxDecoration(
-            color:
-                Colors.black.withOpacity(0.2), // Background color with opacity
-            shape: BoxShape.circle,
-          ),
-          child: PopupMenuButton<int>(
-            icon: const Icon(Icons.more_vert, color: Colors.white),
-            onSelected: (value) {
-              if (value == 0) {
-                Navigator.push(
-                  context,
-                  MaterialPageRoute(
-                    builder: (context) => ArtistDetailPage(artistId: artistId),
+      if (artistId != 'Various Artists')
+        Positioned(
+          top: 16,
+          right: 16,
+          child: Container(
+            decoration: BoxDecoration(
+              color: Colors.black
+                  .withOpacity(0.2), // Background color with opacity
+              shape: BoxShape.circle,
+            ),
+            child: PopupMenuButton<int>(
+              icon: const Icon(Icons.more_vert, color: Colors.white),
+              onSelected: (value) {
+                if (value == 0) {
+                  Navigator.push(
+                    context,
+                    MaterialPageRoute(
+                      builder: (context) =>
+                          ArtistDetailPage(artistId: artistId),
+                    ),
+                  );
+                }
+              },
+              itemBuilder: (context) => [
+                const PopupMenuItem<int>(
+                  value: 0,
+                  child: ListTile(
+                    leading: Icon(Icons.info),
+                    title: Text('About this artist'),
                   ),
-                );
-              }
-            },
-            itemBuilder: (context) => [
-              const PopupMenuItem<int>(
-                value: 0,
-                child: ListTile(
-                  leading: Icon(Icons.info),
-                  title: Text('About this artist'),
                 ),
-              ),
-            ],
+              ],
+            ),
           ),
         ),
-      ),
       // Play shuffle button
       Positioned(
         left: 0,
@@ -232,21 +235,6 @@ Widget buildAlbumImageWithBackButton(
             Row(
               mainAxisAlignment: MainAxisAlignment.center,
               children: [
-                // Container(
-                //   width: 40,
-                //   height: 40,
-                //   decoration: BoxDecoration(
-                //     color: Colors.black.withOpacity(0.2),
-                //     shape: BoxShape.circle,
-                //   ),
-                //   child: IconButton(
-                //     icon:
-                //         const Icon(Icons.favorite, color: Colors.red, size: 20),
-                //     onPressed: () {
-                //       // Handle add to favorite action
-                //     },
-                //   ),
-                // ),
                 const SizedBox(width: 16),
                 Container(
                   width: 40,
@@ -265,21 +253,6 @@ Widget buildAlbumImageWithBackButton(
                   ),
                 ),
                 const SizedBox(width: 16),
-                // Container(
-                //   width: 40,
-                //   height: 40,
-                //   decoration: BoxDecoration(
-                //     color: Colors.black.withOpacity(0.2),
-                //     shape: BoxShape.circle,
-                //   ),
-                //   child: IconButton(
-                //     icon:
-                //         const Icon(Icons.share, color: Colors.yellow, size: 20),
-                //     onPressed: () {
-                //       // Handle share action
-                //     },
-                //   ),
-                // ),
               ],
             ),
           ],
@@ -486,7 +459,7 @@ Widget buildTrackList(BuildContext context, ReleaseGroup releaseGroup,
                     // Handle add to favorite action
                   } else if (value == 1) {
                     // Handle add to queue action
-                  }
+                  } else if (value == 2) {}
                 },
                 itemBuilder: (context) => [
                   PopupMenuItem<int>(
@@ -503,11 +476,22 @@ Widget buildTrackList(BuildContext context, ReleaseGroup releaseGroup,
                   PopupMenuItem<int>(
                     value: 1,
                     child: ListTile(
-                      leading: Icon(Icons.queue),
-                      title: Text('Add to Queue'),
+                      leading: const Icon(Icons.queue),
+                      title: const Text('Add to Queue'),
                       onTap: () {
                         getIt<MediaManager>()
                             .loadTrack(track, releaseGroup.name);
+                      }, // Add track to queue
+                    ),
+                  ),
+
+                  PopupMenuItem<int>(
+                    value: 2,
+                    child: ListTile(
+                      leading: const Icon(Icons.report),
+                      title: const Text('Report a problem'),
+                      onTap: () {
+                        _showReportDialog(context, track.id);
                       }, // Add track to queue
                     ),
                   ),
@@ -530,6 +514,200 @@ Widget buildTrackList(BuildContext context, ReleaseGroup releaseGroup,
           //skip to the selected track
           print('get indexed track: $index');
         },
+      );
+    },
+  );
+}
+
+void _showReportDialog(BuildContext context, String recordingId) {
+  showDialog(
+    context: context,
+    builder: (context) {
+      String? selectedOption;
+      TextEditingController detailController = TextEditingController();
+      final _releaseGroupController = ReleaseGroupController();
+      return AlertDialog(
+        title: const Text('Report a problem'),
+        content: Container(
+          width: 300.0, // Set the fixed width here
+          child: StatefulBuilder(
+            builder: (BuildContext context, StateSetter setState) {
+              return Column(
+                mainAxisSize: MainAxisSize.min,
+                children: [
+                  RadioListTile<String>(
+                    title: const Text('The track is unavailable'),
+                    value: 'invalid_playback',
+                    groupValue: selectedOption,
+                    onChanged: (value) {
+                      setState(() {
+                        selectedOption = value;
+                      });
+                    },
+                  ),
+                  RadioListTile<String>(
+                    title: const Text('The track is inappropriate'),
+                    value: 'inappropriate_content',
+                    groupValue: selectedOption,
+                    onChanged: (value) {
+                      setState(() {
+                        selectedOption = value;
+                      });
+                    },
+                  ),
+                  RadioListTile<String>(
+                    title: const Text('Other error'),
+                    value: 'other',
+                    groupValue: selectedOption,
+                    onChanged: (value) {
+                      setState(() {
+                        selectedOption = value;
+                      });
+                    },
+                  ),
+                  TextField(
+                    controller: detailController,
+                    inputFormatters: [
+                      FilteringTextInputFormatter.allow(RegExp(r'[ -~]')),
+                      LengthLimitingTextInputFormatter(250),
+                    ],
+                    decoration: InputDecoration(
+                      labelText: 'Error detail',
+                      labelStyle: TextStyle(
+                        color: Colors.white
+                            .withOpacity(0.7), // Adjust the opacity here
+                      ),
+                    ),
+                    onChanged: (text) {
+                      if (!RegExp(r'^[ -~]*$').hasMatch(text)) {
+                        Fluttertoast.showToast(
+                          msg: 'Only ASCII characters are allowed',
+                          toastLength: Toast.LENGTH_SHORT,
+                          gravity: ToastGravity.BOTTOM,
+                          backgroundColor: Colors.red,
+                          textColor: Colors.white,
+                        );
+                      } else if (text.length > 250) {
+                        Fluttertoast.showToast(
+                          msg: 'Character limit of 250 reached',
+                          toastLength: Toast.LENGTH_SHORT,
+                          gravity: ToastGravity.BOTTOM,
+                          backgroundColor: Colors.red,
+                          textColor: Colors.white,
+                        );
+                      }
+                    },
+                  ),
+                ],
+              );
+            },
+          ),
+        ),
+
+        ///
+        actions: [
+          TextButton(
+            onPressed: () {
+              Navigator.of(context).pop();
+            },
+            child: const Text('Cancel'),
+          ),
+          TextButton(
+            onPressed: () async {
+              if (selectedOption == null) {
+                Fluttertoast.showToast(
+                  msg: 'Please select an option',
+                  toastLength: Toast.LENGTH_SHORT,
+                  gravity: ToastGravity.BOTTOM,
+                  backgroundColor: Colors.red,
+                  textColor: Colors.white,
+                );
+                return;
+              }
+              String response = await _releaseGroupController.reportRelease(
+                  recordingId, selectedOption!, detailController.text);
+              // Handle the report submission
+              switch (response) {
+                case '200':
+                  Fluttertoast.showToast(
+                    msg: 'Report submitted successfully',
+                    toastLength: Toast.LENGTH_SHORT,
+                    gravity: ToastGravity.BOTTOM,
+                    backgroundColor: Colors.green,
+                    textColor: Colors.white,
+                  );
+                  break;
+                case '400':
+                  Fluttertoast.showToast(
+                    msg: 'Bad request',
+                    toastLength: Toast.LENGTH_SHORT,
+                    gravity: ToastGravity.BOTTOM,
+                    backgroundColor: Colors.red,
+                    textColor: Colors.white,
+                  );
+                  break;
+                case '401':
+                  Fluttertoast.showToast(
+                    msg: 'Unauthorized',
+                    toastLength: Toast.LENGTH_SHORT,
+                    gravity: ToastGravity.BOTTOM,
+                    backgroundColor: Colors.red,
+                    textColor: Colors.white,
+                  );
+                  break;
+                // case '403':
+                //   Fluttertoast.showToast(
+                //     msg: 'Forbidden',
+                //     toastLength: Toast.LENGTH_SHORT,
+                //     gravity: ToastGravity.BOTTOM,
+                //     backgroundColor: Colors.red,
+                //     textColor: Colors.white,
+                //   );
+                //   break;
+                case '404':
+                  Fluttertoast.showToast(
+                    msg: 'Not found',
+                    toastLength: Toast.LENGTH_SHORT,
+                    gravity: ToastGravity.BOTTOM,
+                    backgroundColor: Colors.red,
+                    textColor: Colors.white,
+                  );
+                  break;
+                case '502':
+                  Fluttertoast.showToast(
+                    msg: 'Bad gateway',
+                    toastLength: Toast.LENGTH_SHORT,
+                    gravity: ToastGravity.BOTTOM,
+                    backgroundColor: Colors.red,
+                    textColor: Colors.white,
+                  );
+                  break;
+                case '500':
+                  Fluttertoast.showToast(
+                    msg: 'Something broke',
+                    toastLength: Toast.LENGTH_SHORT,
+                    gravity: ToastGravity.BOTTOM,
+                    backgroundColor: Colors.red,
+                    textColor: Colors.white,
+                  );
+                  break;
+                default:
+                  Fluttertoast.showToast(
+                    msg: 'An unexpected error happened',
+                    toastLength: Toast.LENGTH_SHORT,
+                    gravity: ToastGravity.BOTTOM,
+                    backgroundColor: Colors.red,
+                    textColor: Colors.white,
+                  );
+                  break;
+              }
+              print('Selected option: $selectedOption');
+              print('Detail: ${detailController.text}');
+              Navigator.of(context).pop();
+            },
+            child: const Text('Submit'),
+          ),
+        ],
       );
     },
   );

@@ -15,7 +15,7 @@ class _ProfileLoaderState extends State<ProfileLoader> {
   late Future<Map<String, String>> profileFuture;
 
   Future<Map<String, dynamic>> _loadProfileAndBitrate() async {
-    final storage = FlutterSecureStorage();
+    const storage = FlutterSecureStorage();
     final profile = await profileFuture;
     final bitrate = await storage.read(key: 'bitrate');
     return {
@@ -36,7 +36,7 @@ class _ProfileLoaderState extends State<ProfileLoader> {
       future: _loadProfileAndBitrate(),
       builder: (context, snapshot) {
         if (snapshot.connectionState == ConnectionState.waiting) {
-          return Center(child: CircularProgressIndicator());
+          return const Center(child: CircularProgressIndicator());
         } else if (snapshot.hasError) {
           return Center(child: Text('Error: ${snapshot.error}'));
         } else if (snapshot.hasData) {
